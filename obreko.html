@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>obreko · Reformas y mantenimiento en Tenerife</title>
+<meta name="description" content="obreko: reformas integrales, mantenimiento, obras, domótica y urgencias del hogar en Tenerife. Un solo interlocutor, plazos reales, sin sorpresas.">
+<meta name="keywords" content="reformas Tenerife, mantenimiento hogar Tenerife, obras Tenerife, domótica Tenerife, empresa reformas Canarias, manitas Tenerife">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="obreko · Tu casa, siempre a punto">
+<meta property="og:description" content="Reformas, mantenimiento y hogar conectado en Tenerife. Un solo interlocutor. Sin sorpresas.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --navy:#222E50;--navy-lt:#3C528E;--blue-mid:#5C7CD9;
+  --sand:#F1EDE0;--sand-lt:#F8F1E5;--sand-xlt:#FCF8EA;
+  --yellow:#FED544;--white:#fff;--muted:#5a5870;--border:rgba(34,46,80,0.13);
+  --wa:#25D366;
+}
+.brand{font-family:'Playfair Display',serif;font-style:italic;font-weight:400}
+body{font-family:'DM Sans',sans-serif;font-weight:300;color:var(--navy);background:var(--white);overflow-x:hidden;font-size:17px}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none;min-height:100vh}
+#page-obras,#page-reforma,#page-manitas,#page-mantenimiento,#page-hogar{background:var(--navy)}
+.page.active{display:block}
+
+/* ── WHATSAPP ── */
+#waBtn{position:fixed;bottom:2rem;right:2rem;z-index:8000;width:56px;height:56px;border-radius:50%;background:var(--wa);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:transform .25s}
+#waBtn:hover{transform:scale(1.1)}
+#waBtn svg{width:28px;height:28px;fill:white}
+.wa-tt{position:absolute;right:68px;top:50%;transform:translateY(-50%);background:var(--navy);color:#fff;padding:.45rem .9rem;white-space:nowrap;font-size:.76rem;pointer-events:none;opacity:0;transition:opacity .2s}
+.wa-tt::after{content:'';position:absolute;left:100%;top:50%;transform:translateY(-50%);border:5px solid transparent;border-left-color:var(--navy)}
+#waBtn:hover .wa-tt{opacity:1}
+
+/* ── DRAWER ── */
+#menuDrawer{position:fixed;top:0;right:-320px;bottom:0;width:300px;background:var(--navy);z-index:9000;padding:5rem 2.5rem 3rem;transition:right .4s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-left:3px solid var(--yellow)}
+#menuDrawer.open{right:0}
+.d-overlay{position:fixed;inset:0;background:rgba(34,46,80,.55);backdrop-filter:blur(3px);z-index:8999;opacity:0;pointer-events:none;transition:opacity .4s}
+.d-overlay.open{opacity:1;pointer-events:all}
+.d-close{position:absolute;top:1.4rem;right:1.4rem;background:none;border:none;color:rgba(255,255,255,.5);font-size:1.4rem;cursor:pointer;transition:color .2s}
+.d-close:hover{color:var(--yellow)}
+.d-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:2rem;color:#fff;margin-bottom:2.5rem;cursor:pointer}
+.d-link{display:block;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.7);text-decoration:none;background:none;border-left:none;border-right:none;border-top:none;text-align:left;width:100%;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:color .2s,padding-left .2s}
+.d-link:hover{color:var(--yellow);padding-left:.5rem}
+.d-cta{display:block;margin-top:2rem;background:var(--yellow);color:var(--navy);border:none;padding:1rem 1.5rem;text-align:center;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;width:100%;transition:background .3s}
+.d-cta:hover{background:#ffe382}
+
+/* ── INTRO ANIM ── */
+#introAnim{position:fixed;inset:0;z-index:9999;background:var(--navy);display:flex;align-items:center;justify-content:center;animation:fadeOvl .5s ease 2.1s forwards}
+#introAnim.done{display:none}
+.ia{display:flex;flex-direction:column;align-items:flex-start;overflow:hidden}
+.ia-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(5rem,12vw,11rem);color:#fff;line-height:1;transform:translateY(120%);animation:slideUp .9s cubic-bezier(.16,1,.3,1) .2s forwards}
+.ia-sub{font-size:clamp(.75rem,1.5vw,.9rem);letter-spacing:.35em;text-transform:uppercase;color:var(--yellow);font-weight:400;margin-top:.5rem;opacity:0;transform:translateY(10px);animation:fadeUp .6s ease .9s forwards}
+.ia-line{width:0;height:2px;background:var(--yellow);margin-top:1.2rem;animation:growLine .8s ease 1.1s forwards}
+@keyframes slideUp{to{transform:translateY(0)}}
+@keyframes growLine{to{width:100%}}
+@keyframes fadeOvl{to{opacity:0;pointer-events:none}}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:900;background:var(--sand);display:flex;align-items:center;justify-content:space-between;padding:0 3rem;height:68px;border-bottom:1px solid rgba(34,46,80,.08);transition:background .4s,height .35s}
+#nav.hero-mode{background:transparent;border-bottom-color:transparent;height:76px}
+.n-logo{background:none;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-style:italic;font-size:2rem;color:var(--navy);letter-spacing:.04em;transition:color .4s;padding:0}
+#nav.hero-mode .n-logo{color:#fff}
+.n-links{display:flex;align-items:center;gap:1.8rem;list-style:none}
+.n-link{background:none;border:none;cursor:pointer;color:var(--navy);font-family:'DM Sans',sans-serif;font-size:.73rem;font-weight:400;letter-spacing:.15em;text-transform:uppercase;transition:color .3s;position:relative;padding:0}
+.n-link::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--navy);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.n-link:hover::after,.n-link.active::after{transform:scaleX(1)}
+#nav.hero-mode .n-link{color:rgba(255,255,255,.85)}
+#nav.hero-mode .n-link::after{background:#fff}
+.n-right{display:flex;align-items:center;gap:1rem}
+.n-cta{background:var(--navy);color:#fff;border:none;padding:.65rem 1.5rem;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background .3s;white-space:nowrap}
+.n-cta:hover{background:var(--navy-lt)}
+#nav.hero-mode .n-cta{background:#fff;color:var(--navy)}
+#nav.hero-mode .n-cta:hover{background:var(--yellow)}
+.n-burger{background:none;border:1px solid rgba(34,46,80,.25);color:var(--navy);width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+#nav.hero-mode .n-burger{border-color:rgba(255,255,255,.4);color:#fff}
+.n-burger span{display:block;width:16px;height:1.5px;background:currentColor;border-radius:1px}
+
+/* ── COMMONS ── */
+.eyebrow{display:flex;align-items:center;gap:.7rem;font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--blue-mid);margin-bottom:1.2rem;font-weight:500}
+.eyebrow-bar{width:24px;height:1px;background:var(--blue-mid);flex-shrink:0}
+.sec-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2.2rem,3.8vw,3.2rem);font-weight:400;color:var(--navy);line-height:1.15}
+.sec-title strong{font-style:normal;font-weight:600}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+/* ── PAGE FADE ── */
+.page{display:none}
+.page.active{display:block;animation:pageFadeIn .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes pageFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════
+   HOME PAGE
+══════════════════════════════════════ */
+/* HERO */
+.h-hero{position:relative;height:100vh;min-height:600px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.h-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0f1624}
+.h-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 65% 38%,rgba(92,124,217,.2) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 15% 78%,rgba(140,172,232,.1) 0%,transparent 55%)}
+.h-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(to bottom,rgba(10,15,35,.5) 0%,rgba(10,15,35,.1) 40%,rgba(10,15,35,.88) 100%)}
+.h-text{position:relative;z-index:2;text-align:right;padding:0 4.5rem 1.5rem;max-width:800px;margin-left:auto}
+.h-h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(3.5rem,8vw,8rem);font-weight:400;color:#fff;line-height:.97;opacity:0;transform:translateY(24px);animation:fadeUp 1s ease 2.1s forwards;animation-fill-mode:forwards;letter-spacing:-.01em}
+.h-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.2rem,2.4vw,1.8rem);color:rgba(255,255,255,.75);margin-top:.8rem;opacity:0;transform:translateY(16px);animation:fadeUp .9s ease 2.3s forwards;animation-fill-mode:forwards}
+.h-vbtn{display:inline-flex;align-items:center;gap:.7rem;margin-top:1.8rem;background:#fff;color:var(--navy);border:none;padding:.8rem 1.9rem;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background .3s;opacity:0;animation:fadeUp .9s ease 2.5s forwards;animation-fill-mode:forwards}
+.h-vbtn:hover{background:var(--yellow)}
+.tri{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid var(--navy)}
+.h-scroll{position:absolute;bottom:100px;right:4.5rem;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.4rem;opacity:0;animation:fadeUp .8s ease 2.9s forwards;animation-fill-mode:forwards}
+.h-scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,rgba(255,255,255,.55),transparent);animation:spulse 2s ease-in-out infinite}
+.h-scroll-txt{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);writing-mode:vertical-rl}
+@keyframes spulse{0%,100%{opacity:.35}50%{opacity:1}}
+/* Search bar */
+.h-search{position:relative;z-index:2;background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.15);opacity:0;animation:fadeUp .9s ease 2.7s forwards;animation-fill-mode:forwards;overflow:visible;overflow:visible}
+.h-search-inner{display:flex;align-items:stretch;overflow:visible}
+.sb-f{flex:1;display:flex;align-items:center;gap:.9rem;padding:1.35rem 2.5rem;cursor:pointer;border-right:1px solid rgba(255,255,255,.15);transition:background .3s;position:relative;overflow:visible}
+.sb-f:hover{background:rgba(255,255,255,.08)}
+.sb-ic{color:rgba(255,255,255,.55);font-size:1rem;flex-shrink:0}
+.sb-l{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;margin-bottom:3px}
+.sb-v{font-size:.92rem;color:rgba(255,255,255,.88);font-weight:300}
+.sb-btn{background:#fff;color:var(--navy);border:none;padding:0 3.5rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .3s;white-space:nowrap;flex-shrink:0}
+.sb-btn:hover{background:var(--yellow)}
+/* Sections */
+.h-intro{background:var(--sand);padding:7rem 4rem}
+.intro-top{display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:end;margin-bottom:4rem}
+.intro-body{margin-top:1.4rem;font-size:1.05rem;color:var(--muted);line-height:1.95}
+.btn-navy{display:inline-block;margin-top:2.2rem;background:var(--navy);color:#fff;padding:1rem 2.5rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;transition:background .3s}
+.btn-navy:hover{background:var(--navy-lt)}
+.pain-blocks{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border)}
+.pb{background:#fff;padding:3.2rem 2.5rem;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:1.2rem;position:relative;overflow:hidden;transition:background .4s,transform .4s cubic-bezier(.16,1,.3,1)}
+.pb:last-child{border-right:none}
+.pb::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.pb:hover{background:var(--sand-xlt)}
+.pb:hover::after{transform:scaleX(1)}
+.pb-num{font-family:'Playfair Display',serif;font-style:italic;font-size:5.5rem;color:rgba(92,124,217,.18);line-height:.9;margin-bottom:.3rem}
+.pb-text{font-size:1.05rem;color:var(--navy);line-height:1.65;font-weight:400}
+/* Services grid */
+.h-svc{background:#fff;padding:7rem 4rem;border-top:1px solid var(--border)}
+.svc-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem}
+.svc-note{font-size:.9rem;color:var(--muted);max-width:280px;line-height:1.8;text-align:right}
+.svc-grid{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--border)}
+.svc-card{padding:2.8rem 1.8rem;border-right:1px solid var(--border);cursor:pointer;position:relative;overflow:hidden;transition:background .35s;background:none;border-top:none;border-bottom:none;border-left:none;text-align:left;width:100%}
+.svc-card:last-child{border-right:none}
+.svc-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.svc-card:hover{background:var(--sand-xlt)}
+.svc-card:hover::after{transform:scaleX(1)}
+.svc-n{font-family:'Playfair Display',serif;font-style:italic;font-size:.82rem;color:var(--blue-mid);margin-bottom:1.2rem;display:block}
+.svc-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:400;color:var(--navy);line-height:1.2;margin-bottom:.9rem;transition:color .3s}
+.svc-card:hover .svc-name{color:var(--navy-lt)}
+.svc-desc{font-size:.92rem;color:var(--muted);line-height:1.9}
+.svc-cta{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.3rem;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blue-mid);transition:gap .3s;font-family:'DM Sans',sans-serif}
+.svc-card:hover .svc-cta{gap:.8rem}
+.svc-cta::after{content:'→'}
+/* Proceso */
+.h-proceso{background:var(--sand-lt);padding:7rem 4rem;border-top:1px solid var(--border)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);margin-top:4rem}
+.step{padding:2.8rem 2.2rem;border-right:1px solid var(--border);position:relative}
+.step:last-child{border-right:none}
+.step-n{font-family:'Playfair Display',serif;font-style:italic;font-size:5rem;color:rgba(34,46,80,.12);line-height:1;margin-bottom:1.2rem}
+.step-name{font-size:1.05rem;font-weight:600;color:var(--navy);margin-bottom:.6rem}
+.step-desc{font-size:.95rem;color:var(--muted);line-height:1.85}
+.step-arr{position:absolute;right:-.9rem;top:40%;font-size:1.1rem;color:var(--blue-mid);z-index:1}
+.step:last-child .step-arr{display:none}
+/* Testimonios */
+.h-testi{background:var(--navy);padding:7rem 4rem}
+.t-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:#fff;line-height:1.15;margin-top:.8rem}
+.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:4rem}
+.t-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:2.5rem;transition:background .35s,border-color .35s}
+.t-card:hover{background:rgba(255,255,255,.09);border-color:rgba(254,213,68,.25)}
+.t-q{font-family:'Playfair Display',serif;font-style:italic;font-size:6rem;line-height:.55;color:rgba(254,213,68,.15);margin-bottom:1.5rem;display:block}
+.t-text{font-size:1.05rem;color:rgba(255,255,255,.78);line-height:1.9;font-style:italic;margin-bottom:1.8rem}
+.t-stars{color:var(--yellow);font-size:.85rem;letter-spacing:2px;margin-bottom:1rem}
+.t-author{display:flex;align-items:center;gap:1rem}
+.t-av{width:42px;height:42px;border-radius:50%;background:var(--navy-lt);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:#fff;flex-shrink:0}
+.t-name{font-size:.88rem;font-weight:500;color:#fff}
+.t-svc{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow);margin-top:2px}
+/* Para quién */
+.h-clientes{background:#fff;padding:7rem 4rem;border-top:1px solid var(--border)}
+.clients-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem}
+.clients-note{font-size:.9rem;color:var(--muted);max-width:270px;line-height:1.8;text-align:right}
+.cc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
+.cc{border:1px solid var(--border);padding:2.2rem 1.6rem;position:relative;overflow:hidden;transition:border-color .35s,transform .35s,box-shadow .35s}
+.cc:hover{border-color:var(--navy-lt);transform:translateY(-4px);box-shadow:0 12px 28px rgba(34,46,80,.1)}
+.cc-top{height:2px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .4s;margin-bottom:1.4rem}
+.cc:hover .cc-top{transform:scaleX(1)}
+.cc-svc{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue-mid);font-weight:500;margin-bottom:.8rem;display:block}
+.cc-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:400;color:var(--navy);margin-bottom:.8rem;line-height:1.3}
+.cc-desc{font-size:.92rem;color:var(--muted);line-height:1.85}
+/* Diferencial */
+.h-diff{background:var(--sand);display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.diff-l{padding:7rem 4rem;border-right:1px solid var(--border)}
+.diff-q{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.2vw,2.8rem);font-weight:400;color:var(--navy);line-height:1.25;margin:1.2rem 0 1.5rem}
+.diff-q em{color:var(--blue-mid);font-style:normal}
+.diff-p{font-size:.97rem;color:var(--muted);line-height:1.95;margin-bottom:2.5rem}
+.btn-outline{display:inline-block;border:2px solid var(--navy);color:var(--navy);padding:1rem 2.5rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;background:none;cursor:pointer;transition:background .3s,color .3s}
+.btn-outline:hover{background:var(--navy);color:#fff}
+.diff-r{padding:7rem 4rem}
+.di{display:grid;grid-template-columns:8px 1fr;gap:1.4rem;padding:1.6rem 0;border-bottom:1px solid var(--border);align-items:start}
+.di:first-child{border-top:1px solid var(--border)}
+.di-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);margin-top:.45rem}
+.di-name{font-size:.97rem;font-weight:500;color:var(--navy);margin-bottom:.3rem}
+.di-text{font-size:.97rem;color:var(--muted);line-height:1.9}
+/* Stats */
+.h-stats{background:var(--yellow);display:grid;grid-template-columns:repeat(4,1fr)}
+.st{padding:3.8rem 2rem;text-align:center;border-right:1px solid rgba(34,46,80,.12)}
+.st:last-child{border-right:none}
+.st-n{font-family:'Playfair Display',serif;font-style:italic;font-size:3.8rem;color:var(--navy);line-height:1}
+.st-l{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(34,46,80,.65);margin-top:.4rem}
+/* Cobertura */
+.h-cob{background:var(--navy);padding:8rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.cob-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2.2rem,3.8vw,3.4rem);font-weight:400;color:var(--white);line-height:1.15;margin:1.2rem 0 1.4rem}
+.cob-title strong{font-style:normal;font-weight:600}
+.cob-body{font-size:1.02rem;color:rgba(255,255,255,.55);line-height:1.95;margin-bottom:1.8rem}
+.cob-tags{display:flex;flex-wrap:wrap;gap:.6rem}
+.ctag{border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.5);padding:.5rem 1.1rem;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;cursor:default;transition:all .3s}
+.ctag.on{background:var(--yellow);border-color:var(--yellow);color:var(--navy);font-weight:600}
+.map-box{background:#fff;border:1px solid rgba(34,46,80,.1);padding:1.5rem}
+.map-box svg{width:100%;height:auto;display:block}
+/* Contacto */
+.h-cto{background:var(--white);padding:9rem 4rem;border-top:1px solid var(--border)}
+.cto-wrap{display:grid;grid-template-columns:5fr 7fr;gap:7rem;align-items:start}
+.cto-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2.5rem,5vw,4.2rem);font-weight:400;color:var(--navy);line-height:1;margin:1.2rem 0 1.4rem}
+.cto-sub{font-size:.97rem;color:var(--muted);line-height:1.95;margin-bottom:2.5rem}
+.cto-info{display:flex;flex-direction:column;gap:.9rem}
+.cto-row{display:flex;align-items:center;gap:1rem}
+.cto-lbl{font-size:.67rem;letter-spacing:.22em;text-transform:uppercase;color:var(--blue-mid);width:4rem;flex-shrink:0}
+.cto-val{font-size:.92rem;color:var(--muted)}
+.cform{background:#fff;padding:2.8rem;border:1px solid var(--border)}
+.cf{position:relative;border-bottom:1px solid var(--border)}
+.cf:first-child{border-top:1px solid var(--border)}
+.cf input,.cf textarea,.cf select{background:transparent;border:none;outline:none;width:100%;padding:1.2rem 0;resize:none;font-family:'DM Sans',sans-serif;font-size:.94rem;font-weight:300;color:var(--navy)}
+.cf select{cursor:pointer}
+.cf select option{background:#fff}
+.cf input::placeholder,.cf textarea::placeholder{color:rgba(34,46,80,.3)}
+.cf-line{position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--navy);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.cf:focus-within .cf-line{transform:scaleX(1)}
+.cf-2{display:grid;grid-template-columns:1fr 1fr}
+.cf-2 .cf:first-child{border-right:1px solid var(--border);padding-right:1.2rem}
+.cf-2 .cf:last-child{padding-left:1.2rem;border-top:1px solid var(--border)}
+.cf-submit{margin-top:2rem;width:100%;background:var(--navy);border:none;color:#fff;padding:1.1rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .3s}
+.cf-submit:hover{background:var(--navy-lt)}
+/* Footer */
+.h-footer{background:var(--navy);padding:3rem 4rem 2rem;border-top:3px solid var(--yellow)}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.ft-logo{font-family:'Playfair Display',serif;font-style:italic;font-size:1.8rem;color:#fff;display:block;margin-bottom:.8rem;background:none;border:none;cursor:pointer;padding:0;text-align:left}
+.ft-desc{font-size:.86rem;color:rgba(255,255,255,.4);line-height:1.8;max-width:220px}
+.ft-col-t{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow);margin-bottom:1.2rem;font-weight:500}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+.ft-links button{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.86rem;text-align:left;transition:color .3s;padding:0}
+.ft-links button:hover{color:#fff}
+.ft-links a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.86rem;transition:color .3s}
+.ft-links a:hover{color:#fff}
+.ft-bot{display:flex;align-items:center;justify-content:space-between}
+.ft-copy{font-size:.74rem;color:rgba(255,255,255,.3)}
+.ft-legal{display:flex;gap:1.5rem}
+.ft-legal a{font-size:.74rem;color:rgba(255,255,255,.25);text-decoration:none;transition:color .3s}
+.ft-legal a:hover{color:rgba(255,255,255,.6)}
+
+/* ══════════════════════════════════════
+   SERVICE PAGE
+══════════════════════════════════════ */
+.svc-hero{background:var(--navy);padding:130px 4rem 6rem;min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.svc-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 65% 65% at 70% 40%,rgba(92,124,217,.15) 0%,transparent 65%)}
+.svc-bg-num{position:absolute;top:2rem;right:2rem;font-family:'Playfair Display',serif;font-style:italic;font-size:18rem;color:rgba(255,255,255,.035);line-height:1;user-select:none;pointer-events:none}
+.svc-hero-c{position:relative;z-index:1;max-width:700px}
+.svc-tag{font-size:.88rem;letter-spacing:.32em;text-transform:uppercase;color:var(--yellow);margin-bottom:1.5rem;display:flex;align-items:center;gap:.7rem}
+.svc-tag::before{content:'';display:block;width:24px;height:1px;background:var(--yellow)}
+.svc-h1{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(4rem,9vw,8.5rem);font-weight:400;color:#fff;line-height:.93;letter-spacing:-.02em}
+.svc-h1 strong{font-style:normal;font-weight:600}
+.svc-hsub{font-size:1.05rem;color:rgba(255,255,255,.65);margin-top:1rem;line-height:1.8;max-width:480px}
+.svc-hbtn{display:inline-flex;align-items:center;gap:.7rem;margin-top:2.5rem;background:var(--yellow);color:var(--navy);border:none;padding:.95rem 2.5rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .3s}
+.svc-hbtn:hover{background:#ffe382}
+/* Breadcrumb */
+.breadcrumb{position:absolute;top:70px;left:0;right:0;z-index:5;background:transparent;padding:.8rem 4rem;display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(255,255,255,.5);border:none}
+.bc-btn{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.8rem;transition:color .2s;padding:0}
+.bc-btn:hover{color:var(--navy)}
+/* Intro */
+.svc-intro{background:var(--sand);padding:6rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.svc-intro h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.2}
+.svc-intro p{margin-top:1rem;font-size:1rem;color:var(--muted);line-height:1.9}
+.svc-intro em,.svc-intro em.brand{font-family:'Playfair Display',serif;font-style:italic}
+/* Bullets */
+.svc-bullets{background:#fff;padding:6rem 4rem;border-top:1px solid var(--border)}
+.bull-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:3.5rem}
+.bull-card{background:#fff;padding:2.5rem 2rem;transition:background .3s;position:relative;overflow:hidden}
+.bull-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.bull-card:hover{background:var(--sand-xlt)}
+.bull-card:hover::after{transform:scaleX(1)}
+.bull-icon{width:36px;height:36px;background:rgba(34,46,80,.06);display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--blue-mid)}
+.bull-name{font-size:.95rem;font-weight:600;color:var(--navy);margin-bottom:.6rem}
+.bull-desc{font-size:.86rem;color:var(--muted);line-height:1.8}
+/* FAQ */
+.svc-faq{background:var(--sand-lt);padding:6rem 4rem;border-top:1px solid var(--border)}
+.faq-list{margin-top:3rem;max-width:700px}
+.faq-item{border-bottom:1px solid var(--border);overflow:hidden}
+.faq-item:first-child{border-top:1px solid var(--border)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 0;cursor:pointer;gap:1rem;background:none;border:none;width:100%;text-align:left}
+.faq-qt{font-size:.97rem;font-weight:500;color:var(--navy);font-family:'DM Sans',sans-serif}
+.faq-tog{width:28px;height:28px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;color:var(--navy);transition:transform .3s}
+.faq-item.open .faq-tog{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-item.open .faq-a{max-height:200px}
+.faq-ai{padding-bottom:1.5rem;font-size:.93rem;color:var(--muted);line-height:1.85}
+/* CTA band */
+.svc-cta{background:var(--navy);padding:6rem 4rem;display:grid;grid-template-columns:1fr auto;gap:4rem;align-items:center;border-top:3px solid var(--yellow)}
+.cta-h{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:#fff;line-height:1.2}
+.cta-sub{font-size:.95rem;color:rgba(255,255,255,.55);margin-top:.8rem;line-height:1.8}
+.btn-yellow{display:inline-block;background:var(--yellow);color:var(--navy);border:none;padding:1.1rem 2.8rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .3s;white-space:nowrap}
+.btn-yellow:hover{background:#ffe382}
+/* Svc mini footer */
+.svc-footer{background:var(--navy);padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.08)}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;z-index:9999;background:rgba(34,46,80,.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s}
+.modal.open{opacity:1;pointer-events:all}
+.modal-box{background:#fff;padding:2.5rem 3rem;max-width:520px;width:90%;position:relative}
+.modal-box h3{font-family:'Playfair Display',serif;font-style:italic;font-size:1.7rem;color:var(--navy);font-weight:400;margin-bottom:1rem}
+.modal-box p{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:1.5rem}
+.modal-ph{aspect-ratio:16/9;background:var(--sand-lt);border:1px dashed rgba(34,46,80,.2);display:flex;align-items:center;justify-content:center}
+.modal-ph span{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.modal-close{position:absolute;top:1rem;right:1.2rem;background:none;border:none;font-size:1.2rem;color:var(--muted);cursor:pointer}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  #nav{padding:0 1.5rem}.n-links{display:none}
+  .h-text{text-align:left;max-width:100%;padding:0 1.5rem 1.5rem}
+  .h-search-inner{flex-direction:column}
+  .sb-f{flex:1;display:flex;align-items:center;gap:.9rem;padding:1.35rem 2.5rem;cursor:pointer;border-right:1px solid rgba(255,255,255,.15);transition:background .3s;position:relative;overflow:visible}
+  .sb-btn{padding:1.2rem 2rem}
+  .intro-top,.cto-wrap,.h-diff,.svc-intro,.h-cob{grid-template-columns:1fr;gap:3rem}
+  .h-intro,.h-svc,.h-proceso,.h-testi,.h-clientes,.h-stats,.h-cto,.h-footer,.h-cob,.svc-hero,.svc-intro,.svc-bullets,.svc-faq,.svc-cta,.breadcrumb{position:absolute;top:70px;left:0;right:0;z-index:5;background:transparent;padding:.8rem 4rem;display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(255,255,255,.5);border:none}
+  .pain-blocks,.svc-grid{grid-template-columns:repeat(2,1fr)}
+  .t-grid,.cc-grid{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .step-arr{display:none}
+  .h-stats{grid-template-columns:repeat(2,1fr)}
+  .st:nth-child(2){border-right:none}
+  .diff-l{border-right:none;border-bottom:1px solid var(--border)}
+  .ft-top{grid-template-columns:1fr 1fr}
+  .h-scroll,.svc-bg-num{display:none}
+  .svc-cta{grid-template-columns:1fr}
+  .bull-grid{grid-template-columns:1fr 1fr}
+  .ft-bot{flex-direction:column;gap:1rem;text-align:center}
+  .svc-footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+  #waBtn{bottom:1.2rem;right:1.2rem}
+}
+/* ── SEARCH DROPDOWNS ── */
+.sb-inner{flex:1;display:flex;flex-direction:column;justify-content:center}
+.sb-val{font-size:.92rem;color:rgba(255,255,255,.88);font-weight:300;font-family:'DM Sans',sans-serif}
+.sb-val::after{content:' ▾';font-size:.65rem;color:rgba(255,255,255,.4)}
+.sb-drop{display:none;position:absolute;top:100%;left:0;right:0;background:#1a2648;border:1px solid rgba(255,255,255,.15);border-top:none;border-bottom:2px solid #FED544;z-index:9999;max-height:260px;overflow-y:auto}
+.sb-drop.open{display:block}
+.sb-opt{display:block;width:100%;padding:.78rem 1.3rem;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-family:'DM Sans',sans-serif;font-size:.83rem;color:rgba(255,255,255,.65);cursor:pointer;transition:background .15s,color .15s,padding-left .2s}
+.sb-opt:last-child{border-bottom:none}
+.sb-opt:hover{background:rgba(254,213,68,.09);color:#fff;padding-left:1.7rem}
+.sb-opt.on{color:#FED544;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- WHATSAPP -->
+<a id="waBtn" href="https://wa.me/34XXXXXXXXX?text=Hola%20obreko%2C%20me%20gustar%C3%ADa%20solicitar%20un%20presupuesto" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <div class="wa-tt">¿Hablamos?</div>
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- INTRO ANIM -->
+<div id="introAnim"><div class="ia"><div class="ia-logo">obreko</div><div class="ia-sub">reformas · mantenimiento · hogar conectado</div><div class="ia-line"></div></div></div>
+
+<!-- DRAWER -->
+<div class="d-overlay" id="dOverlay"></div>
+<div id="menuDrawer">
+  <button class="d-close" id="dClose">✕</button>
+  <div class="d-logo" onclick="nav('home')">obreko</div>
+  <button class="d-link" onclick="nav('obras')">Obras &amp; Proyectos</button>
+  <button class="d-link" onclick="nav('reforma')">Reforma integral</button>
+  <button class="d-link" onclick="nav('manitas')">Manitas &amp; Urgencias</button>
+  <button class="d-link" onclick="nav('mantenimiento')">Mantenimiento &amp; Cuidado</button>
+  <button class="d-link" onclick="nav('hogar')">Hogar conectado</button>
+  <button class="d-cta" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal"><div class="modal-box"><button class="modal-close" id="mClose">✕</button><h3>obreko en acción</h3><p>Aquí irá tu vídeo corporativo. Sustituye el placeholder por tu etiqueta &lt;video&gt;.</p><div class="modal-ph"><span>[ Tu vídeo corporativo ]</span></div></div></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <button class="n-logo" onclick="nav('home')">obreko</button>
+  <ul class="n-links">
+    <li><button class="n-link" onclick="nav('obras')">Obras</button></li>
+    <li><button class="n-link" onclick="nav('reforma')">Reformas</button></li>
+    <li><button class="n-link" onclick="nav('manitas')">Manitas</button></li>
+    <li><button class="n-link" onclick="nav('mantenimiento')">Mantenimiento</button></li>
+    <li><button class="n-link" onclick="nav('hogar')">Hogar conectado</button></li>
+  </ul>
+  <div class="n-right">
+    <button class="n-cta" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto</button>
+    <button class="n-burger" id="nBurger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════
+     HOME PAGE
+═══════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="h-hero" id="homeHero">
+    <div class="h-bg"><video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="obreko-hero.mp4" type="video/mp4"></video></div><div class="h-overlay"></div>
+    <div class="h-text">
+      <h1 class="h-h1">Tu casa,<br>siempre<br>a punto.</h1>
+      <p class="h-sub">La tranquilidad de saber que todo está bien.</p>
+      <button class="h-vbtn" id="vBtn"><span class="tri"></span>Ver vídeo</button>
+    </div>
+    <div class="h-scroll"><div class="h-scroll-line"></div><span class="h-scroll-txt">Scroll</span></div>
+    <div class="h-search">
+      <div class="h-search-inner">
+        <div class="sb-f" onclick="sbTog('dropSvc')">
+          <span class="sb-ic">◈</span>
+          <div class="sb-inner"><span class="sb-l">Servicio</span><div class="sb-val" id="valSvc">Todos los servicios</div></div>
+          <div class="sb-drop" id="dropSvc">
+            <button class="sb-opt on" onclick="sbSel('dropSvc','valSvc','Todos los servicios','',event)">Todos los servicios</button>
+            <button class="sb-opt" onclick="sbSel('dropSvc','valSvc','Obras &amp; Proyectos','obras',event)">Obras &amp; Proyectos</button>
+            <button class="sb-opt" onclick="sbSel('dropSvc','valSvc','Reforma integral','reforma',event)">Reforma integral</button>
+            <button class="sb-opt" onclick="sbSel('dropSvc','valSvc','Pintura fachadas y viviendas','reforma',event)">Pintura fachadas y viviendas</button>
+            <button class="sb-opt" onclick="sbSel('dropSvc','valSvc','Manitas &amp; Urgencias','manitas',event)">Manitas &amp; Urgencias</button>
+            <button class="sb-opt" onclick="sbSel('dropSvc','valSvc','Mantenimiento &amp; Cuidado','mantenimiento',event)">Mantenimiento &amp; Cuidado</button>
+            <button class="sb-opt" onclick="sbSel('dropSvc','valSvc','Hogar conectado','hogar',event)">Hogar conectado</button>
+          </div>
+        </div>
+        <div class="sb-f" onclick="sbTog('dropZona')">
+          <span class="sb-ic">◎</span>
+          <div class="sb-inner"><span class="sb-l">Zona</span><div class="sb-val" id="valZona">Toda Tenerife</div></div>
+          <div class="sb-drop" id="dropZona">
+            <button class="sb-opt on" onclick="sbSel('dropZona','valZona','Toda Tenerife','',event)">Toda Tenerife</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Santa Cruz de Tenerife','',event)">Santa Cruz de Tenerife</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','La Laguna','',event)">La Laguna</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Arona','',event)">Arona</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Adeje','',event)">Adeje</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Puerto de la Cruz','',event)">Puerto de la Cruz</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','La Orotava','',event)">La Orotava</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Los Realejos','',event)">Los Realejos</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Icod de los Vinos','',event)">Icod de los Vinos</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Candelaria','',event)">Candelaria</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Güímar','',event)">Güímar</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Granadilla de Abona','',event)">Granadilla de Abona</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','San Miguel de Abona','',event)">San Miguel de Abona</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Guía de Isora','',event)">Guía de Isora</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Santiago del Teide','',event)">Santiago del Teide</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Vilaflor','',event)">Vilaflor</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Arafo','',event)">Arafo</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Tacoronte','',event)">Tacoronte</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','El Sauzal','',event)">El Sauzal</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','La Victoria de Acentejo','',event)">La Victoria de Acentejo</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','La Matanza de Acentejo','',event)">La Matanza de Acentejo</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Santa Úrsula','',event)">Santa Úrsula</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','San Juan de la Rambla','',event)">San Juan de la Rambla</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','La Guancha','',event)">La Guancha</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Buenavista del Norte','',event)">Buenavista del Norte</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Los Silos','',event)">Los Silos</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Garachico','',event)">Garachico</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Tegueste','',event)">Tegueste</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','El Rosario','',event)">El Rosario</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Fasnia','',event)">Fasnia</button>
+            <button class="sb-opt" onclick="sbSel('dropZona','valZona','Arico','',event)">Arico</button>
+          </div>
+        </div>
+        <div class="sb-f" onclick="sbTog('dropDisp')">
+          <span class="sb-ic">◷</span>
+          <div class="sb-inner"><span class="sb-l">¿Para cuándo lo necesitas?</span><div class="sb-val" id="valDisp">Lo antes posible</div></div>
+          <div class="sb-drop" id="dropDisp">
+            <button class="sb-opt on" onclick="sbSel('dropDisp','valDisp','Lo antes posible','',event)">Lo antes posible</button>
+            <button class="sb-opt" onclick="sbSel('dropDisp','valDisp','Esta semana','',event)">Esta semana</button>
+            <button class="sb-opt" onclick="sbSel('dropDisp','valDisp','En 15 días','',event)">En 15 días</button>
+            <button class="sb-opt" onclick="sbSel('dropDisp','valDisp','Este mes','',event)">Este mes</button>
+            <button class="sb-opt" onclick="sbSel('dropDisp','valDisp','En 1-2 meses','',event)">En 1-2 meses</button>
+            <button class="sb-opt" onclick="sbSel('dropDisp','valDisp','Estoy planificando','',event)">Estoy planificando</button>
+          </div>
+        </div>
+        <button class="sb-btn" onclick="sbBuscar()">Buscar</button>
+      </div>
+    </div>
+  </div>
+      <div class="cform reveal d2">
+        <div class="cf-2">
+          <div class="cf"><input type="text" placeholder="Nombre"><div class="cf-line"></div></div>
+          <div class="cf"><input type="tel" placeholder="Teléfono"><div class="cf-line"></div></div>
+        </div>
+        <div class="cf"><input type="email" placeholder="Email"><div class="cf-line"></div></div>
+        <div class="cf">
+          <select id="cfSvc">
+            <option value="" disabled selected>Tipo de servicio</option>
+            <option>Obras &amp; Proyectos</option><option>Reforma integral</option>
+            <option>Manitas &amp; Urgencias</option><option>Mantenimiento &amp; Cuidado</option>
+            <option>Hogar conectado</option><option>No lo tengo claro aún</option>
+          </select>
+          <div class="cf-line"></div>
+        </div>
+        <div class="cf"><textarea rows="3" placeholder="Cuéntanos qué necesitas..."></textarea><div class="cf-line"></div></div>
+        <button class="cf-submit" id="cfBtn">Solicitar presupuesto gratuito →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="h-footer">
+    <div class="ft-top">
+      <div><button class="ft-logo" onclick="nav('home')">obreko</button><p class="ft-desc">Reformas, mantenimiento y hogar conectado en Tenerife. Un solo interlocutor. Sin sorpresas.</p></div>
+      <div><div class="ft-col-t">Servicios</div><ul class="ft-links"><li><button onclick="nav('obras')">Obras &amp; Proyectos</button></li><li><button onclick="nav('reforma')">Reforma integral</button></li><li><button onclick="nav('manitas')">Manitas &amp; Urgencias</button></li><li><button onclick="nav('mantenimiento')">Mantenimiento</button></li><li><button onclick="nav('hogar')">Hogar conectado</button></li></ul></div>
+      <div><div class="ft-col-t">obreko</div><ul class="ft-links"><li><button onclick="document.querySelector('.h-diff').scrollIntoView({behavior:'smooth'})">Por qué obreko</button></li><li><button onclick="document.querySelector('.h-proceso').scrollIntoView({behavior:'smooth'})">Cómo trabajamos</button></li><li><button onclick="document.querySelector('.h-clientes').scrollIntoView({behavior:'smooth'})">Para quién</button></li><li><button onclick="document.querySelector('.h-testi').scrollIntoView({behavior:'smooth'})">Testimonios</button></li></ul></div>
+      <div><div class="ft-col-t">Contacto</div><ul class="ft-links"><li><a href="/cdn-cgi/l/email-protection#9cf4f3f0fddcf3feeef9f7f3b2fff3f1"><span class="__cf_email__" data-cfemail="6e0601020f2e010c1c0b0501400d0103">[email&#160;protected]</span></a></li><li><a href="https://wa.me/34XXXXXXXXX">WhatsApp</a></li><li><button onclick="document.getElementById('cto').scrollIntoView({behavior:'smooth'})">Formulario</button></li></ul></div>
+    </div>
+    <div class="ft-bot">
+      <div class="ft-copy">© 2025 <span class="brand" style="font-size:1.05rem;color:rgba(255,255,255,.6)">obreko</span> · Todos los derechos reservados</div>
+      <div class="ft-legal"><a href="#">Privacidad</a><a href="#">Aviso legal</a><a href="#">Cookies</a></div>
+    </div>
+  </footer>
+</div><!-- /page-home -->
+
+<!-- ═══════════════════════════════════
+     SERVICE PAGES  (generated x5)
+═══════════════════════════════════ -->
+<div class="page" id="page-obras">
+    <section class="svc-hero">
+  <div class="breadcrumb"><button class="bc-btn" onclick="nav('home')">obreko</button><span class="breadcrumb-sep" style="opacity:.4">›</span><span>Obras &amp; Proyectos</span></div><div class="svc-bg-num">01</div><div class="svc-hero-c"><div class="svc-tag">Construir · Ampliar · Invertir</div><h1 class="svc-h1">Obras &amp;<br><strong>Proyectos.</strong></h1><p class="svc-hsub">Gestionamos tu obra de principio a fin. Coordinamos todos los gremios, cumplimos plazos y te informamos en cada paso.</p><button class="svc-hbtn" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto gratuito</button></div></section>
+  <section class="svc-intro"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Obras &amp; Proyectos</div><h2>Tu proyecto, en las mejores manos.</h2></div><div class="reveal d1"><p>Tanto si quieres construir desde cero, ampliar tu vivienda o rehabilitar un inmueble para invertir, en <em class="brand">obreko</em> te acompañamos desde el primer boceto hasta la entrega de llaves.</p><p style="margin-top:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.9">¿Tienes dudas sobre tu proyecto? Escríbenos sin compromiso y te respondemos en menos de 24 horas.</p></div></section>
+  <section class="svc-bullets"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Qué incluye</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Todo lo que <strong style="font-style:normal">necesitas.</strong></h2></div>
+  <div class="bull-grid">
+    <div class="bull-card reveal d1"><div class="bull-icon">I</div><div class="bull-name">Obra nueva residencial</div><p class="bull-desc">Construcción de viviendas desde cero. Gestión completa de licencias, estructura, instalaciones y acabados.</p></div>
+    <div class="bull-card reveal d2"><div class="bull-icon">II</div><div class="bull-name">Ampliaciones estructurales</div><p class="bull-desc">Añadir plantas, ampliar superficies, modificar distribuciones con la ingeniería y permisos necesarios.</p></div>
+    <div class="bull-card reveal d3"><div class="bull-icon">III</div><div class="bull-name">Rehabilitación de inmuebles</div><p class="bull-desc">Recupera el valor de un inmueble deteriorado. Ideal para inversores y propietarios de segunda residencia.</p></div>
+    <div class="bull-card reveal d4"><div class="bull-icon">IV</div><div class="bull-name">Locales y oficinas</div><p class="bull-desc">Transformamos espacios comerciales desde la obra gruesa hasta el interiorismo final.</p></div>
+    <div class="bull-card reveal d5"><div class="bull-icon">V</div><div class="bull-name">Coordinación de gremios</div><p class="bull-desc">Un solo interlocutor para albañiles, instaladores, carpinteros y acabados. Tú no coordinas nada.</p></div>
+  </div></section>
+  <section class="svc-faq"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Preguntas frecuentes</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Resolvemos tus <strong style="font-style:normal">dudas.</strong></h2></div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Cuánto tarda una obra nueva?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">En proyectos residenciales estándar trabajamos con plazos de 6 a 12 meses. Te damos un calendario detallado antes de empezar.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Gestionáis los permisos y licencias?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Sí. Nos encargamos de toda la tramitación con el ayuntamiento. Tú no tienes que gestionar nada.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Puedo hacer cambios durante la obra?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Sí. Cualquier cambio se presupuesta antes de ejecutarse. Sin sorpresas en la factura.</div></div></div>
+  </div></section>
+  <section class="svc-cta"><div class="reveal"><h2 class="cta-h">¿Listo para empezar?</h2><p class="cta-sub">Presupuesto claro en 48 horas. Sin compromiso.</p></div><button class="btn-yellow reveal d1" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Pedir presupuesto →</button></section>
+  <footer class="svc-footer"><button class="ft-logo" onclick="nav('home')">obreko</button><ul class="ft-links" style="flex-direction:row;flex-wrap:wrap;justify-content:center"><li><button onclick="nav('reforma')">Reformas</button></li><li><button onclick="nav('manitas')">Manitas</button></li><li><button onclick="nav('mantenimiento')">Mantenimiento</button></li><li><button onclick="nav('hogar')">Hogar conectado</button></li></ul><div class="ft-copy">© 2025 obreko</div></footer>
+</div>
+
+<div class="page" id="page-reforma">
+    <section class="svc-hero">
+  <div class="breadcrumb"><button class="bc-btn" onclick="nav('home')">obreko</button><span style="opacity:.4">›</span><span>Reforma integral</span></div><div class="svc-bg-num">02</div><div class="svc-hero-c"><div class="svc-tag">Transformar · Mejorar · Adaptar</div><h1 class="svc-h1">Reforma<br><strong>integral.</strong></h1><p class="svc-hsub">Tu casa como siempre quisiste que fuera. Sin caos, sin retrasos, sin facturas sorpresa.</p><button class="svc-hbtn" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto gratuito</button></div></section>
+  <section class="svc-intro"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Reforma integral</div><h2>La reforma que siempre quisiste hacer.</h2></div><div class="reveal d1"><p>En <em class="brand">obreko</em> coordinamos todos los oficios — albañilería, fontanería, electricidad, carpintería, pintura — para que tú solo tengas que aprobar el resultado final.</p><p style="margin-top:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.9">¿No sabes por dónde empezar? Cuéntanos lo que tienes en mente y te orientamos sin compromiso.</p></div></section>
+  <section class="svc-bullets"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Qué incluye</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Todo lo que <strong style="font-style:normal">necesitas.</strong></h2></div>
+  <div class="bull-grid">
+    <div class="bull-card reveal d1"><div class="bull-icon">I</div><div class="bull-name">Reforma de cocina</div><p class="bull-desc">Distribución, instalaciones, encimeras, electrodomésticos integrados. Sin gestionar gremios.</p></div>
+    <div class="bull-card reveal d2"><div class="bull-icon">II</div><div class="bull-name">Reforma de baño</div><p class="bull-desc">Desde cambio de revestimientos hasta reforma completa con nueva fontanería. Acabados de calidad.</p></div>
+    <div class="bull-card reveal d3"><div class="bull-icon">III</div><div class="bull-name">Reforma integral de vivienda</div><p class="bull-desc">Diseño, gestión y ejecución completa con un solo presupuesto y un único responsable.</p></div>
+    <div class="bull-card reveal d4"><div class="bull-icon">IV</div><div class="bull-name">Pintura de fachadas, viviendas y locales</div><p class="bull-desc">Pintura interior y exterior, fachadas, locales comerciales y viviendas. Acabados profesionales duraderos que renuevan completamente el aspecto de cualquier espacio.</p></div>
+    <div class="bull-card reveal d5"><div class="bull-icon">V</div><div class="bull-name">Cambio de distribución</div><p class="bull-desc">Derribar tabiques, crear espacios abiertos o dividir estancias. Con permisos y estructura incluidos.</p></div>
+    <div class="bull-card reveal d1"><div class="bull-icon">VI</div><div class="bull-name">Rehabilitación energética</div><p class="bull-desc">Aislamiento, ventanas eficientes, climatización. Reduce consumo y gana confort.</p></div>
+  </div></section>
+  <section class="svc-faq"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Preguntas frecuentes</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Resolvemos tus <strong style="font-style:normal">dudas.</strong></h2></div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Cuánto tarda una reforma integral?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Baño: 2-3 semanas. Cocina: 3-4 semanas. Vivienda completa: 6-10 semanas. Siempre con calendario previo.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Tengo que irme de casa durante la reforma?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">En reformas parciales normalmente no. Para integrales completas te lo indicamos antes de empezar.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿El presupuesto puede variar?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Solo si hay imprevistos estructurales o cambias el alcance. Cualquier variación se informa y aprueba antes.</div></div></div>
+  </div></section>
+  <section class="svc-cta"><div class="reveal"><h2 class="cta-h">¿Listo para empezar?</h2><p class="cta-sub">Presupuesto claro en 48 horas. Sin compromiso.</p></div><button class="btn-yellow reveal d1" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Pedir presupuesto →</button></section>
+  <footer class="svc-footer"><button class="ft-logo" onclick="nav('home')">obreko</button><ul class="ft-links" style="flex-direction:row;flex-wrap:wrap;justify-content:center"><li><button onclick="nav('obras')">Obras</button></li><li><button onclick="nav('manitas')">Manitas</button></li><li><button onclick="nav('mantenimiento')">Mantenimiento</button></li><li><button onclick="nav('hogar')">Hogar conectado</button></li></ul><div class="ft-copy">© 2025 obreko</div></footer>
+</div>
+
+<div class="page" id="page-manitas">
+    <section class="svc-hero">
+  <div class="breadcrumb"><button class="bc-btn" onclick="nav('home')">obreko</button><span style="opacity:.4">›</span><span>Manitas &amp; Urgencias</span></div><div class="svc-bg-num">03</div><div class="svc-hero-c"><div class="svc-tag">Rápido · Resolutivo · Sin búsquedas</div><h1 class="svc-h1">Manitas &amp;<br><strong>Urgencias.</strong></h1><p class="svc-hsub">Cuando algo falla, no quieres buscar. Llamas y se resuelve.</p><button class="svc-hbtn" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto gratuito</button></div></section>
+  <section class="svc-intro"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Manitas &amp; Urgencias</div><h2>Algo se ha roto. Lo resolvemos.</h2></div><div class="reveal d1"><p>Goteras, enchufes, persianas atascadas, grifos que gotean. En <em class="brand">obreko</em> tenemos los profesionales adecuados para cada avería, listos para actuar rápido con precio pactado antes de empezar.</p><p style="margin-top:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.9">Llámanos o escríbenos por WhatsApp para urgencias. Respondemos en minutos.</p></div></section>
+  <section class="svc-bullets"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Qué incluye</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Todo lo que <strong style="font-style:normal">necesitas.</strong></h2></div>
+  <div class="bull-grid">
+    <div class="bull-card reveal d1"><div class="bull-icon">I</div><div class="bull-name">Fontanería urgente</div><p class="bull-desc">Goteras, fugas, desatascos, reparación de grifería. Actuamos el mismo día o en 24h en urgencias.</p></div>
+    <div class="bull-card reveal d2"><div class="bull-icon">II</div><div class="bull-name">Electricidad</div><p class="bull-desc">Averías eléctricas, instalación de puntos de luz, sustitución de cuadros, automatismos sencillos.</p></div>
+    <div class="bull-card reveal d3"><div class="bull-icon">III</div><div class="bull-name">Carpintería y cerrajería</div><p class="bull-desc">Puertas que no cierran, ventanas con problemas, apertura de urgencia, cerraduras.</p></div>
+    <div class="bull-card reveal d4"><div class="bull-icon">IV</div><div class="bull-name">Pintura y pequeñas obras</div><p class="bull-desc">Reparar un hueco, pintar una habitación, alisar una pared. Arreglos que quedan como nuevos.</p></div>
+    <div class="bull-card reveal d5"><div class="bull-icon">V</div><div class="bull-name">Pequeñas instalaciones</div><p class="bull-desc">Montar un mueble, instalar un aparato de aire, anclar una televisión. Rápido y bien hecho.</p></div>
+  </div></section>
+  <section class="svc-faq"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Preguntas frecuentes</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Resolvemos tus <strong style="font-style:normal">dudas.</strong></h2></div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Actuáis fuera de horario?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Sí, tenemos servicio de urgencias. Las urgencias nocturnas o en festivo tienen tarifa diferenciada que te indicamos antes de actuar.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Me dais precio antes de empezar?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Siempre. En reparaciones pequeñas damos precio cerrado por tipo de trabajo. Sin sorpresas al terminar.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Hacéis trabajos muy pequeños?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Sí. No hay trabajo demasiado pequeño para obreko. Preferimos resolverlo ahora que esperar a que sea mayor.</div></div></div>
+  </div></section>
+  <section class="svc-cta"><div class="reveal"><h2 class="cta-h">¿Necesitas que venga alguien?</h2><p class="cta-sub">Cuéntanos la avería. Respondemos rápido.</p></div><button class="btn-yellow reveal d1" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Contactar ahora →</button></section>
+  <footer class="svc-footer"><button class="ft-logo" onclick="nav('home')">obreko</button><ul class="ft-links" style="flex-direction:row;flex-wrap:wrap;justify-content:center"><li><button onclick="nav('obras')">Obras</button></li><li><button onclick="nav('reforma')">Reformas</button></li><li><button onclick="nav('mantenimiento')">Mantenimiento</button></li><li><button onclick="nav('hogar')">Hogar conectado</button></li></ul><div class="ft-copy">© 2025 obreko</div></footer>
+</div>
+
+<div class="page" id="page-mantenimiento">
+    <section class="svc-hero">
+  <div class="breadcrumb"><button class="bc-btn" onclick="nav('home')">obreko</button><span style="opacity:.4">›</span><span>Mantenimiento &amp; Cuidado</span></div><div class="svc-bg-num">04</div><div class="svc-hero-c"><div class="svc-tag">Prevenir · Conservar · Descansar</div><h1 class="svc-h1">Mantenimiento<br><strong>&amp; Cuidado.</strong></h1><p class="svc-hsub">Alguien de confianza que cuida tu casa cuando tú no puedes estar.</p><button class="svc-hbtn" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto gratuito</button></div></section>
+  <section class="svc-intro"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Mantenimiento &amp; Cuidado</div><h2>Tu inmueble en manos de confianza.</h2></div><div class="reveal d1"><p>En <em class="brand">obreko</em> ofrecemos planes de mantenimiento periódico pensados para propietarios con segunda residencia, piso en alquiler, o quienes prefieren delegar el cuidado de su casa a profesionales.</p><p style="margin-top:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.9">Muchos de nuestros clientes de mantenimiento viven fuera de Tenerife. Somos sus ojos y manos en la isla.</p></div></section>
+  <section class="svc-bullets"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Qué incluye</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Todo lo que <strong style="font-style:normal">necesitas.</strong></h2></div>
+  <div class="bull-grid">
+    <div class="bull-card reveal d1"><div class="bull-icon">I</div><div class="bull-name">Plan de revisiones periódicas</div><p class="bull-desc">Visitas programadas para detectar desperfectos antes de que sean urgencias y mantener todo en orden.</p></div>
+    <div class="bull-card reveal d2"><div class="bull-icon">II</div><div class="bull-name">Gestión de segunda residencia</div><p class="bull-desc">Tu casa de vacaciones siempre lista. Abrimos, revisamos y preparamos la vivienda antes de tu llegada.</p></div>
+    <div class="bull-card reveal d3"><div class="bull-icon">III</div><div class="bull-name">Coordinación con propietarios ausentes</div><p class="bull-desc">Si tu inmueble está en alquiler, gestionamos incidencias, partes y reparaciones en tu nombre.</p></div>
+    <div class="bull-card reveal d4"><div class="bull-icon">IV</div><div class="bull-name">Mantenimiento de exteriores</div><p class="bull-desc">Jardines, terrazas, patios. Cuidamos los espacios exteriores con la misma dedicación que el interior.</p></div>
+    <div class="bull-card reveal d5"><div class="bull-icon">V</div><div class="bull-name">Informes de estado con fotos</div><p class="bull-desc">Recibes un informe detallado en cada visita. Total transparencia de lo que ocurre en tu propiedad.</p></div>
+  </div></section>
+  <section class="svc-faq"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Preguntas frecuentes</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Resolvemos tus <strong style="font-style:normal">dudas.</strong></h2></div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Qué incluye un plan de mantenimiento?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Desde revisiones trimestrales básicas hasta un servicio mensual completo. Te hacemos una propuesta a medida según tu inmueble.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Puedo contratar desde fuera de Tenerife?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Es exactamente para eso. Muchos de nuestros clientes viven fuera y nos confían el cuidado de su propiedad en la isla.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Cómo me informáis de las incidencias?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">Por WhatsApp o email según prefieras. Con foto, descripción y presupuesto si requiere reparación.</div></div></div>
+  </div></section>
+  <section class="svc-cta"><div class="reveal"><h2 class="cta-h">¿Quieres despreocuparte de tu inmueble?</h2><p class="cta-sub">Te diseñamos un plan a medida. Sin compromiso.</p></div><button class="btn-yellow reveal d1" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Pedir presupuesto →</button></section>
+  <footer class="svc-footer"><button class="ft-logo" onclick="nav('home')">obreko</button><ul class="ft-links" style="flex-direction:row;flex-wrap:wrap;justify-content:center"><li><button onclick="nav('obras')">Obras</button></li><li><button onclick="nav('reforma')">Reformas</button></li><li><button onclick="nav('manitas')">Manitas</button></li><li><button onclick="nav('hogar')">Hogar conectado</button></li></ul><div class="ft-copy">© 2025 obreko</div></footer>
+</div>
+
+<div class="page" id="page-hogar">
+    <section class="svc-hero">
+  <div class="breadcrumb"><button class="bc-btn" onclick="nav('home')">obreko</button><span style="opacity:.4">›</span><span>Hogar conectado</span></div><div class="svc-bg-num">05</div><div class="svc-hero-c"><div class="svc-tag">Automatizar · Controlar · Vivir mejor</div><h1 class="svc-h1">Hogar<br><strong>conectado.</strong></h1><p class="svc-hsub">Tu casa que trabaja para ti. Luces, clima, seguridad y persianas desde tu móvil o con voz.</p><button class="svc-hbtn" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Solicitar presupuesto gratuito</button></div></section>
+  <section class="svc-intro"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Hogar conectado</div><h2>Una casa inteligente, de verdad.</h2></div><div class="reveal d1"><p>En <em class="brand">obreko</em> diseñamos e instalamos sistemas de automatización adaptados a cualquier vivienda y presupuesto. Desde la iluminación hasta la seguridad, todo integrado y sencillo de usar.</p><p style="margin-top:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.9">¿No sabes por dónde empezar con la domótica? Te hacemos una visita sin coste y te mostramos lo que es posible.</p></div></section>
+  <section class="svc-bullets"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Qué incluye</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Todo lo que <strong style="font-style:normal">necesitas.</strong></h2></div>
+  <div class="bull-grid">
+    <div class="bull-card reveal d1"><div class="bull-icon">I</div><div class="bull-name">Automatización de iluminación</div><p class="bull-desc">Escenas de luz personalizadas, sensores de presencia, control por voz o móvil. Ahorra energía sin pensar.</p></div>
+    <div class="bull-card reveal d2"><div class="bull-icon">II</div><div class="bull-name">Control de climatización</div><p class="bull-desc">Termostatos inteligentes, programación por zonas, control remoto. Tu casa a la temperatura perfecta.</p></div>
+    <div class="bull-card reveal d3"><div class="bull-icon">III</div><div class="bull-name">Seguridad y acceso</div><p class="bull-desc">Cámaras IP, videoportero, cerraduras inteligentes, alarmas. Monitoriza desde cualquier lugar.</p></div>
+    <div class="bull-card reveal d4"><div class="bull-icon">IV</div><div class="bull-name">Persianas y toldos automáticos</div><p class="bull-desc">Integración con sensores de luz y viento. Se abren y cierran solas según el momento del día.</p></div>
+    <div class="bull-card reveal d5"><div class="bull-icon">V</div><div class="bull-name">Asistentes de voz</div><p class="bull-desc">Compatible con Alexa, Google Home y Apple HomeKit. Control total con la voz o desde la app.</p></div>
+  </div></section>
+  <section class="svc-faq"><div class="reveal"><div class="eyebrow"><div class="eyebrow-bar"></div>Preguntas frecuentes</div><h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2rem,3.5vw,3rem);font-weight:400;color:var(--navy);line-height:1.15;margin-top:.7rem">Resolvemos tus <strong style="font-style:normal">dudas.</strong></h2></div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Hace falta obra para instalar domótica?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">No necesariamente. Hay soluciones inalámbricas que se instalan sin obra, perfectas para viviendas ya terminadas.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-qt">¿Es compatible con mi instalación actual?</span><span class="faq-tog">+</span></button><div class="faq-a"><div class="faq-ai">En la mayoría de casos sí, o requiere adaptaciones mínimas. Lo evaluamos en visita previa gratuita.</div></div></div>
+    <div class="faq-item"><button class="faq-q"><span class="faq-tog">+</span><span class="faq-qt">¿Qué pasa si hay un fallo técnico?</span></button><div class="faq-a"><div class="faq-ai">Todos los sistemas tienen modo manual de emergencia. obreko ofrece soporte post-instalación para cualquier incidencia.</div></div></div>
+  </div></section>
+  <section class="svc-cta"><div class="reveal"><h2 class="cta-h">¿Quieres una casa inteligente?</h2><p class="cta-sub">Visita de diagnóstico gratuita. Sin compromiso.</p></div><button class="btn-yellow reveal d1" onclick="nav('home');setTimeout(()=>document.getElementById('cto').scrollIntoView({behavior:'smooth'}),200)">Pedir presupuesto →</button></section>
+  <footer class="svc-footer"><button class="ft-logo" onclick="nav('home')">obreko</button><ul class="ft-links" style="flex-direction:row;flex-wrap:wrap;justify-content:center"><li><button onclick="nav('obras')">Obras</button></li><li><button onclick="nav('reforma')">Reformas</button></li><li><button onclick="nav('manitas')">Manitas</button></li><li><button onclick="nav('mantenimiento')">Mantenimiento</button></li></ul><div class="ft-copy">© 2025 obreko</div></footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  1. PAGE FADE NAVIGATION
+// ══════════════════════════════════════════════
+function nav(page) {
+  const current = document.querySelector('.page.active');
+  const next = document.getElementById('page-' + page);
+  if (!next || current === next) return;
+
+  // Fade out current
+  current.style.transition = 'opacity .22s ease';
+  current.style.opacity = '0';
+
+  setTimeout(() => {
+    current.classList.remove('active');
+    current.style.transition = '';
+    current.style.opacity = '';
+
+    next.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    closeD();
+
+    // Reveals on new page
+    setTimeout(initReveals, 60);
+    updateNav();
+
+    // Counters on new page
+    setTimeout(initCounters, 100);
+  }, 220);
+}
+
+// ══════════════════════════════════════════════
+//  2. NAV HERO MODE
+// ══════════════════════════════════════════════
+function updateNav() {
+  const heroEl = document.querySelector('.page.active #homeHero') || document.querySelector('.page.active .svc-hero');
+  const navEl = document.getElementById('nav');
+  if (!heroEl) { navEl.classList.remove('hero-mode'); return; }
+  const check = () => navEl.classList.toggle('hero-mode', heroEl.getBoundingClientRect().bottom > 68);
+  check();
+  window.removeEventListener('scroll', _scrollHandler);
+  _scrollHandler = check;
+  window.addEventListener('scroll', check, { passive: true });
+}
+let _scrollHandler = () => {};
+updateNav();
+
+// ══════════════════════════════════════════════
+//  3. REVEAL ON SCROLL — elegante y suave
+// ══════════════════════════════════════════════
+let _revealIO = null;
+function initReveals() {
+  if (_revealIO) _revealIO.disconnect();
+  _revealIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        _revealIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.page.active .reveal:not(.in)').forEach(el => _revealIO.observe(el));
+}
+initReveals();
+
+// ══════════════════════════════════════════════
+//  4. CONTADORES ANIMADOS EN STATS
+// ══════════════════════════════════════════════
+function animCount(el, raw, duration) {
+  // Symbols like ∞ → just show them
+  const num = parseInt(raw.replace(/[^0-9]/g, ''));
+  if (isNaN(num) || num === 0) { el.textContent = raw; return; }
+  const suffix = raw.replace(/[0-9]/g, '');
+  let start = 0;
+  const increment = Math.ceil(num / (duration / 16));
+  const timer = setInterval(() => {
+    start = Math.min(start + increment, num);
+    el.textContent = start + suffix;
+    if (start >= num) clearInterval(timer);
+  }, 16);
+}
+
+let _countIO = null;
+function initCounters() {
+  if (_countIO) _countIO.disconnect();
+  _countIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const original = el.dataset.original || el.textContent.trim();
+      el.dataset.original = original;
+      animCount(el, original, 1200);
+      _countIO.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+
+  document.querySelectorAll('.page.active .st-n').forEach(el => {
+    // Reset so it can animate again on page change
+    if (el.dataset.original) el.textContent = el.dataset.original;
+    _countIO.observe(el);
+  });
+}
+initCounters();
+
+// ══════════════════════════════════════════════
+//  5. INTRO ANIMATION
+// ══════════════════════════════════════════════
+setTimeout(() => {
+  const el = document.getElementById('introAnim');
+  if (el) el.classList.add('done');
+}, 2700);
+
+// ══════════════════════════════════════════════
+//  6. DRAWER
+// ══════════════════════════════════════════════
+const drawerEl = document.getElementById('menuDrawer');
+const dOv = document.getElementById('dOverlay');
+function openD() { drawerEl.classList.add('open'); dOv.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeD() { drawerEl.classList.remove('open'); dOv.classList.remove('open'); document.body.style.overflow = ''; }
+document.getElementById('nBurger').addEventListener('click', openD);
+document.getElementById('dClose').addEventListener('click', closeD);
+dOv.addEventListener('click', closeD);
+
+// ══════════════════════════════════════════════
+//  7. MODAL VÍDEO
+// ══════════════════════════════════════════════
+const modal = document.getElementById('modal');
+document.getElementById('vBtn')?.addEventListener('click', () => modal.classList.add('open'));
+document.getElementById('mClose').addEventListener('click', () => modal.classList.remove('open'));
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+// ══════════════════════════════════════════════
+//  8. FAQs ACORDEÓN
+// ══════════════════════════════════════════════
+document.addEventListener('click', e => {
+  const q = e.target.closest('.faq-q');
+  if (!q) return;
+  const item = q.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  item.closest('.faq-list').querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+});
+
+// ══════════════════════════════════════════════
+//  9. FORMULARIO FEEDBACK
+// ══════════════════════════════════════════════
+document.getElementById('cfBtn')?.addEventListener('click', function () {
+  this.textContent = '✓ Mensaje enviado — te contactamos pronto';
+  this.style.cssText = 'margin-top:2rem;width:100%;background:transparent;border:2px solid var(--navy);color:var(--navy);padding:1.1rem;font-family:DM Sans,sans-serif;font-size:.8rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;';
+  setTimeout(() => { this.textContent = 'Solicitar presupuesto gratuito →'; this.style.cssText = ''; }, 4000);
+});
+
+// ── SEARCH DROPDOWNS
+var _sbPage='';
+function sbTog(id){
+  var d=document.getElementById(id);
+  var was=d.classList.contains('open');
+  document.querySelectorAll('.sb-drop').forEach(function(x){x.classList.remove('open');});
+  if(!was)d.classList.add('open');
+}
+function sbSel(dropId,valId,label,page,e){
+  if(e)e.stopPropagation();
+  document.getElementById(valId).textContent=label;
+  var d=document.getElementById(dropId);
+  d.querySelectorAll('.sb-opt').forEach(function(b){b.classList.remove('on');});
+  if(e&&e.target)e.target.classList.add('on');
+  d.classList.remove('open');
+  if(valId==='valSvc'){
+    _sbPage=page;
+    var cf=document.getElementById('cfSvc');
+    var map={obras:'Obras & Proyectos',reforma:'Reforma integral',manitas:'Manitas & Urgencias',mantenimiento:'Mantenimiento & Cuidado',hogar:'Hogar conectado'};
+    if(cf&&map[page])for(var i=0;i<cf.options.length;i++)if(cf.options[i].text===map[page]){cf.value=cf.options[i].value;break;}
+  }
+}
+function sbBuscar(){
+  var ps=['obras','reforma','manitas','mantenimiento','hogar'];
+  if(_sbPage&&ps.indexOf(_sbPage)>=0)nav(_sbPage);
+  else{var c=document.getElementById('cto');if(c)c.scrollIntoView({behavior:'smooth'});}
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.sb-f'))document.querySelectorAll('.sb-drop').forEach(function(d){d.classList.remove('open');});
+});
+</script>
+</body>
+</html>
