@@ -4,6 +4,12 @@ https://obreko.es/* https://obreko.com/:splat 301!
 # Bloquear acceso público a propuestas (contenido interno)
 /propuestas/*  /  301!
 
+# Redirecciones de URLs antiguas a las nuevas landing pages
+/reformas-integrales-tenerife/*    /reformas-tenerife/    301!
+/mantenimiento-vivienda-tenerife/* /mantenimiento-tenerife/ 301!
+/domotica-tenerife/*               /hogar-conectado-tenerife/ 301!
+/reformas-madrid/*                 /                      301!
+
 # Landing pages SEO (servir sus propios index.html)
 /reformas-tenerife/*     /reformas-tenerife/index.html   200
 /obras-tenerife/*        /obras-tenerife/index.html      200
