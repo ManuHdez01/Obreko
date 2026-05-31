@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propuesta Reforma Integral · obreko</title>
+<style>
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400 600;font-display:swap;src:url('../fonts/playfair.woff2') format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:300 600;font-display:swap;src:url('../fonts/playfair-italic.woff2') format('woff2')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:300 700;font-display:swap;src:url('../fonts/dm-sans.woff2') format('woff2')}
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#1a2236;--yellow:#FED544;--sand:#F1EDE0;--blue:#5C7CD9;
+  --slate:#8896B3;--sand2:#E8E2D3;--navy2:#2d3a56;--warm:#C4922A;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',Arial,sans-serif;
+}
+html{background:#B8B4AA;font-family:var(--sans)}
+/* ─ toolbar ─ */
+.toolbar{
+  background:var(--navy);padding:9px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-logo{font-family:var(--serif);font-style:italic;font-size:19px;color:#fff;letter-spacing:.03em}
+.tb-sep{width:1px;height:18px;background:rgba(255,255,255,.2)}
+.tb-type{font-size:11px;color:var(--slate);letter-spacing:.05em}
+.tb-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tb-hint{font-size:10px;color:rgba(255,255,255,.3);margin-right:4px}
+.tb-btn{
+  padding:7px 14px;font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;border:none;cursor:pointer;font-family:var(--sans);
+}
+.tb-btn.pri{background:var(--yellow);color:var(--navy)}
+.tb-btn.sec{background:rgba(255,255,255,.1);color:#fff}
+.tb-btn:hover{opacity:.85}
+.tb-back{font-size:11px;color:var(--slate);text-decoration:none}
+.tb-back:hover{color:#fff}
+/* ─ pages ─ */
+.page{
+  width:210mm;min-height:297mm;background:#fff;
+  margin:12px auto;box-shadow:0 3px 20px rgba(0,0,0,.25);
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+}
+/* ─ cover ─ */
+.cover{background:var(--navy)}
+.cover-stripe{height:3px;background:var(--yellow);width:100%}
+.cover-top{padding:10mm 13mm 0;display:flex;justify-content:space-between;align-items:flex-start}
+.cover-logo{font-family:var(--serif);font-style:italic;font-size:22pt;color:#fff;line-height:1;letter-spacing:.03em}
+.cover-sub{font-size:6pt;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:3px}
+.cover-mid{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 13mm 8mm}
+.cover-doc{display:flex;align-items:center;gap:8px;margin-bottom:7mm}
+.cover-doc::before{content:'';display:block;width:20px;height:1.5px;background:var(--yellow)}
+.cover-doc span{font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--sans)}
+.cover-h{font-family:var(--serif);font-weight:400;line-height:1.05;color:#fff}
+.cover-h-line{display:block;font-size:52pt}
+.cover-h-em{font-style:italic;color:var(--yellow)}
+.cover-card{
+  margin:0 8mm 8mm;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  padding:6mm 8mm;display:grid;grid-template-columns:1fr 1fr;gap:0;
+}
+.cc-field{padding:3mm 4mm;border-bottom:1px solid rgba(255,255,255,.07)}
+.cc-field:nth-child(odd){border-right:1px solid rgba(255,255,255,.07)}
+.cc-field:nth-last-child(-n+2){border-bottom:none}
+.cc-label{font-size:6pt;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px;font-family:var(--sans)}
+.cc-val{
+  font-family:var(--serif);font-style:italic;font-size:10.5pt;color:rgba(255,255,255,.8);
+  background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);
+  width:100%;outline:none;padding:1px 0;
+}
+.cc-val::placeholder{color:rgba(255,255,255,.25)}
+/* ─ inner pages ─ */
+.inner-page{padding:10mm 13mm 0;flex:1;display:flex;flex-direction:column}
+.section-label{font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:var(--blue);font-family:var(--sans);margin-bottom:2mm}
+.section-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2mm}
+.section-h1{font-family:var(--serif);font-weight:400;font-size:30pt;color:var(--navy);line-height:1.1}
+.section-h1 em{font-style:italic;color:var(--navy)}
+.ghost-num{
+  font-family:var(--serif);font-weight:700;font-size:100pt;color:var(--navy);
+  opacity:.055;line-height:1;letter-spacing:-.04em;user-select:none;
+  position:relative;top:-12pt;
+}
+.yellow-rule{height:2px;background:var(--yellow);margin-bottom:6mm}
+/* ─ section content ─ */
+.sec-block{margin-bottom:5mm}
+.sec-block-label{
+  font-size:7pt;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:700;color:var(--navy);border-bottom:1px solid var(--sand2);
+  padding-bottom:2px;margin-bottom:3mm;
+}
+.fields-grid{display:grid;gap:0}
+.fields-grid.cols2{grid-template-columns:1fr 1fr}
+.fields-grid.cols3{grid-template-columns:1fr 1fr 1fr}
+.field{padding:2.5mm 0 2mm}
+.field-lbl{font-size:6.5pt;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:2px;display:block;font-family:var(--sans)}
+.field-inp{
+  font-family:var(--serif);font-style:italic;font-size:11pt;color:var(--navy);
+  border:none;border-bottom:1px solid #D0CCC3;background:transparent;
+  width:100%;outline:none;padding:2px 0;
+}
+.field-inp::placeholder{color:#C8C4BC;font-size:10pt}
+.field-inp:focus{border-bottom-color:var(--blue)}
+.field-ta{
+  font-family:var(--sans);font-size:9pt;color:var(--navy);
+  border:1px solid #E0DBD3;background:transparent;
+  width:100%;outline:none;padding:6px 8px;resize:vertical;min-height:50px;
+  line-height:1.6;
+}
+.field-ta::placeholder{color:#C0BBB3}
+.field-ta:focus{border-color:var(--blue)}
+/* ─ scope table ─ */
+.scope-intro{font-size:9pt;color:#666;margin-bottom:4mm;line-height:1.6}
+.scope-tbl{width:100%;border-collapse:collapse;margin-bottom:3mm}
+.scope-tbl th{
+  background:var(--navy);color:#fff;
+  font-size:7pt;letter-spacing:.18em;text-transform:uppercase;
+  padding:5px 8px;text-align:left;font-family:var(--sans);
+}
+.scope-tbl th:first-child{width:36px;text-align:center}
+.scope-tbl th:nth-child(2){width:35%}
+.scope-cat-row td{
+  background:#F7F5F0;font-size:7.5pt;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--navy);
+  padding:5px 8px;border-top:2px solid var(--sand2);
+  font-family:var(--sans);
+}
+.scope-tbl tbody tr{border-bottom:1px solid #ECEAE5}
+.scope-tbl td{padding:5px 8px;vertical-align:top}
+.scope-chk{display:flex;justify-content:center;align-items:center}
+.scope-chk input[type=checkbox]{
+  width:14px;height:14px;cursor:pointer;
+  accent-color:var(--navy);
+}
+.scope-item{font-size:9pt;color:var(--navy);font-family:var(--sans)}
+.scope-desc{
+  font-size:9pt;color:#666;border:none;border-bottom:1px solid transparent;
+  background:transparent;width:100%;outline:none;font-family:var(--sans);
+  padding:1px 2px;
+}
+.scope-desc::placeholder{color:#C8C4BC}
+.scope-desc:focus{border-bottom:1px solid var(--blue);background:rgba(92,124,217,.03)}
+.add-scope-btn{
+  background:none;border:1px dashed #D0CCC3;color:var(--slate);
+  font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 10px;cursor:pointer;font-family:var(--sans);margin-top:2mm;
+}
+.add-scope-btn:hover{border-color:var(--blue);color:var(--blue)}
+/* ─ budget table ─ */
+.budget-intro{font-size:9pt;color:#666;margin-bottom:4mm;line-height:1.6}
+.budget-tbl{width:100%;border-collapse:collapse}
+.budget-tbl th{
+  background:var(--navy);color:#fff;
+  font-size:7pt;letter-spacing:.14em;text-transform:uppercase;
+  padding:6px 8px;text-align:left;font-family:var(--sans);
+}
+.budget-tbl th.right{text-align:right}
+.budget-cap-row td{
+  background:#F2F0EB;font-size:7.5pt;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--navy);
+  padding:5px 8px;border-top:1.5px solid var(--sand2);font-family:var(--sans);
+}
+.budget-cap-row td input{
+  background:transparent;border:none;outline:none;
+  font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--navy);font-family:var(--sans);width:100%;cursor:text;
+}
+.budget-tbl tbody .item-row{border-bottom:1px solid #ECEAE5}
+.budget-tbl tbody .item-row:nth-child(even){background:#FAFAF8}
+.bd-num{width:36px;font-size:8pt;color:var(--slate);padding:4px 6px;font-family:var(--sans)}
+.bd-desc{padding:4px 6px;width:48%}
+.bd-uds,.bd-unit{padding:4px 4px;width:9%;text-align:right}
+.bd-price{padding:4px 4px;width:13%;text-align:right}
+.bd-total{padding:4px 8px;width:13%;text-align:right;font-weight:700;color:var(--navy);white-space:nowrap}
+.bd-del{width:20px;text-align:center;padding:2px}
+.inp-bd{
+  background:transparent;border:none;border-bottom:1px solid transparent;
+  font-family:var(--sans);font-size:9pt;color:var(--navy);
+  outline:none;padding:1px 2px;width:100%;
+}
+.inp-bd.right{text-align:right}
+.inp-bd:focus{border-bottom-color:var(--blue);background:rgba(92,124,217,.03)}
+.del-row-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:0}
+.del-row-btn:hover{color:#d44}
+.add-row-btn{
+  background:none;border:1px dashed #D0CCC3;color:var(--slate);
+  font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 10px;cursor:pointer;font-family:var(--sans);margin:2px 0 2px 36px;
+}
+.add-row-btn:hover{border-color:var(--blue);color:var(--blue)}
+.budget-totals{margin-top:4mm;border-top:1.5px solid var(--navy)}
+.bt-row{display:flex;justify-content:space-between;align-items:center;padding:3px 8px;border-bottom:1px solid #ECEAE5}
+.bt-label{font-size:9pt;color:#666;font-family:var(--sans)}
+.bt-label small{font-size:7.5pt;color:var(--slate)}
+.bt-val{font-size:9pt;font-weight:600;color:var(--navy);font-family:var(--sans);white-space:nowrap}
+.bt-row.total-row{background:var(--navy);margin-top:1mm}
+.bt-row.total-row .bt-label{color:var(--yellow);font-weight:700;font-size:10pt;letter-spacing:.05em;text-transform:uppercase}
+.bt-row.total-row .bt-val{color:#fff;font-size:12pt;font-weight:700}
+.inp-pct{
+  width:30px;background:transparent;border:none;border-bottom:1px solid #D0CCC3;
+  outline:none;font-family:var(--sans);font-size:9pt;color:var(--navy);
+  text-align:center;padding:0;display:inline;
+}
+.budget-cond{
+  margin-top:3mm;border-left:3px solid var(--yellow);padding:6px 10px;
+  background:#FAFAF8;
+}
+.budget-cond p{font-size:8.5pt;color:#555;line-height:1.7;font-family:var(--sans)}
+.budget-cond span{font-weight:700;color:var(--navy)}
+/* ─ gantt ─ */
+.gantt-dates{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6mm;margin-bottom:6mm}
+.gantt-date .field-lbl{margin-bottom:3px}
+.gantt-block-label{font-size:7pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm;font-family:var(--sans)}
+.gantt-tbl{width:100%;border-collapse:collapse;margin-bottom:4mm}
+.gantt-tbl th{
+  background:var(--navy);color:#fff;
+  font-size:7pt;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 4px;text-align:center;font-family:var(--sans);white-space:nowrap;
+}
+.gantt-tbl th:first-child{text-align:left;padding-left:8px;width:32%}
+.gantt-tbl td{padding:0;border:1px solid #E8E4DE;height:26px;vertical-align:middle}
+.gantt-tbl td:first-child{padding:0 4px 0 8px;font-size:9pt;color:var(--navy);font-family:var(--sans)}
+.gantt-tbl td:first-child [contenteditable]{outline:none;display:block;padding:4px 0}
+.gantt-cell{width:100%;height:100%;cursor:pointer;background:transparent;transition:background .1s}
+.gantt-cell.active{background:var(--navy)}
+.gantt-cell.delivery{background:var(--yellow)}
+.gantt-legend{display:flex;gap:16px;align-items:center;margin-bottom:4mm}
+.gantt-leg-item{display:flex;align-items:center;gap:6px;font-size:8pt;color:#666;font-family:var(--sans)}
+.gantt-leg-swatch{width:18px;height:12px}
+.gantt-cond-label{font-size:7pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm;font-family:var(--sans)}
+/* ─ signatures ─ */
+.sigs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm;margin-bottom:5mm}
+.sigs-box{border:1px solid var(--sand2);padding:5mm}
+.sigs-box-label{font-size:7pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:3mm;font-family:var(--sans)}
+.sigs-list{list-style:none;padding:0}
+.sigs-list li{font-size:9pt;color:#444;padding:2px 0 2px 12px;font-family:var(--sans);position:relative}
+.sigs-list li::before{content:'·';position:absolute;left:2px;color:var(--yellow);font-size:12pt;top:-3px}
+.sigs-list li[contenteditable]{outline:none;cursor:text}
+.sigs-list li[contenteditable]:focus{background:rgba(92,124,217,.04);border-radius:2px}
+.adapt-label{font-size:7pt;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-top:3mm;margin-bottom:1mm;font-family:var(--sans)}
+.clause-box{
+  background:var(--navy);padding:5mm 6mm;margin:4mm 0;
+}
+.clause-label{font-size:6.5pt;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow);margin-bottom:2mm;font-family:var(--sans)}
+.clause-text{font-size:8.5pt;color:rgba(255,255,255,.8);line-height:1.7;font-family:var(--sans)}
+.sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:10mm;margin-top:5mm}
+.sign-block .sign-name-label{font-size:7pt;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:1mm;font-family:var(--sans)}
+.sign-block .sign-name-val{font-size:10.5pt;color:var(--navy);font-family:var(--serif);font-style:italic;margin-bottom:4mm}
+.sign-meta{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:4mm}
+.sign-meta-lbl{font-size:6.5pt;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:1px;font-family:var(--sans)}
+.sign-meta-val{font-size:9.5pt;font-family:var(--serif);font-style:italic;color:var(--navy)}
+.sign-line{border-top:1px solid var(--navy);margin-bottom:1mm}
+.sign-line-label{font-size:6.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);font-family:var(--sans)}
+.sign-obreko-logo{font-family:var(--serif);font-style:italic;font-size:16pt;color:var(--navy);margin-bottom:1mm;letter-spacing:.03em}
+.sign-obreko-sub{font-size:7.5pt;color:var(--slate);font-family:var(--sans);margin-bottom:4mm}
+/* ─ back cover ─ */
+.back-cover{background:var(--navy)}
+.bc-stripe{height:3px;background:var(--yellow)}
+.bc-inner{flex:1;display:flex;flex-direction:column;padding:10mm 13mm}
+.bc-label{display:flex;align-items:center;gap:8px;margin-bottom:8mm}
+.bc-label::before{content:'';display:block;width:20px;height:1.5px;background:var(--yellow)}
+.bc-label span{font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:var(--sans)}
+.bc-h{font-family:var(--serif);font-weight:400;font-size:42pt;color:#fff;line-height:1.05;margin-bottom:auto}
+.bc-h em{font-style:italic;color:var(--yellow)}
+.bc-contact-label{font-size:6.5pt;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4mm;font-family:var(--sans)}
+.bc-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:8mm}
+.bc-contact-card{border:1px solid rgba(255,255,255,.1);padding:4mm 5mm}
+.bc-contact-type{font-size:6.5pt;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow);margin-bottom:2mm;font-family:var(--sans)}
+.bc-contact-val{font-size:11pt;font-weight:700;color:#fff;font-family:var(--sans)}
+.bc-contact-sub{font-size:8pt;color:var(--slate);font-family:var(--sans)}
+.bc-footer{display:flex;justify-content:space-between;align-items:flex-end;padding-top:4mm;border-top:1px solid rgba(255,255,255,.1)}
+.bc-footer-logo{font-family:var(--serif);font-style:italic;font-size:14pt;color:rgba(255,255,255,.3);letter-spacing:.03em}
+.bc-footer-info{font-size:7pt;color:rgba(255,255,255,.25);text-align:right;line-height:1.6;font-family:var(--sans)}
+/* ─ page footer ─ */
+.page-foot{
+  padding:3.5mm 13mm;border-top:1px solid #EBE7E0;
+  display:flex;justify-content:space-between;align-items:center;margin-top:auto;
+}
+.pf-logo{font-family:var(--serif);font-style:italic;font-size:9pt;color:var(--navy);opacity:.35;letter-spacing:.03em}
+.pf-num{font-size:7pt;color:#BBB;letter-spacing:.1em;font-family:var(--sans)}
+/* ─ contenteditable ─ */
+[contenteditable]{outline:none;cursor:text}
+[contenteditable]:hover{background:rgba(92,124,217,.04);border-radius:2px}
+[contenteditable]:focus{background:rgba(92,124,217,.07);border-radius:2px}
+/* ─ print ─ */
+@media print{
+  @page{size:A4 portrait;margin:0}
+  html,body{background:#fff}
+  .toolbar,.no-print{display:none!important}
+  .page{margin:0;box-shadow:none;page-break-after:always}
+  .page:last-child{page-break-after:auto}
+  input,textarea{border-color:transparent!important;background:transparent!important}
+  .field-inp::placeholder,.field-ta::placeholder,.scope-desc::placeholder,.inp-bd::placeholder{color:transparent}
+  [contenteditable]{background:transparent!important}
+  .gantt-cell{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .bc-label::before,.cover-stripe,.bc-stripe{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="tb-left">
+    <a href="index.html" class="tb-back">← Volver</a>
+    <div class="tb-sep"></div>
+    <span class="tb-logo">obreko</span>
+    <div class="tb-sep"></div>
+    <span class="tb-type">Propuesta · Reforma Integral</span>
+  </div>
+  <div class="tb-right">
+    <span class="tb-hint no-print">Rellena los campos y guarda como PDF</span>
+    <button class="tb-btn sec no-print" onclick="resetForm()">Nuevo documento</button>
+    <button class="tb-btn pri no-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+  </div>
+</div>
+
+
+<div class="page cover">
+  <div class="cover-stripe"></div>
+  <div class="cover-top">
+    <div>
+      <div class="cover-logo">obreko</div>
+      <div class="cover-sub">Tenerife · Madrid · obreko.com</div>
+    </div>
+  </div>
+  <div class="cover-mid">
+    <div class="cover-doc"><span>Documento oficial</span></div>
+    <div class="cover-h" style="margin-bottom:8mm">
+      <span class="cover-h-line" contenteditable>Propuesta</span>
+      <span class="cover-h-line">de <span class="cover-h-em" contenteditable>reforma</span></span>
+      <span class="cover-h-line" contenteditable>integral</span>
+    </div>
+  </div>
+  <div class="cover-card">
+    <div class="cc-field">
+      <div class="cc-label">Cliente / Empresa</div>
+      <input class="cc-val" type="text" placeholder="Nombre Apellido o Razón Social">
+    </div>
+    <div class="cc-field">
+      <div class="cc-label">Referencia</div>
+      <input class="cc-val" type="text" id="ref-num" value="REF-2026-001">
+    </div>
+    <div class="cc-field">
+      <div class="cc-label">Inmueble / Dirección</div>
+      <input class="cc-val" type="text" placeholder="C/ Ejemplo, 24 — Santa Cruz de Tenerife">
+    </div>
+    <div class="cc-field">
+      <div class="cc-label">Fecha de propuesta</div>
+      <input class="cc-val" type="text" id="cover-date" placeholder="Enero 2026">
+    </div>
+    <div class="cc-field" style="grid-column:1/-1">
+      <div class="cc-label">Tipo de intervención</div>
+      <input class="cc-val" type="text" placeholder="Reforma Integral · Especificar alcance...">
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="inner-page">
+    <div class="section-label" contenteditable>DATOS DEL PROYECTO</div>
+    <div class="section-head">
+      <h1 class="section-h1"><span contenteditable>Información</span> <em contenteditable>general</em></h1>
+      <div class="ghost-num">01</div>
+    </div>
+    <div class="yellow-rule"></div>
+
+    <div class="sec-block">
+      <div class="sec-block-label">Datos del cliente</div>
+      <div class="fields-grid cols3">
+        <div class="field"><label class="field-lbl">Nombre completo</label><input class="field-inp" placeholder="Nombre Apellido"></div>
+        <div class="field"><label class="field-lbl">DNI / NIF</label><input class="field-inp" placeholder="00000000A"></div>
+        <div class="field"><label class="field-lbl">Teléfono</label><input class="field-inp" placeholder="+34 600 000 000"></div>
+      </div>
+      <div class="fields-grid cols2">
+        <div class="field"><label class="field-lbl">Email</label><input class="field-inp" type="email" placeholder="cliente@email.com"></div>
+        <div class="field"><label class="field-lbl">Dirección de contacto</label><input class="field-inp" placeholder="C/ Ejemplo, 24 — 38001 Santa Cruz"></div>
+      </div>
+    </div>
+
+    <div class="sec-block">
+      <div class="sec-block-label">Datos del inmueble</div>
+      <div class="fields-grid cols3">
+        <div class="field"><label class="field-lbl">Dirección de la obra</label><input class="field-inp" placeholder="C/ Obra, 10 — Santa Cruz"></div>
+        <div class="field"><label class="field-lbl">Municipio</label><input class="field-inp" placeholder="Santa Cruz de Tenerife"></div>
+        <div class="field"><label class="field-lbl">Código postal</label><input class="field-inp" placeholder="38001"></div>
+      </div>
+      <div class="fields-grid cols3">
+        <div class="field"><label class="field-lbl">Tipo de inmueble</label><input class="field-inp" placeholder="Piso · Local · Chalet · Nave..."></div>
+        <div class="field"><label class="field-lbl">Superficie aprox. (m²)</label><input class="field-inp" placeholder="85 m²"></div>
+        <div class="field"><label class="field-lbl">Planta / Acceso</label><input class="field-inp" placeholder="2ª planta · con ascensor"></div>
+      </div>
+    </div>
+
+    <div class="sec-block">
+      <div class="sec-block-label">Descripción del proyecto</div>
+      <div class="field"><label class="field-lbl">Resumen del trabajo a realizar</label>
+        <textarea class="field-ta" rows="3" placeholder="Describe el proyecto: qué se quiere hacer, para qué uso, estilo deseado, urgencia..."></textarea>
+      </div>
+      <div class="fields-grid cols2" style="margin-top:2mm">
+        <div class="field"><label class="field-lbl">Estado actual del inmueble</label>
+          <textarea class="field-ta" rows="3" placeholder="Describe el estado actual: si hay obra existente, si hay que demoler, problemas de humedad, instalaciones antiguas..."></textarea>
+        </div>
+        <div class="field"><label class="field-lbl">Uso previsto tras la intervención</label>
+          <textarea class="field-ta" rows="3" placeholder="Vivienda principal · Local comercial · Oficina · Alquiler vacacional · Hostelería..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span class="pf-logo">obreko</span><span class="pf-num">2</span></div>
+</div>
+
+<div class="page">
+  <div class="inner-page">
+    <div class="section-label" contenteditable>ALCANCE DE LA OBRA</div>
+    <div class="section-head">
+      <h1 class="section-h1"><span contenteditable>Trabajos</span> <em contenteditable>contemplados</em></h1>
+      <div class="ghost-num">02</div>
+    </div>
+    <div class="yellow-rule"></div>
+    <p class="scope-intro" contenteditable>Marca con una ✓ los trabajos incluidos en esta propuesta y detalla el alcance específico de cada uno.</p>
+    <table class="scope-tbl">
+      <thead><tr>
+        <th>Inc.</th>
+        <th>Trabajo</th>
+        <th>Descripción / Alcance específico</th>
+      </tr></thead>
+      <tbody>
+      <tr class="scope-cat-row"><td colspan="3">DEMOLICIÓN Y SANEAMIENTO</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Demolición de tabiques</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Levantado de pavimento existente</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Retirada de sanitarios y cocina</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'DEMOLICIÓN Y SANEAMIENTO')">+ Añadir trabajo</button>
+      </td></tr>
+      <tr class="scope-cat-row"><td colspan="3">ALBAÑILERÍA Y ESTRUCTURA</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Rozas y pasos de instalaciones</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Reconstrucción de elementos</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Relleno y regularización</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'ALBAÑILERÍA Y ESTRUCTURA')">+ Añadir trabajo</button>
+      </td></tr>
+      <tr class="scope-cat-row"><td colspan="3">INSTALACIONES</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Fontanería y saneamiento</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Instalación eléctrica</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Tomas especiales (cocina, baño)</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'INSTALACIONES')">+ Añadir trabajo</button>
+      </td></tr>
+      <tr class="scope-cat-row"><td colspan="3">SUELOS Y REVESTIMIENTOS</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Tarima flotante / gres porcelánico</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Alicatado baño y cocina</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Pintura general (2 manos)</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'SUELOS Y REVESTIMIENTOS')">+ Añadir trabajo</button>
+      </td></tr>
+      <tr class="scope-cat-row"><td colspan="3">CARPINTERÍA INTERIOR</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Puertas de paso</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Armarios a medida</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Rodapié y molduras</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'CARPINTERÍA INTERIOR')">+ Añadir trabajo</button>
+      </td></tr>
+      <tr class="scope-cat-row"><td colspan="3">CARPINTERÍA EXTERIOR</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Ventanas PVC / aluminio con RPT</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Puerta de entrada blindada</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'CARPINTERÍA EXTERIOR')">+ Añadir trabajo</button>
+      </td></tr>
+      <tr class="scope-cat-row"><td colspan="3">COCINA Y BAÑOS</td></tr>
+      
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Muebles de cocina y encimera</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Electrodomésticos integrados</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="item-row">
+        <td class="scope-chk"><input type="checkbox"></td>
+        <td class="scope-item" style="font-size:9pt;color:var(--navy)">Sanitarios y griferías</td>
+        <td><input type="text" class="scope-desc" placeholder="Especificar..."></td>
+      </tr>
+      <tr class="no-print"><td colspan="3" style="padding:3px 8px">
+        <button class="add-scope-btn" onclick="addScopeRow(this,'COCINA Y BAÑOS')">+ Añadir trabajo</button>
+      </td></tr></tbody>
+    </table>
+  </div>
+  <div class="page-foot"><span class="pf-logo">obreko</span><span class="pf-num">3</span></div>
+</div>
+
+<div class="page">
+  <div class="inner-page">
+    <div class="section-label" contenteditable>PRESUPUESTO</div>
+    <div class="section-head">
+      <h1 class="section-h1"><span contenteditable>Desglose</span> <em contenteditable>económico</em></h1>
+      <div class="ghost-num">03</div>
+    </div>
+    <div class="yellow-rule"></div>
+    <p class="budget-intro" contenteditable>Presupuesto cerrado. Todos los importes incluyen material y mano de obra salvo indicación expresa. IVA no incluido.</p>
+    <table class="budget-tbl">
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th>Partida / Descripción</th>
+        <th class="right" style="width:9%">Uds.</th>
+        <th class="right" style="width:8%">Ud.</th>
+        <th class="right" style="width:13%">Precio Unit.</th>
+        <th class="right" style="width:13%">Total</th>
+        <th class="no-print" style="width:20px"></th>
+      </tr></thead>
+      <tbody>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="1. DEMOLICIÓN" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="1.1">
+        <td class="bd-num">1.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="1.2">
+        <td class="bd-num">1.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,1)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="2. ALBAÑILERÍA" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="2.1">
+        <td class="bd-num">2.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="2.2">
+        <td class="bd-num">2.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,2)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="3. FONTANERÍA Y SANEAMIENTO" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="3.1">
+        <td class="bd-num">3.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="3.2">
+        <td class="bd-num">3.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,3)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="4. INSTALACIÓN ELÉCTRICA" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="4.1">
+        <td class="bd-num">4.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="4.2">
+        <td class="bd-num">4.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,4)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="5. SUELOS Y REVESTIMIENTOS" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="5.1">
+        <td class="bd-num">5.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="5.2">
+        <td class="bd-num">5.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,5)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="6. CARPINTERÍA INTERIOR" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="6.1">
+        <td class="bd-num">6.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="6.2">
+        <td class="bd-num">6.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,6)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="7. CARPINTERÍA EXTERIOR" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="7.1">
+        <td class="bd-num">7.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="7.2">
+        <td class="bd-num">7.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,7)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="8. COCINA Y BAÑOS" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="8.1">
+        <td class="bd-num">8.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="8.2">
+        <td class="bd-num">8.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,8)">+ Añadir partida</button>
+        </td>
+      </tr>
+      <tr class="budget-cap-row">
+        <td colspan="7" style="padding-left:8px">
+          <input value="9. GESTIÓN Y RESIDUOS" style="background:transparent;border:none;outline:none;font-size:7.5pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-family:var(--sans);width:100%;cursor:text">
+        </td>
+      </tr>
+      <tr class="item-row" data-num="9.1">
+        <td class="bd-num">9.1</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr><tr class="item-row" data-num="9.2">
+        <td class="bd-num">9.2</td>
+        <td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>
+        <td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>
+        <td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>
+        <td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>
+        <td class="bd-total item-total">0,00 €</td>
+        <td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>
+      </tr>
+      <tr class="no-print">
+        <td colspan="7" style="padding:2px 0 2px 36px">
+          <button class="add-row-btn" onclick="addBudgetRow(this,9)">+ Añadir partida</button>
+        </td>
+      </tr></tbody>
+    </table>
+    <div class="budget-totals">
+      <div class="bt-row"><span class="bt-label">Base imponible</span><span class="bt-val" id="val-base">0,00 €</span></div>
+      <div class="bt-row"><span class="bt-label">IVA <input type="number" class="inp-pct" id="inp-iva" value="21" min="0" max="100"> % <small>(10% obra o 21% servicios)</small></span><span class="bt-val" id="val-iva">0,00 €</span></div>
+      <div class="bt-row total-row"><span class="bt-label">Total propuesta</span><span class="bt-val" id="val-total">0,00 €</span></div>
+    </div>
+    <div class="budget-cond" style="margin-top:4mm">
+      <p><span>Condiciones:</span> <span contenteditable>Presupuesto cerrado válido 30 días. No incluye licencias ni tasas municipales. Gestión de residuos incluida. Materiales y calidades según memoria descriptiva anexa.</span></p>
+    </div>
+  </div>
+  <div class="page-foot"><span class="pf-logo">obreko</span><span class="pf-num">4</span></div>
+</div>
+
+<div class="page">
+  <div class="inner-page">
+    <div class="section-label" contenteditable>PLANIFICACIÓN</div>
+    <div class="section-head">
+      <h1 class="section-h1"><span contenteditable>Plazos</span> <em contenteditable>y calendario</em></h1>
+      <div class="ghost-num">04</div>
+    </div>
+    <div class="yellow-rule"></div>
+    <div class="gantt-dates">
+      <div class="gantt-date"><label class="field-lbl">Fecha prevista de inicio</label><input class="field-inp" placeholder="15 de febrero de 2026"></div>
+      <div class="gantt-date"><label class="field-lbl">Duración estimada</label><input class="field-inp" placeholder="8 semanas"></div>
+      <div class="gantt-date"><label class="field-lbl">Fecha prevista de entrega</label><input class="field-inp" placeholder="15 de abril de 2026"></div>
+    </div>
+    <div class="gantt-block-label">Diagrama de fases</div>
+    <table class="gantt-tbl">
+      <thead><tr><th>Fase / Trabajo</th><th contenteditable>SEM 1</th><th contenteditable>SEM 2</th><th contenteditable>SEM 3</th><th contenteditable>SEM 4</th><th contenteditable>SEM 5</th><th contenteditable>SEM 6</th><th contenteditable>SEM 7</th><th contenteditable>SEM 8</th></tr></thead>
+      <tbody><tr><td><span contenteditable>Demolición</span></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Albañilería y fontanería</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Instalación eléctrica</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Suelos y alicatados</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Carpintería interior</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Carpintería exterior</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Pintura y acabados</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell active" onclick="toggleGantt(this)"></div></td></tr><tr><td><span contenteditable>Revisión y entrega</span></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell delivery" onclick="toggleGantt(this)"></div></td></tr><tr class="no-print"><td contenteditable style="color:var(--slate);font-style:italic;font-size:8.5pt">(añadir fase)</td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td><td><div class="gantt-cell" onclick="toggleGantt(this)"></div></td></tr></tbody>
+    </table>
+    <div class="gantt-legend">
+      <div class="gantt-leg-item"><div class="gantt-leg-swatch" style="background:var(--navy)"></div>Trabajo activo</div>
+      <div class="gantt-leg-item"><div class="gantt-leg-swatch" style="background:var(--yellow)"></div>Revisión / entrega</div>
+      <div class="gantt-leg-item" style="font-style:italic;color:var(--slate)">Haz clic en las celdas para activarlas</div>
+    </div>
+    <div class="gantt-cond-label">Condiciones y observaciones de plazo</div>
+    <textarea class="field-ta" rows="3" placeholder="Ej: El plazo puede verse afectado por la disponibilidad de materiales especiales o por modificaciones solicitadas por el cliente una vez iniciada la obra..."></textarea>
+  </div>
+  <div class="page-foot"><span class="pf-logo">obreko</span><span class="pf-num">5</span></div>
+</div>
+
+<div class="page">
+  <div class="inner-page">
+    <div class="section-label" contenteditable>CONDICIONES Y ACEPTACIÓN</div>
+    <div class="section-head">
+      <h1 class="section-h1"><span contenteditable>Garantías</span> <em contenteditable>y firma</em></h1>
+      <div class="ghost-num">05</div>
+    </div>
+    <div class="yellow-rule"></div>
+    <div class="sigs-grid">
+      <div class="sigs-box">
+        <div class="sigs-box-label">Forma de pago</div>
+        <ul class="sigs-list"><li contenteditable>30% a la firma del contrato</li><li contenteditable>40% al inicio de la obra</li><li contenteditable>30% a la entrega de llaves</li></ul>
+        <div class="adapt-label">Adaptar condiciones de pago</div>
+        <textarea class="field-ta" rows="3" placeholder="Si se acuerdan condiciones diferentes, indicarlas aquí..."></textarea>
+      </div>
+      <div class="sigs-box">
+        <div class="sigs-box-label">Garantías</div>
+        <ul class="sigs-list"><li contenteditable>Acabados: 1 año</li><li contenteditable>Instalaciones: 3 años</li><li contenteditable>Elementos constructivos: 6 años</li></ul>
+      </div>
+    </div>
+    <div class="sec-block-label" style="margin-bottom:2mm">Notas adicionales y exclusiones</div>
+    <textarea class="field-ta" rows="3" placeholder="Indicar aquí trabajos expresamente excluidos del presupuesto, materiales que aporta el cliente, condiciones especiales, etc."></textarea>
+    <div class="clause-box" style="margin-top:4mm">
+      <div class="clause-label">Cláusula de aceptación</div>
+      <div class="clause-text" contenteditable>El cliente declara haber leído y comprendido la presente propuesta en su totalidad y acepta los trabajos, precios y condiciones descritos. La firma de este documento implica la aceptación formal del presupuesto y la autorización para iniciar los trabajos en la fecha acordada. Cualquier modificación posterior al alcance o materiales deberá ser pactada por escrito entre ambas partes.</div>
+    </div>
+    <div class="sign-grid">
+      <div class="sign-block">
+        <div class="sign-name-label">Nombre del cliente (firmante)</div>
+        <div class="sign-name-val"><input class="field-inp" placeholder="Nombre Apellido" style="font-size:10.5pt"></div>
+        <div class="sign-meta">
+          <div><div class="sign-meta-lbl">DNI / NIF</div><div class="sign-meta-val"><input class="field-inp" placeholder="00000000A" style="font-size:9.5pt"></div></div>
+          <div><div class="sign-meta-lbl">Fecha</div><div class="sign-meta-val"><input class="field-inp" placeholder="__ / __ / 2026" style="font-size:9.5pt"></div></div>
+        </div>
+        <div class="sign-line"></div>
+        <div class="sign-line-label">Firma del cliente</div>
+      </div>
+      <div class="sign-block">
+        <div class="sign-obreko-logo">obreko</div>
+        <div class="sign-obreko-sub">Reformas y Construcción · NIF: B-00000000</div>
+        <div class="sign-meta">
+          <div><div class="sign-meta-lbl">Responsable de obra</div><div class="sign-meta-val"><input class="field-inp" placeholder="Nombre Apellido" style="font-size:9.5pt"></div></div>
+          <div><div class="sign-meta-lbl">Fecha</div><div class="sign-meta-val"><input class="field-inp" placeholder="__ / __ / 2026" style="font-size:9.5pt"></div></div>
+        </div>
+        <div class="sign-line"></div>
+        <div class="sign-line-label">Firma y sello obreko</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span class="pf-logo">obreko</span><span class="pf-num">6</span></div>
+</div>
+
+<div class="page back-cover">
+  <div class="bc-stripe"></div>
+  <div class="bc-inner">
+    <div class="bc-label"><span contenteditable>Propuesta de reforma · obreko</span></div>
+    <div class="bc-h">
+      <span contenteditable>Gracias</span><br>
+      por <em contenteditable>confiar</em><br>
+      <span contenteditable>en nosotros.</span>
+    </div>
+    <div style="margin-bottom:6mm"></div>
+    <div class="bc-contact-label">¿Tienes dudas? Estamos a tu disposición</div>
+    <div class="bc-contact-grid">
+      <div class="bc-contact-card">
+        <div class="bc-contact-type">Llámanos</div>
+        <div class="bc-contact-val" contenteditable>+34 698 900 623</div>
+        <div class="bc-contact-sub" contenteditable>Lunes a viernes · 8:00 – 19:00</div>
+      </div>
+      <div class="bc-contact-card">
+        <div class="bc-contact-type">Escríbenos</div>
+        <div class="bc-contact-val" contenteditable>hola@obreko.com</div>
+        <div class="bc-contact-sub" contenteditable>obreko.com · Tenerife · Madrid</div>
+      </div>
+    </div>
+    <div class="bc-footer">
+      <div class="bc-footer-logo">obreko</div>
+      <div class="bc-footer-info">Documento confidencial<br>© 2026 obreko · Todos los derechos reservados</div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+// ─ init date ─
+var today = new Date();
+var d = document.getElementById('cover-date');
+if(d) d.placeholder = today.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+
+// ─ format eur ─
+function fmtEur(n){
+  return n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+}
+
+// ─ calc budget ─
+function calcBudget(){
+  var subtotal=0;
+  document.querySelectorAll('.item-row').forEach(function(r){
+    var qty=parseFloat(r.querySelector('.qty')?r.querySelector('.qty').value:0)||0;
+    var price=parseFloat(r.querySelector('.price')?r.querySelector('.price').value:0)||0;
+    var tot=qty*price;
+    var td=r.querySelector('.item-total');
+    if(td) td.textContent=tot>0?fmtEur(tot):'0,00 €';
+    subtotal+=tot;
+  });
+  var ivaEl=document.getElementById('inp-iva');
+  var ivaP=ivaEl?parseFloat(ivaEl.value)||0:21;
+  var ivaAmt=subtotal*ivaP/100;
+  var total=subtotal+ivaAmt;
+  var bEl=document.getElementById('val-base');
+  var iEl=document.getElementById('val-iva');
+  var tEl=document.getElementById('val-total');
+  if(bEl) bEl.textContent=fmtEur(subtotal);
+  if(iEl) iEl.textContent=fmtEur(ivaAmt);
+  if(tEl) tEl.textContent=fmtEur(total);
+}
+
+document.addEventListener('input',function(e){
+  if(e.target.classList.contains('qty')||e.target.classList.contains('price')||e.target.id==='inp-iva'){
+    calcBudget();
+  }
+});
+calcBudget();
+
+// ─ gantt toggle ─
+window.toggleGantt=function(cell){
+  if(cell.classList.contains('delivery')){cell.className='gantt-cell';}
+  else if(cell.classList.contains('active')){cell.className='gantt-cell delivery';}
+  else{cell.className='gantt-cell active';}
+};
+
+// ─ add budget row ─
+var capCounters={};
+window.addBudgetRow=function(btn,capNum){
+  var tbody=btn.closest('table').querySelector('tbody');
+  var addRowEl=btn.closest('tr');
+  if(!capCounters[capNum]){
+    var existing=tbody.querySelectorAll('[data-num^="'+capNum+'."]');
+    capCounters[capNum]=existing.length;
+  }
+  capCounters[capNum]++;
+  var num=capNum+'.'+capCounters[capNum];
+  var tr=document.createElement('tr');
+  tr.className='item-row';
+  tr.dataset.num=num;
+  tr.innerHTML='<td class="bd-num">'+num+'</td>'
+    +'<td class="bd-desc"><input type="text" class="inp-bd" placeholder="Descripción de la partida"></td>'
+    +'<td class="bd-uds"><input type="number" class="inp-bd right qty" value="" min="0" step="0.01" placeholder="0"></td>'
+    +'<td class="bd-unit"><input type="text" class="inp-bd right unit" value="ud." placeholder="ud."></td>'
+    +'<td class="bd-price"><input type="number" class="inp-bd right price" value="" min="0" step="0.01" placeholder="0,00"></td>'
+    +'<td class="bd-total item-total">0,00 €</td>'
+    +'<td class="bd-del no-print"><button class="del-row-btn" onclick="delBudgetRow(this)" title="Eliminar">×</button></td>';
+  tbody.insertBefore(tr,addRowEl);
+  tr.querySelector('.inp-bd').focus();
+};
+
+// ─ delete budget row ─
+window.delBudgetRow=function(btn){
+  btn.closest('tr').remove();
+  calcBudget();
+};
+
+// ─ add scope row ─
+window.addScopeRow=function(btn,catName){
+  var tbody=btn.closest('table').querySelector('tbody');
+  var tr=document.createElement('tr');
+  tr.className='item-row';
+  tr.innerHTML='<td class="scope-chk"><input type="checkbox"></td>'
+    +'<td class="scope-item" contenteditable style="font-size:9pt;color:var(--navy);outline:none;cursor:text" >Nuevo trabajo</td>'
+    +'<td><input type="text" class="scope-desc" placeholder="Especificar..."></td>';
+  var addRowEl=btn.closest('tr');
+  tbody.insertBefore(tr,addRowEl);
+  tr.querySelector('[contenteditable]').focus();
+};
+
+// ─ prevent Enter in contenteditable ─
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.hasAttribute('contenteditable')&&!e.target.classList.contains('clause-text')){
+    e.preventDefault();
+  }
+});
+
+// ─ reset ─
+window.resetForm=function(){
+  if(!confirm('¿Crear un nuevo documento? Se borrarán todos los datos.')) return;
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=number],textarea').forEach(function(i){
+    if(i.id!=='inp-iva') i.value='';
+  });
+  document.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false;});
+  document.querySelectorAll('.gantt-cell').forEach(function(c){c.className='gantt-cell';});
+  calcBudget();
+};
+})();
+</script>
+</body>
+</html>

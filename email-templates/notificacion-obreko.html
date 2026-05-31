@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva solicitud · obreko</title>
+<style type="text/css">
+@media only screen and (max-width:600px){
+  .m-outer{padding:16px 8px !important}
+  .m-pad{padding-left:22px !important;padding-right:22px !important}
+  .m-pad-head{padding:24px 22px 20px !important}
+  .m-pad-foot{padding:18px 22px !important}
+  .m-h1{font-size:24px !important;line-height:1.2 !important}
+  .m-data td{padding:12px 16px !important}
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f0ede6;font-family:Georgia,serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" class="m-outer" style="background:#f0ede6;padding:40px 20px;">
+  <tr>
+    <td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-top:3px solid #FED544;">
+
+        <!-- HEADER -->
+        <tr>
+          <td class="m-pad-head" style="padding:32px 40px 24px;background:#1a2236;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td>
+                  <img src="https://obreko.com/assets/email/obreko-white@4x.png" alt="obreko" width="61" height="26" style="display:inline-block;border:0;outline:none;text-decoration:none;vertical-align:middle;">
+                </td>
+                <td align="right">
+                  <span style="font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#FED544;font-family:Arial,sans-serif;font-weight:600;">Nueva solicitud</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- TITLE -->
+        <tr>
+          <td class="m-pad" style="padding:32px 40px 24px;background:#ffffff;">
+            <p style="margin:0 0 8px;font-size:11px;letter-spacing:.25em;color:#5C7CD9;font-family:Arial,sans-serif;font-weight:600;"><span style="text-transform:uppercase;">Formulario web ·</span> obreko.com</p>
+            <h1 class="m-h1" style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:30px;font-weight:400;color:#1a2236;line-height:1.2;">Alguien quiere un<br>presupuesto.</h1>
+          </td>
+        </tr>
+
+        <!-- DIVIDER -->
+        <tr>
+          <td style="padding:0 40px;">
+            <div style="height:1px;background:#e8e4dc;"></div>
+          </td>
+        </tr>
+
+        <!-- DATA TABLE -->
+        <tr>
+          <td class="m-pad" style="padding:28px 40px 32px;background:#ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" class="m-data" style="background:#f8f6f1;border:1px solid #e8e4dc;">
+
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Nombre</p>
+                  <p style="margin:0;font-size:16px;color:#1a2236;font-family:Arial,sans-serif;font-weight:600;">{{nombre}}</p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Teléfono</p>
+                  <p style="margin:0;font-size:16px;color:#1a2236;font-family:Arial,sans-serif;">{{telefono}}</p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Email</p>
+                  <p style="margin:0;font-size:16px;color:#5C7CD9;font-family:Arial,sans-serif;">{{email_cliente}}</p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Servicio solicitado</p>
+                  <p style="margin:0;">
+                    <span style="display:inline-block;background:#FED544;color:#1a2236;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;font-family:Arial,sans-serif;">{{servicio}}</span>
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:14px 20px;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Mensaje</p>
+                  <p style="margin:0;font-size:15px;color:#444;font-family:Arial,sans-serif;line-height:1.7;">{{mensaje}}</p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+
+        <!-- CTA -->
+        <tr>
+          <td class="m-pad" style="padding:0 40px 40px;background:#ffffff;">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background:#FED544;">
+                  <a href="mailto:{{email_cliente}}" style="display:inline-block;padding:14px 28px;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#1a2236;text-decoration:none;">Responder ahora →</a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:12px 0 0;font-size:12px;color:#aaa;font-family:Arial,sans-serif;">Responde en menos de 48h para no perder al cliente.</p>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td class="m-pad-foot" style="padding:20px 40px;background:#1a2236;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td>
+                  <img src="https://obreko.com/assets/email/obreko-white35@4x.png" alt="obreko" width="35" height="15" style="display:inline-block;border:0;outline:none;text-decoration:none;vertical-align:middle;opacity:.35;">
+                </td>
+                <td align="right">
+                  <span style="font-size:11px;color:rgba(255,255,255,0.25);font-family:Arial,sans-serif;">Tenerife · Madrid</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

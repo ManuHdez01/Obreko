@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo obreko — Descarga de archivos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1a2236;--yellow:#FED544;--sand:#F1EDE0;--blue:#5C7CD9;--sans:'DM Sans',Arial,sans-serif;--serif:'Playfair Display',Georgia,serif}
+body{background:#d4d0c8;font-family:var(--sans);padding:32px 24px}
+h1{font-family:var(--serif);font-style:italic;font-size:28px;color:var(--navy);margin-bottom:6px}
+.subtitle{font-size:12px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;max-width:900px}
+.card{background:#fff;border-top:3px solid var(--yellow);padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+.card.dark{background:var(--navy);border-top-color:var(--yellow)}
+.card.sand{background:var(--sand);border-top-color:var(--navy)}
+.preview{height:70px;display:flex;align-items:center;justify-content:center}
+.wm{font-family:var(--serif);font-style:italic}
+.wm.navy{color:var(--navy);font-size:36px}
+.wm.white{color:#fff;font-size:36px}
+.wm.sand-col{color:var(--navy);font-size:36px}
+.card-info{font-size:11px;color:#888;line-height:1.6}
+.card.dark .card-info{color:rgba(255,255,255,.4)}
+.card-name{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.card.dark .card-name{color:#fff}
+.btn{display:inline-block;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:none;font-family:var(--sans)}
+.btn.primary{background:var(--yellow);color:var(--navy)}
+.btn.secondary{background:rgba(26,34,54,.08);color:var(--navy)}
+.btn.dark-secondary{background:rgba(255,255,255,.1);color:#fff}
+.btn:hover{opacity:.85}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.section-title{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);font-weight:600;margin:24px 0 12px;max-width:900px}
+.note{max-width:900px;padding:12px 16px;background:rgba(255,255,255,.5);border-left:2px solid var(--yellow);font-size:12px;color:#555;line-height:1.7;margin-top:24px}
+</style>
+</head>
+<body>
+
+<h1>obreko — Recursos de logo</h1>
+<div class="subtitle">Descarga · Variantes · Uso correcto</div>
+
+<div class="section-title">Variantes para fondo claro</div>
+<div class="grid">
+  <div class="card">
+    <div class="preview"><span class="wm navy">obreko</span></div>
+    <div>
+      <div class="card-name">Versión navy — uso principal</div>
+      <div class="card-info">Para documentos, papelería y fondos blancos o arena.<br>Color: #1A2236 · Playfair Display Italic</div>
+    </div>
+    <div class="btns">
+      <a class="btn primary" href="obreko-navy.svg" download="obreko-navy.svg">Descargar SVG</a>
+      <button class="btn secondary" onclick="copiarSVG('navy')">Copiar SVG</button>
+    </div>
+  </div>
+
+  <div class="card sand">
+    <div class="preview"><span class="wm sand-col">obreko</span></div>
+    <div>
+      <div class="card-name">Versión para fondo arena</div>
+      <div class="card-info">Igual que la versión navy pero sobre fondo arena #F1EDE0.<br>No modificar el color del texto.</div>
+    </div>
+    <div class="btns">
+      <a class="btn secondary" href="obreko-navy.svg" download="obreko-navy.svg">Descargar SVG</a>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Variantes para fondo oscuro</div>
+<div class="grid">
+  <div class="card dark">
+    <div class="preview"><span class="wm white">obreko</span></div>
+    <div>
+      <div class="card-name">Versión blanca — sobre navy</div>
+      <div class="card-info">Para cabeceras de email, portadas de propuesta y redes sociales sobre fondo oscuro.</div>
+    </div>
+    <div class="btns">
+      <a class="btn primary" href="obreko-white.svg" download="obreko-white.svg">Descargar SVG</a>
+      <button class="btn dark-secondary" onclick="copiarSVG('white')">Copiar SVG</button>
+    </div>
+  </div>
+
+  <div class="card" style="background:var(--yellow);border-top-color:var(--navy)">
+    <div class="preview"><span class="wm navy">obreko</span></div>
+    <div>
+      <div class="card-name">Versión sobre amarillo</div>
+      <div class="card-info">Solo para elementos de acento: botones, badges, fondos amarillo.</div>
+    </div>
+    <div class="btns">
+      <a class="btn secondary" href="obreko-navy.svg" download="obreko-navy.svg">Descargar SVG (navy)</a>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Uso en código (HTML / CSS)</div>
+<div class="grid">
+  <div class="card" style="grid-column:span 2">
+    <div class="card-name">Código HTML inline — wordmark tipográfico</div>
+    <div style="background:#1e2535;padding:12px 16px;font-family:'Courier New',monospace;font-size:11px;color:#9db3c8;line-height:1.9;border-radius:2px;overflow-x:auto">
+      <span style="color:#7ec8e3">&lt;span</span> <span style="color:rgba(255,255,255,.5)">style=</span><span style="color:#c3e88d">"font-family:'Playfair Display',Georgia,serif; font-style:italic; font-size:24px; color:#1a2236"</span><span style="color:#7ec8e3">&gt;</span>obreko<span style="color:#7ec8e3">&lt;/span&gt;</span><br><br>
+      <span style="color:#aaa">/* Sobre fondo oscuro → cambiar color a #ffffff */</span><br>
+      <span style="color:#aaa">/* No usar font-weight:bold. Siempre 400 Italic. */</span>
+    </div>
+    <div class="card-info">Regla: siempre minúscula · nunca bold en el nombre · tracking 0</div>
+  </div>
+</div>
+
+<div class="note">
+  <strong style="color:var(--navy)">Importante:</strong> Los SVG usan la fuente <em>Playfair Display Italic</em> declarada como system font. Si la fuente no está cargada en el dispositivo del destinatario, el SVG puede renderizarse con Georgia como fallback. Para máxima fidelidad en impresión, solicita el archivo con texto convertido a trazados (outlines) al equipo de diseño.
+</div>
+
+<script>
+var svgs = {
+  navy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60"><text x="0" y="48" font-family="'Playfair Display', Georgia, serif" font-style="italic" font-weight="400" font-size="54" fill="#1a2236" letter-spacing="-1">obreko</text></svg>`,
+  white: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60"><text x="0" y="48" font-family="'Playfair Display', Georgia, serif" font-style="italic" font-weight="400" font-size="54" fill="#ffffff" letter-spacing="-1">obreko</text></svg>`
+};
+function copiarSVG(variant){
+  navigator.clipboard.writeText(svgs[variant]).then(function(){
+    alert('SVG copiado al portapapeles');
+  });
+}
+</script>
+</body>
+</html>

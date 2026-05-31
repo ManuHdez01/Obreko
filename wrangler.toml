@@ -1,0 +1,7 @@
+name = "obreko"
+pages_build_output_dir = "."
+compatibility_date = "2026-04-01"
+
+[[r2_buckets]]
+binding = "ARCHIVE"
+bucket_name = "obreko-archivo"

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu {{tipo}} ha sido registrada · obreko</title>
+<style type="text/css">
+@media only screen and (max-width:600px){
+  .m-outer{padding:16px 8px !important}
+  .m-pad{padding-left:22px !important;padding-right:22px !important}
+  .m-pad-head{padding:24px 22px !important}
+  .m-pad-sig{padding:20px 22px !important}
+  .m-pad-box{padding:18px 20px !important}
+  .m-h1{font-size:26px !important;line-height:1.2 !important}
+  .m-ref{font-size:18px !important;letter-spacing:.04em !important}
+  .m-btn-row{width:100% !important}
+  .m-btn-row td{display:block !important;width:100% !important;padding:0 0 10px !important}
+  .m-btn-row a{display:block !important;text-align:center !important;padding:14px 0 !important}
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f0ede6;font-family:Georgia,serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" class="m-outer" style="background:#f0ede6;padding:40px 20px;">
+  <tr>
+    <td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-top:3px solid #FED544;">
+
+        <!-- HEADER navy -->
+        <tr>
+          <td class="m-pad-head" style="padding:32px 40px;background:#1a2236;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td>
+                  <img src="https://obreko.com/assets/email/obreko-white@4x.png" alt="obreko" width="61" height="26" style="display:inline-block;border:0;outline:none;text-decoration:none;vertical-align:middle;">
+                </td>
+                <td align="right">
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="width:20px;height:1px;background:#FED544;vertical-align:middle;"></td>
+                      <td style="width:8px;"></td>
+                      <td style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#FED544;font-family:Arial,sans-serif;font-weight:600;vertical-align:middle;">Atención al cliente</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- TÍTULO -->
+        <tr>
+          <td class="m-pad" style="padding:36px 40px 20px;background:#ffffff;">
+            <p style="margin:0 0 10px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;font-weight:600;">{{tipo}} registrada</p>
+            <h1 class="m-h1" style="margin:0 0 16px;font-family:Georgia,serif;font-style:italic;font-size:32px;font-weight:400;color:#1a2236;line-height:1.15;">Hola, {{nombre}}.<br>La hemos recibido.</h1>
+            <p style="margin:0;font-size:16px;color:#555;font-family:Arial,sans-serif;line-height:1.75;">
+              Gracias por ponerte en contacto con nosotros. Tu <strong style="color:#1a2236;">{{tipo}}</strong> ha quedado registrada correctamente y ya está en manos de nuestro equipo de atención al cliente.
+            </p>
+          </td>
+        </tr>
+
+        <!-- REFERENCIA DESTACADA -->
+        <tr>
+          <td class="m-pad" style="padding:8px 40px 28px;background:#ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a2236;">
+              <tr>
+                <td class="m-pad-box" style="padding:22px 26px;">
+                  <p style="margin:0 0 6px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#FED544;font-family:Arial,sans-serif;font-weight:600;">Número de referencia</p>
+                  <p class="m-ref" style="margin:0 0 4px;font-family:'Courier New',monospace;font-size:22px;color:#ffffff;letter-spacing:.06em;font-weight:700;">{{referencia}}</p>
+                  <p style="margin:0;font-size:12px;color:rgba(255,255,255,.55);font-family:Arial,sans-serif;line-height:1.55;">Guárdalo: lo necesitarás si quieres consultarnos el estado o ampliar la información.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- DIVIDER -->
+        <tr>
+          <td style="padding:0 40px;">
+            <div style="height:1px;background:#e8e4dc;"></div>
+          </td>
+        </tr>
+
+        <!-- RESUMEN -->
+        <tr>
+          <td class="m-pad" style="padding:28px 40px 12px;background:#ffffff;">
+            <p style="margin:0 0 14px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;font-weight:600;">Resumen de tu solicitud</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f6f1;border-left:3px solid #FED544;">
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Tipo de solicitud</p>
+                  <p style="margin:0;font-size:15px;color:#1a2236;font-family:Arial,sans-serif;font-weight:600;">{{tipo}}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Ubicación</p>
+                  <p style="margin:0;font-size:15px;color:#1a2236;font-family:Arial,sans-serif;">{{ubicacion}}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Servicio</p>
+                  <p style="margin:0;font-size:15px;color:#1a2236;font-family:Arial,sans-serif;">{{servicio}}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;border-bottom:1px solid #e8e4dc;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Fecha de registro</p>
+                  <p style="margin:0;font-size:15px;color:#1a2236;font-family:Arial,sans-serif;">{{fecha}}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;">
+                  <p style="margin:0 0 3px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;">Descripción</p>
+                  <p style="margin:0;font-size:14px;color:#444;font-family:Arial,sans-serif;line-height:1.7;">{{descripcion}}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- PLAZO -->
+        <tr>
+          <td class="m-pad" style="padding:20px 40px 28px;background:#ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8f6f1;">
+              <tr>
+                <td style="padding:18px 24px;">
+                  <p style="margin:0 0 4px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;font-weight:600;">Plazo máximo de respuesta</p>
+                  <p style="margin:0;font-size:18px;color:#1a2236;font-family:Arial,sans-serif;font-weight:700;">{{plazo}}</p>
+                  <p style="margin:6px 0 0;font-size:13px;color:#666;font-family:Arial,sans-serif;line-height:1.6;">Trabajamos para resolver cada caso en el menor tiempo posible. Si necesitas ampliar información, respóndenos a este email citando tu número de referencia.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- DIVIDER -->
+        <tr>
+          <td style="padding:0 40px;">
+            <div style="height:1px;background:#e8e4dc;"></div>
+          </td>
+        </tr>
+
+        <!-- URGENTE -->
+        <tr>
+          <td class="m-pad" style="padding:26px 40px 10px;background:#ffffff;">
+            <p style="margin:0 0 6px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#5C7CD9;font-family:Arial,sans-serif;font-weight:600;">¿Es urgente?</p>
+            <p style="margin:0;font-size:15px;color:#666;font-family:Arial,sans-serif;line-height:1.7;">Si tu asunto no puede esperar, llámanos o escríbenos por WhatsApp indicando el número de referencia.</p>
+          </td>
+        </tr>
+
+        <!-- BOTONES -->
+        <tr>
+          <td class="m-pad" style="padding:14px 40px 34px;background:#ffffff;">
+            <table cellpadding="0" cellspacing="0" border="0" class="m-btn-row">
+              <tr>
+                <td style="padding-right:12px;">
+                  <a href="tel:+34698900623" style="display:inline-block;background:#FED544;padding:13px 24px;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1a2236;text-decoration:none;">✆ Llamar</a>
+                </td>
+                <td>
+                  <a href="https://wa.me/34698900623" style="display:inline-block;border:1px solid #d0ccc4;padding:12px 24px;font-family:Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1a2236;text-decoration:none;">WhatsApp →</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- FIRMA -->
+        <tr>
+          <td style="padding:0 40px;">
+            <div style="height:1px;background:#e8e4dc;"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="m-pad-sig" style="padding:24px 40px;background:#ffffff;">
+            <p style="margin:0 0 4px;font-size:14px;color:#888;font-family:Arial,sans-serif;line-height:1.7;">
+              Atención al cliente · <img src="https://obreko.com/assets/email/obreko-navy-small@4x.png" alt="obreko" width="33" height="14" style="display:inline-block;border:0;outline:none;text-decoration:none;vertical-align:baseline;">
+            </p>
+            <p style="margin:0;font-size:13px;color:#aaa;font-family:Arial,sans-serif;line-height:1.7;">
+              +34 698 900 623 · atencion@obreko.com<br>Tenerife · Madrid
+            </p>
+          </td>
+        </tr>
+
+        <!-- PIE LEGAL -->
+        <tr>
+          <td class="m-pad" style="padding:16px 40px 24px;background:#f8f6f1;border-top:1px solid #e8e4dc;">
+            <p style="margin:0;font-size:11px;color:#bbb;font-family:Arial,sans-serif;line-height:1.7;text-align:center;">
+              Has recibido este email porque registraste una {{tipo}} a través de obreko.com.<br>Si fue un error, responde a este mensaje indicando tu número de referencia {{referencia}}.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

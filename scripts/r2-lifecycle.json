@@ -1,0 +1,10 @@
+{
+  "rules": [
+    {
+      "id": "proposals-retention-365",
+      "enabled": true,
+      "conditions": { "prefix": "proposals/" },
+      "deleteObjectsTransition": { "condition": { "type": "Age", "maxAge": 31536000 } }
+    }
+  ]
+}
