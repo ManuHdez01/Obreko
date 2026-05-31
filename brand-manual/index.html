@@ -1,0 +1,2513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Identidad Corporativa · obreko</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#1a2236;--yellow:#FED544;--sand:#F1EDE0;--blue:#5C7CD9;
+  --sand2:#E8E2D3;--navy2:#2d3a56;--slate:#8896B3;--warm:#C4922A;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',Arial,sans-serif;
+}
+html{background:#C8C4BA;font-family:var(--sans)}
+/* ── DOWNLOAD BAR ── */
+.dl-bar{background:var(--navy);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100}
+@media print{.dl-bar{display:none}}
+.dl-bar-brand{font-family:var(--serif);font-style:italic;font-size:17px;color:#fff}
+.dl-bar-actions{display:flex;gap:10px;flex-wrap:wrap}
+.dl-btn{display:inline-flex;align-items:center;gap:7px;padding:7px 16px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;font-family:var(--sans);cursor:pointer;border:none}
+.dl-btn.primary{background:var(--yellow);color:var(--navy)}
+.dl-btn.secondary{background:rgba(255,255,255,.1);color:#fff}
+.dl-btn:hover{opacity:.85}
+.page{width:210mm;min-height:297mm;background:#fff;margin:0 auto 8mm;position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 20px rgba(0,0,0,.18)}
+@media print{html{background:#fff}.page{margin:0;box-shadow:none;page-break-after:always;min-height:297mm}}
+
+/* ── SHARED ELEMENTS ── */
+.pg-num{position:absolute;bottom:9mm;right:11mm;font-size:7pt;color:rgba(0,0,0,.22);letter-spacing:.12em;font-family:var(--sans)}
+.pg-num.w{color:rgba(255,255,255,.3)}
+.wm{font-family:var(--serif);font-style:italic}
+.tag{font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;font-weight:600;font-family:var(--sans)}
+.tag.blue{color:var(--blue)}
+.tag.yellow{color:var(--yellow)}
+.tag.muted{color:var(--slate)}
+.rule{height:1px;background:#E2DDD4}
+.rule.y{background:var(--yellow);height:2px}
+.rule.n{background:var(--navy)}
+.inner{padding:13mm 15mm;flex:1;display:flex;flex-direction:column}
+.page-footer{padding:5mm 15mm;border-top:1px solid #EBE7DF;display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.page-footer .wm{font-size:8pt;color:var(--navy);opacity:.3}
+.page-footer .pf-num{font-size:7pt;color:#BBB;letter-spacing:.1em}
+
+/* ══════════════════════
+   P1 — PORTADA
+══════════════════════ */
+.cover{background:var(--navy);flex-direction:column;justify-content:space-between}
+.cover-top{padding:12mm 15mm 0;display:flex;justify-content:space-between;align-items:flex-start}
+.cover-top .wm{font-size:24pt;color:#fff}
+.cover-top-right{text-align:right}
+.cover-top-right span{display:block;font-size:6pt;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:3pt}
+.cover-mid{padding:0 15mm;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:10mm}
+.cover-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:7mm}
+.cover-eyebrow::before{content:'';display:block;width:22px;height:1px;background:var(--yellow)}
+.cover-h1{font-family:var(--serif);font-size:52pt;font-weight:400;line-height:.92;color:#fff;margin-bottom:7mm}
+.cover-h1 em{color:var(--yellow);font-style:italic}
+.cover-desc{font-size:9pt;color:rgba(255,255,255,.45);line-height:1.8;max-width:90mm}
+.cover-bot{padding:8mm 15mm;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
+.cover-bot-l{font-size:7pt;color:rgba(255,255,255,.25);letter-spacing:.06em}
+.cover-bot-r{font-size:7pt;color:rgba(255,255,255,.25);text-align:right}
+.cover-accent{position:absolute;top:0;right:0;width:55mm;height:100%;background:linear-gradient(180deg,rgba(254,213,68,.07) 0%,rgba(254,213,68,0) 60%);pointer-events:none}
+.cover-dots{position:absolute;top:18mm;right:14mm;display:grid;grid-template-columns:repeat(5,5px);gap:4px}
+.cover-dots span{width:5px;height:5px;background:rgba(255,255,255,.07);border-radius:50%;display:block}
+
+/* ══════════════════════
+   P2 — ÍNDICE
+══════════════════════ */
+.toc-head{padding:12mm 15mm 6mm;border-bottom:2px solid var(--yellow)}
+.toc-h{font-family:var(--serif);font-size:30pt;font-weight:400;color:var(--navy);line-height:1}
+.toc-h em{font-style:italic}
+.toc-body{padding:7mm 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0}
+.toc-item{padding:4mm 0;border-bottom:1px solid #EBE7DF;display:flex;gap:5mm;align-items:baseline}
+.toc-item:nth-child(odd){padding-right:7mm;border-right:1px solid #EBE7DF}
+.toc-item:nth-child(even){padding-left:7mm}
+.toc-n{font-size:20pt;font-family:var(--serif);font-style:italic;color:#DDD9D0;line-height:1;min-width:9mm}
+.toc-info{}
+.toc-cat{font-size:6.5pt;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:1.5mm}
+.toc-lines{font-size:8pt;color:#666;line-height:2}
+
+/* ══════════════════════
+   P3 — HISTORIA
+══════════════════════ */
+.split2{display:grid;grid-template-columns:1fr 1fr;flex:1}
+.col-navy{background:var(--navy);padding:13mm 12mm;display:flex;flex-direction:column}
+.col-white{padding:13mm 12mm;display:flex;flex-direction:column;gap:7mm}
+.big-quote{font-family:var(--serif);font-style:italic;font-size:16pt;color:#fff;line-height:1.45;margin-bottom:6mm}
+.big-num{font-family:var(--serif);font-style:italic;font-size:72pt;color:rgba(255,255,255,.05);line-height:1;margin-top:auto;text-align:right}
+.origin-tag{font-size:6.5pt;letter-spacing:.25em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:3mm}
+.origin-h{font-family:var(--serif);font-size:18pt;color:var(--navy);line-height:1.2;margin-bottom:3mm}
+.origin-h em{font-style:italic;color:var(--blue)}
+.body-text{font-size:8.5pt;color:#555;line-height:1.85}
+.timeline{display:flex;flex-direction:column;gap:3.5mm;margin-top:2mm}
+.tl-row{display:flex;gap:4mm;align-items:flex-start}
+.tl-yr{font-size:7pt;font-weight:700;color:var(--yellow);min-width:10mm;padding-top:1pt;letter-spacing:.04em}
+.tl-txt{font-size:8pt;color:#666;line-height:1.65}
+
+/* ══════════════════════
+   P4 — MISIÓN/VISIÓN/VALORES
+══════════════════════ */
+.mvv-top{padding:11mm 15mm 5mm}
+.mvv-top h2{font-family:var(--serif);font-size:26pt;color:var(--navy);font-weight:400}
+.mvv-top h2 em{font-style:italic;color:var(--blue)}
+.mvv-grid{padding:0 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5mm;align-content:start}
+.mvv-card{border:1px solid #E8E4DB;padding:6mm}
+.mvv-card.accent{background:var(--navy);border-color:var(--navy)}
+.mvv-card.sand{background:var(--sand);border-color:var(--sand2)}
+.mvv-label{font-size:6pt;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2.5mm}
+.mvv-card.accent .mvv-label{color:var(--yellow)}
+.mvv-card-h{font-family:var(--serif);font-style:italic;font-size:14pt;color:var(--navy);line-height:1.2;margin-bottom:2.5mm}
+.mvv-card.accent .mvv-card-h{color:#fff}
+.mvv-card-p{font-size:8pt;color:#555;line-height:1.75}
+.mvv-card.accent .mvv-card-p{color:rgba(255,255,255,.55)}
+.values-grid{padding:0 15mm 8mm;display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+.val-item{padding:4mm 3mm;border-top:2px solid var(--yellow);background:var(--sand)}
+.val-num{font-family:var(--serif);font-style:italic;font-size:18pt;color:var(--yellow);line-height:1}
+.val-name{font-size:7.5pt;font-weight:700;color:var(--navy);margin:2mm 0 1mm;text-transform:uppercase;letter-spacing:.08em}
+.val-desc{font-size:7pt;color:#777;line-height:1.6}
+
+/* ══════════════════════
+   P5 — TONO DE VOZ
+══════════════════════ */
+.voice-head{padding:11mm 15mm 5mm;border-bottom:1px solid #E8E4DB}
+.voice-h{font-family:var(--serif);font-size:26pt;color:var(--navy);font-weight:400}
+.voice-h em{font-style:italic}
+.voice-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:6mm}
+.pillars-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.pillar{padding:5mm 4mm;background:var(--navy);display:flex;flex-direction:column;gap:2mm}
+.pillar-icon{font-size:14pt;color:var(--yellow);line-height:1}
+.pillar-name{font-size:8pt;font-weight:700;color:#fff;letter-spacing:.06em}
+.pillar-desc{font-size:7pt;color:rgba(255,255,255,.45);line-height:1.55}
+.voice-examples{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.ve-col{display:flex;flex-direction:column;gap:3mm}
+.ve-head{font-size:6.5pt;letter-spacing:.22em;text-transform:uppercase;font-weight:700;padding:3mm 4mm}
+.ve-head.good{background:#E8F5E9;color:#2E7D32}
+.ve-head.bad{background:#FFEBEE;color:#C62828}
+.ve-item{font-size:8pt;color:#444;line-height:1.65;padding:3mm 4mm;border-bottom:1px solid #F0EDE8}
+.ve-item.bad{color:#999;text-decoration:line-through;text-decoration-color:#DDD}
+.vocab-row{display:flex;flex-wrap:wrap;gap:2mm}
+.vocab-chip{background:var(--sand);padding:2mm 5mm;font-size:7.5pt;color:var(--navy);font-weight:500}
+
+/* ══════════════════════
+   P6 — LOGOTIPO CONSTRUCCIÓN
+══════════════════════ */
+.logo-build-head{padding:11mm 15mm 5mm;border-bottom:1px solid #E8E4DB}
+.logo-build-body{padding:8mm 15mm;flex:1;display:flex;flex-direction:column;gap:7mm}
+.logo-center{display:flex;justify-content:center;align-items:center;padding:10mm 0;border:1px solid #EBE7DF}
+.wordmark-display{font-family:var(--serif);font-style:italic;font-size:64pt;font-weight:400;color:var(--navy);letter-spacing:-.02em;line-height:1}
+.anatomy-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.anat-item{padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)}
+.anat-label{font-size:6pt;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm}
+.anat-val{font-size:9pt;color:var(--navy);font-weight:600}
+.anat-sub{font-size:7pt;color:#888;margin-top:1mm}
+.clear-space{border:1.5px dashed #DDD;padding:8mm;display:flex;flex-direction:column;gap:5mm}
+.cs-demo{position:relative;display:flex;justify-content:center;padding:8mm 0}
+.cs-demo::before{content:'x';position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:7pt;color:var(--blue);letter-spacing:.1em}
+.cs-demo::after{content:'x';position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:7pt;color:var(--blue);letter-spacing:.1em}
+.cs-wm{font-family:var(--serif);font-style:italic;font-size:36pt;color:var(--navy);padding:0 12mm;border-left:1px dashed var(--blue);border-right:1px dashed var(--blue)}
+.cs-note{font-size:7.5pt;color:#666;line-height:1.7;text-align:center}
+
+/* ══════════════════════
+   P7 — VARIANTES DE COLOR
+══════════════════════ */
+.variants-head{padding:10mm 15mm 5mm}
+.variants-body{padding:0 15mm 10mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.var-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.var-card{padding:8mm 6mm;display:flex;flex-direction:column;gap:4mm}
+.var-card.bg-navy{background:var(--navy)}
+.var-card.bg-white{background:#fff;border:1px solid #E8E4DB}
+.var-card.bg-sand{background:var(--sand)}
+.var-card.bg-yellow{background:var(--yellow)}
+.var-wm{font-family:var(--serif);font-style:italic;font-size:28pt;font-weight:400;letter-spacing:-.01em;line-height:1}
+.var-wm.cn{color:#fff}
+.var-wm.cna{color:var(--navy)}
+.var-card-label{font-size:6.5pt;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.var-card-label.lw{color:rgba(255,255,255,.4)}
+.var-card-label.ld{color:var(--slate)}
+.var-card-note{font-size:7pt;line-height:1.55}
+.var-card-note.nw{color:rgba(255,255,255,.35)}
+.var-card-note.nd{color:#888}
+.usage-table{border:1px solid #E8E4DB;overflow:hidden}
+.usage-row{display:grid;grid-template-columns:40mm 1fr 1fr;font-size:7.5pt}
+.usage-row:not(:last-child){border-bottom:1px solid #E8E4DB}
+.usage-row.head{background:var(--navy)}
+.usage-row.head div{color:rgba(255,255,255,.6);font-size:6.5pt;letter-spacing:.18em;text-transform:uppercase;padding:3mm 5mm;font-weight:600}
+.usage-row div{padding:3mm 5mm;color:#555}
+.usage-row div:not(:last-child){border-right:1px solid #E8E4DB}
+.usage-row.head div:not(:last-child){border-right-color:rgba(255,255,255,.1)}
+.dot-navy,.dot-white,.dot-sand,.dot-yellow{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.dot-navy{background:var(--navy)}.dot-white{background:#fff;border:1px solid #CCC}.dot-sand{background:var(--sand);border:1px solid #D0CBC0}.dot-yellow{background:var(--yellow)}
+
+/* ══════════════════════
+   P8 — USOS INCORRECTOS
+══════════════════════ */
+.wrong-head{padding:10mm 15mm 5mm}
+.wrong-grid{padding:0 15mm 10mm;flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;align-content:start}
+.wrong-card{border:1.5px solid #F0EDE8;padding:6mm;display:flex;flex-direction:column;gap:3mm;position:relative}
+.wrong-badge{position:absolute;top:4mm;right:4mm;width:16px;height:16px;border-radius:50%;background:#FFEBEE;display:flex;align-items:center;justify-content:center}
+.wrong-badge::after{content:'✕';font-size:8pt;color:#C62828;font-weight:700}
+.wrong-wm-wrap{height:35px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.wrong-label{font-size:7pt;color:#C62828;font-weight:600;text-align:center}
+.wrong-reason{font-size:6.5pt;color:#999;line-height:1.5;text-align:center}
+/* Incorrect styles for demo */
+.w-bold{font-family:var(--serif);font-style:italic;font-size:22pt;font-weight:700;color:var(--navy)}
+.w-rotate{font-family:var(--serif);font-style:italic;font-size:22pt;color:var(--navy);transform:rotate(-15deg);display:inline-block}
+.w-stretch{font-family:var(--serif);font-style:italic;font-size:22pt;color:var(--navy);transform:scaleX(1.5);display:inline-block}
+.w-outline{font-family:var(--serif);font-style:italic;font-size:22pt;color:transparent;-webkit-text-stroke:1.5px var(--navy)}
+.w-blue{font-family:var(--serif);font-style:italic;font-size:22pt;color:var(--blue)}
+.w-shadow{font-family:var(--serif);font-style:italic;font-size:22pt;color:var(--navy);text-shadow:3px 3px 5px rgba(0,0,0,.3)}
+.w-caps{font-family:var(--serif);font-size:22pt;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em}
+.w-colorful{font-family:var(--serif);font-style:italic;font-size:22pt}
+.w-colorful span:nth-child(1){color:var(--yellow)}
+.w-colorful span:nth-child(2){color:var(--blue)}
+.w-colorful span:nth-child(3){color:var(--navy)}
+.w-colorful span:nth-child(4){color:var(--yellow)}
+.w-colorful span:nth-child(5){color:var(--blue)}
+.w-colorful span:nth-child(6){color:var(--navy)}
+.w-bgwrong{background:linear-gradient(135deg,#e74c3c,#e91e63);padding:4mm;display:flex;align-items:center;justify-content:center;flex:1}
+.w-bgwrong .wm{font-size:22pt;color:#fff}
+.w-lowcontrast{background:var(--sand);padding:4mm;display:flex;align-items:center;justify-content:center;flex:1}
+.w-lowcontrast .wm{font-size:22pt;color:var(--sand2)}
+
+/* ══════════════════════
+   P9 — COLORES PRIMARIOS
+══════════════════════ */
+.color-head{padding:10mm 15mm 5mm;border-bottom:1px solid #E8E4DB}
+.color-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.primary-swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.swatch-card{display:flex;flex-direction:column}
+.swatch-block{height:32mm}
+.swatch-info{padding:3.5mm 4mm;border:1px solid #E8E4DB;border-top:none}
+.swatch-name{font-size:9pt;font-weight:700;color:var(--navy);margin-bottom:1mm}
+.swatch-hex{font-size:8.5pt;font-family:'Courier New',monospace;color:var(--navy);font-weight:600;margin-bottom:2mm;letter-spacing:.05em}
+.swatch-vals{font-size:6.5pt;color:#888;line-height:1.8}
+.swatch-use{font-size:6.5pt;color:var(--blue);font-weight:600;margin-top:2mm;padding-top:2mm;border-top:1px solid #EEE}
+.secondary-row{display:flex;gap:3mm}
+.mini-swatch{flex:1;height:14mm;border-radius:0;position:relative}
+.mini-swatch span{position:absolute;bottom:3mm;left:4mm;font-size:6pt;letter-spacing:.1em;font-weight:600}
+.color-ratio{padding:4mm;border:1px solid #E8E4DB;background:var(--sand)}
+.ratio-label{font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:3mm}
+.ratio-bar{height:8mm;display:flex;border-radius:0;overflow:hidden}
+.ratio-seg{display:flex;align-items:center;justify-content:center}
+.ratio-seg span{font-size:6pt;font-weight:700;color:rgba(255,255,255,.8)}
+.ratio-seg.navy{background:var(--navy);flex:60}
+.ratio-seg.sand{background:var(--sand2);flex:25}
+.ratio-seg.yellow{background:var(--yellow);flex:10}
+.ratio-seg.blue{background:var(--blue);flex:5}
+.ratio-seg.sand span{color:var(--navy)}
+.ratio-seg.yellow span{color:var(--navy)}
+
+/* ══════════════════════
+   P10 — COLORES SECUNDARIOS
+══════════════════════ */
+.sec-color-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:6mm}
+.sec-swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:3mm}
+.sec-sw{display:flex;flex-direction:column}
+.sec-sw-block{height:18mm}
+.sec-sw-info{padding:2.5mm 3mm;border:1px solid #E8E4DB;border-top:none}
+.sec-sw-name{font-size:7.5pt;font-weight:700;color:var(--navy)}
+.sec-sw-hex{font-size:6.5pt;color:#888;font-family:'Courier New',monospace;letter-spacing:.05em}
+.combos-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3mm}
+.combo{height:28mm;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2mm}
+.combo span{font-family:var(--serif);font-style:italic;font-size:16pt}
+.combo small{font-size:6pt;letter-spacing:.15em;text-transform:uppercase;font-weight:600;opacity:.6}
+.combos-label{font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:3mm}
+
+/* ══════════════════════
+   P11 — TIPOGRAFÍA PLAYFAIR
+══════════════════════ */
+.type-head{padding:10mm 15mm 5mm}
+.type-body{padding:5mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.type-specimen{border:1px solid #E8E4DB;padding:6mm}
+.spec-tag{font-size:6pt;letter-spacing:.25em;text-transform:uppercase;font-weight:600;color:var(--blue);margin-bottom:3mm}
+.spec-alphabet{font-family:var(--serif);font-size:15pt;color:var(--navy);line-height:1.6;letter-spacing:.02em}
+.spec-italic{font-family:var(--serif);font-style:italic;font-size:15pt;color:var(--navy);line-height:1.6;letter-spacing:.02em}
+.type-scale{display:flex;flex-direction:column;gap:2mm}
+.ts-row{display:flex;align-items:baseline;gap:5mm;padding:2mm 0;border-bottom:1px solid #F5F2EE}
+.ts-label{font-size:6.5pt;color:var(--slate);min-width:28mm;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.ts-sample{font-family:var(--serif)}
+.ts-spec{font-size:6.5pt;color:#BBB;margin-left:auto;letter-spacing:.06em;text-align:right;min-width:30mm}
+.type-pair{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.pair-card{padding:5mm;background:var(--sand)}
+.pair-heading{font-family:var(--serif);font-style:italic;font-size:22pt;color:var(--navy);line-height:1.1;margin-bottom:3mm}
+.pair-body{font-family:var(--sans);font-size:8.5pt;color:#555;line-height:1.75}
+
+/* ══════════════════════
+   P12 — TIPOGRAFÍA DM SANS
+══════════════════════ */
+.dmsans-spec{font-family:var(--sans);font-size:15pt;color:var(--navy);line-height:1.7;letter-spacing:.01em}
+.dmsans-weights{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+.weight-card{padding:4mm;border:1px solid #E8E4DB}
+.weight-label{font-size:6.5pt;letter-spacing:.18em;text-transform:uppercase;color:var(--slate);margin-bottom:2mm}
+.weight-sample{font-family:var(--sans);font-size:18pt;color:var(--navy)}
+.w300{font-weight:300}.w400{font-weight:400}.w600{font-weight:600}.w700{font-weight:700}
+.ui-scale{display:flex;flex-direction:column;gap:2mm}
+.ui-row{display:flex;align-items:center;gap:5mm;padding:2mm 0;border-bottom:1px solid #F5F2EE}
+.ui-label{font-size:6.5pt;color:var(--slate);min-width:28mm;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.ui-sample{font-family:var(--sans);color:var(--navy)}
+.ui-spec{font-size:6.5pt;color:#BBB;margin-left:auto;letter-spacing:.06em;text-align:right;min-width:30mm}
+.dos-donts-type{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.dt-col{padding:4mm}
+.dt-col.good{background:#F1F8F1;border-top:2px solid #4CAF50}
+.dt-col.bad{background:#FFF5F5;border-top:2px solid #ef9a9a}
+.dt-head{font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:3mm}
+.dt-col.good .dt-head{color:#2E7D32}.dt-col.bad .dt-head{color:#C62828}
+.dt-item{font-size:7.5pt;color:#555;line-height:1.6;padding:2mm 0;border-bottom:1px solid rgba(0,0,0,.06)}
+
+/* ══════════════════════
+   P13 — ICONOGRAFÍA + SÍMBOLOS PPT
+══════════════════════ */
+.icon-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3mm}
+.icon-item{display:flex;flex-direction:column;align-items:center;gap:2mm;padding:3.5mm 2mm;border:1px solid #EBE7DF}
+.icon-item svg{display:block}
+.icon-name{font-size:5.5pt;color:#999;text-align:center;letter-spacing:.06em;text-transform:uppercase}
+.ppt-symbols{display:grid;grid-template-columns:repeat(6,1fr);gap:3mm}
+.sym-item{display:flex;flex-direction:column;align-items:center;gap:2mm;padding:4mm 2mm;background:var(--navy)}
+.sym-item svg{display:block}
+.sym-name{font-size:5.5pt;color:rgba(255,255,255,.4);text-align:center;letter-spacing:.06em;text-transform:uppercase}
+
+/* ══════════════════════
+   P14 — FOTOGRAFÍA
+══════════════════════ */
+.photo-head{padding:10mm 15mm 5mm;border-bottom:1px solid #E8E4DB}
+.photo-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:6mm}
+.photo-mosaic{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3mm;height:48mm}
+.photo-block{background:var(--navy2);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:4mm}
+.photo-block.tall{grid-row:span 2}
+.photo-block span{font-size:6pt;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.45);font-weight:500}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.photo-rule{padding:4mm;border-left:2px solid var(--yellow);background:var(--sand)}
+.photo-rule-label{font-size:6pt;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm}
+.photo-rule-text{font-size:7.5pt;color:#666;line-height:1.65}
+.do-dont-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.photo-ex{padding:4mm;display:flex;flex-direction:column;gap:2mm}
+.photo-ex-img{height:28mm;display:flex;align-items:center;justify-content:center;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.photo-ex.good .photo-ex-img{background:linear-gradient(135deg,#1a2236 0%,#2d3a56 100%);color:rgba(255,255,255,.5)}
+.photo-ex.bad .photo-ex-img{background:linear-gradient(135deg,#fff 0%,#f5f5f5 100%);color:#CCC;filter:saturate(2) contrast(1.4)}
+.photo-ex-label{font-size:6.5pt;font-weight:700}
+.photo-ex.good .photo-ex-label{color:#2E7D32}
+.photo-ex.bad .photo-ex-label{color:#C62828}
+.photo-ex-note{font-size:6.5pt;color:#888;line-height:1.5}
+
+/* ══════════════════════
+   P15 — TARJETA DE VISITA
+══════════════════════ */
+.card-head{padding:10mm 15mm 5mm}
+.card-body{padding:0 15mm 8mm;flex:1;display:flex;flex-direction:column;gap:6mm}
+.bc-row{display:flex;gap:6mm;justify-content:center;align-items:flex-start}
+.bc{width:85mm;height:50mm;position:relative;flex-shrink:0;box-shadow:0 3px 16px rgba(0,0,0,.15)}
+.bc.front{background:var(--navy);display:flex;flex-direction:column;justify-content:space-between;padding:7mm}
+.bc.back{background:var(--sand);display:flex;flex-direction:column;justify-content:space-between;padding:7mm}
+.bc-stripe{height:2px;background:var(--yellow);width:100%}
+.bc-logo{font-family:var(--serif);font-style:italic;font-size:22pt;color:#fff;letter-spacing:-.01em;line-height:1}
+.bc-name{font-size:8.5pt;font-weight:700;color:#fff;margin-bottom:1mm}
+.bc-role{font-size:7pt;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase}
+.bc-contact{display:flex;flex-direction:column;gap:1.5mm}
+.bc-contact span{font-size:6.5pt;color:rgba(255,255,255,.5)}
+.bc-back-logo{font-family:var(--serif);font-style:italic;font-size:28pt;color:var(--navy);opacity:.12;line-height:1}
+.bc-back-info{display:flex;flex-direction:column;gap:1mm}
+.bc-back-info span{font-size:6.5pt;color:#888}
+.bc-back-web{font-family:var(--serif);font-style:italic;font-size:14pt;color:var(--navy)}
+.bc-spec{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+.bc-spec-item{padding:3mm;background:var(--sand);border-top:2px solid var(--yellow)}
+.bc-spec-label{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--blue);margin-bottom:1.5mm}
+.bc-spec-val{font-size:8pt;color:var(--navy);font-weight:600}
+
+/* ══════════════════════
+   P16 — MEMBRETE + SOBRE
+══════════════════════ */
+.paper-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.letterhead{border:1px solid #E8E4DB;overflow:hidden}
+.lh-top{background:var(--navy);padding:5mm 8mm;display:flex;justify-content:space-between;align-items:center}
+.lh-logo{font-family:var(--serif);font-style:italic;font-size:18pt;color:#fff}
+.lh-contact-mini{text-align:right}
+.lh-contact-mini span{display:block;font-size:6pt;color:rgba(255,255,255,.4);letter-spacing:.1em}
+.lh-stripe{height:2px;background:var(--yellow)}
+.lh-body{padding:6mm 8mm;display:flex;flex-direction:column;gap:3mm;min-height:35mm}
+.lh-date{font-size:7pt;color:#999;text-align:right}
+.lh-to{font-size:7.5pt;color:#555;line-height:1.6}
+.lh-to strong{color:var(--navy)}
+.lh-content{margin-top:2mm}
+.lh-content p{font-size:7.5pt;color:#888;line-height:1.7}
+.lh-bot{padding:4mm 8mm;border-top:1px solid #E8E4DB;display:flex;justify-content:space-between}
+.lh-bot span{font-size:6pt;color:#CCC;letter-spacing:.08em}
+.envelope-wrap{display:flex;gap:5mm;align-items:flex-start}
+.envelope{width:100mm;height:52mm;background:var(--sand);position:relative;border:1px solid #D8D4C8;flex-shrink:0}
+.env-flap{position:absolute;top:0;left:0;width:100%;height:18mm;overflow:hidden}
+.env-flap::before{content:'';position:absolute;top:0;left:0;border-width:18mm 50mm 0;border-style:solid;border-color:var(--sand2) transparent transparent}
+.env-flap::after{content:'';position:absolute;top:0;right:0;border-width:18mm 50mm 0;border-style:solid;border-color:var(--sand2) transparent transparent}
+.env-logo{position:absolute;top:4mm;left:6mm;font-family:var(--serif);font-style:italic;font-size:14pt;color:var(--navy);opacity:.5}
+.env-address{position:absolute;bottom:8mm;left:6mm;font-size:6.5pt;color:#999;line-height:1.6}
+.env-stamp{position:absolute;top:6mm;right:6mm;width:14mm;height:14mm;border:1px solid #D8D4C8;display:flex;align-items:center;justify-content:center}
+.env-stamp span{font-size:5pt;color:#CCC;letter-spacing:.1em;text-transform:uppercase;text-align:center}
+.env-specs{flex:1;display:flex;flex-direction:column;gap:3mm;padding-top:2mm}
+.env-spec-row{display:flex;gap:2mm;align-items:flex-start}
+.env-spec-dot{width:5px;height:5px;background:var(--yellow);margin-top:3pt;flex-shrink:0}
+.env-spec-text{font-size:7.5pt;color:#666;line-height:1.55}
+
+/* ══════════════════════
+   P17 — FIRMA EMAIL
+══════════════════════ */
+.email-head{padding:10mm 15mm 5mm}
+.email-body{padding:5mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.sig-preview{border:1px solid #E8E4DB;padding:6mm;background:#FAFAFA}
+.sig-inner{border-left:3px solid var(--yellow);padding-left:5mm;display:flex;flex-direction:column;gap:1.5mm}
+.sig-name{font-family:var(--sans);font-size:10pt;font-weight:700;color:var(--navy)}
+.sig-role{font-family:var(--sans);font-size:8pt;color:var(--slate);letter-spacing:.06em;text-transform:uppercase}
+.sig-company{font-family:var(--serif);font-style:italic;font-size:13pt;color:var(--navy);margin-top:2mm}
+.sig-divider{height:1px;background:#E8E4DB;margin:2mm 0}
+.sig-contact-row{display:flex;gap:5mm;flex-wrap:wrap}
+.sig-contact-item{font-size:7.5pt;color:#777;display:flex;align-items:center;gap:2mm}
+.sig-web{font-size:7.5pt;color:var(--blue);font-weight:600}
+.sig-code-block{background:#1a2236;padding:5mm 6mm;font-family:'Courier New',monospace;font-size:7.5pt;line-height:1.85;color:#9db3c8;overflow-x:auto}
+.sig-code-block .html-tag{color:#7ec8e3}
+.sig-code-block .html-attr{color:rgba(255,255,255,.5)}
+.sig-code-block .html-val{color:#c3e88d}
+.sig-code-block .html-txt{color:#fff}
+.sig-rules{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+.sig-rule{padding:3mm 4mm;border-left:2px solid var(--yellow);background:var(--sand)}
+.sig-rule-label{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:1.5mm}
+.sig-rule-text{font-size:7pt;color:#666;line-height:1.55}
+
+/* ══════════════════════
+   P18 — REDES SOCIALES
+══════════════════════ */
+.social-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.profile-card{border:1px solid #E8E4DB;overflow:hidden}
+.profile-cover{height:22mm;background:var(--navy);position:relative;display:flex;align-items:flex-end;padding:4mm}
+.profile-cover.ig{background:linear-gradient(135deg,var(--navy) 0%,#2d3a56 100%)}
+.profile-cover.li{background:#0A66C2}
+.profile-cover span{font-size:6.5pt;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,.5)}
+.profile-avatar{width:16mm;height:16mm;background:var(--yellow);border:2.5px solid #fff;margin-top:-8mm;margin-left:5mm;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.profile-avatar .wm{font-size:9pt;color:var(--navy)}
+.profile-info{padding:3mm 5mm 5mm;display:flex;flex-direction:column;gap:1.5mm}
+.profile-row-inner{display:flex;align-items:center;gap:3mm}
+.profile-name{font-size:9pt;font-weight:700;color:var(--navy)}
+.profile-handle{font-size:7.5pt;color:var(--slate)}
+.profile-bio{font-size:7pt;color:#777;line-height:1.6}
+.profile-spec{display:flex;gap:2mm;flex-wrap:wrap;margin-top:2mm}
+.spec-chip{background:var(--sand);padding:1.5mm 4mm;font-size:6pt;color:var(--navy);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.social-specs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+.spec-card{padding:4mm 3mm;background:var(--sand);border-top:2px solid var(--navy)}
+.spec-card-label{font-size:5.5pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm}
+.spec-card-val{font-size:9pt;font-weight:700;color:var(--navy);margin-bottom:1mm}
+.spec-card-note{font-size:6.5pt;color:#999;line-height:1.5}
+
+/* ══════════════════════
+   P19 — POSTS Y STORIES
+══════════════════════ */
+.content-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.post-examples{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}
+.post{aspect-ratio:1;display:flex;flex-direction:column;justify-content:flex-end;padding:5mm;position:relative}
+.post.p1{background:var(--navy)}
+.post.p2{background:var(--sand)}
+.post.p3{background:var(--yellow)}
+.post-eyebrow{font-size:5pt;letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:2mm}
+.post.p1 .post-eyebrow{color:var(--yellow)}
+.post.p2 .post-eyebrow{color:var(--blue)}
+.post.p3 .post-eyebrow{color:var(--navy)}
+.post-text{font-family:var(--serif);font-style:italic;font-size:14pt;line-height:1.2}
+.post.p1 .post-text{color:#fff}
+.post.p2 .post-text{color:var(--navy)}
+.post.p3 .post-text{color:var(--navy)}
+.post-logo{font-family:var(--serif);font-style:italic;font-size:8pt;position:absolute;top:4mm;left:5mm;opacity:.5}
+.post.p1 .post-logo{color:#fff}
+.post.p2 .post-logo{color:var(--navy)}
+.post.p3 .post-logo{color:var(--navy)}
+.post-accent{position:absolute;top:0;right:0;width:8mm;height:8mm;background:var(--yellow)}
+.post.p3 .post-accent{background:var(--navy)}
+.story-examples{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+.story{width:100%;aspect-ratio:.5625;display:flex;flex-direction:column;justify-content:flex-end;padding:4mm;position:relative}
+.story.s1{background:var(--navy)}
+.story.s2{background:linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%)}
+.story.s3{background:var(--sand)}
+.story.s4{background:var(--yellow)}
+.story-tag{font-size:5pt;letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:1.5mm}
+.story.s1 .story-tag,.story.s2 .story-tag{color:var(--yellow)}
+.story.s3 .story-tag{color:var(--blue)}
+.story.s4 .story-tag{color:var(--navy)}
+.story-text{font-family:var(--serif);font-style:italic;font-size:9pt;line-height:1.25}
+.story.s1 .story-text,.story.s2 .story-text{color:#fff}
+.story.s3 .story-text,.story.s4 .story-text{color:var(--navy)}
+.story-stripe{position:absolute;top:0;left:0;height:2mm;width:100%}
+.story.s1 .story-stripe,.story.s2 .story-stripe,.story.s3 .story-stripe{background:var(--yellow)}
+.story.s4 .story-stripe{background:var(--navy)}
+
+/* ══════════════════════
+   P20 — PRESENTACIONES PPT
+══════════════════════ */
+.ppt-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.slide-types{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}
+.slide{width:100%;aspect-ratio:1.777;position:relative;overflow:hidden}
+.slide.cover-a{background:var(--navy)}
+.slide.cover-b{background:var(--sand)}
+.slide.cover-c{background:#fff;border:1px solid #E8E4DB}
+.slide-inner{padding:5mm;height:100%;display:flex;flex-direction:column}
+.slide-top{display:flex;justify-content:space-between;align-items:flex-start}
+.slide-logo{font-family:var(--serif);font-style:italic;font-size:9pt}
+.slide.cover-a .slide-logo{color:#fff}
+.slide.cover-b .slide-logo{color:var(--navy)}
+.slide.cover-c .slide-logo{color:var(--navy)}
+.slide-mid{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1.5mm}
+.slide-tag{font-size:4.5pt;letter-spacing:.28em;text-transform:uppercase;font-weight:700}
+.slide.cover-a .slide-tag{color:var(--yellow)}
+.slide.cover-b .slide-tag{color:var(--blue)}
+.slide.cover-c .slide-tag{color:var(--blue)}
+.slide-title{font-family:var(--serif);font-style:italic;line-height:1.1}
+.slide.cover-a .slide-title{color:#fff;font-size:14pt}
+.slide.cover-b .slide-title{color:var(--navy);font-size:14pt}
+.slide.cover-c .slide-title{color:var(--navy);font-size:14pt}
+.slide-bar{position:absolute;bottom:0;left:0;width:100%;height:1.5mm;background:var(--yellow)}
+.slide.cover-c .slide-bar{background:var(--navy)}
+.slide-accent-dot{position:absolute;top:0;right:0;width:14mm;height:14mm;background:var(--yellow);opacity:.9}
+.slide.cover-b .slide-accent-dot{background:var(--navy);opacity:.08}
+.slide-label{font-size:6.5pt;font-weight:700;color:var(--navy);margin-top:2mm;text-align:center}
+.slide-label-note{font-size:6pt;color:#AAA;text-align:center}
+.inner-slides{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+.inner-slide{width:100%;aspect-ratio:1.777;background:#fff;border:1px solid #E8E4DB;position:relative;overflow:hidden;padding:3mm}
+.is-header{background:var(--navy);height:8mm;margin:-3mm -3mm 3mm;display:flex;align-items:center;padding:0 3mm}
+.is-header span{font-family:var(--serif);font-style:italic;font-size:7pt;color:#fff}
+.is-content{display:flex;flex-direction:column;gap:1.5mm}
+.is-line{height:1.5mm;background:#EEE;border-radius:1px}
+.is-line.short{width:60%}
+.is-line.shorter{width:40%}
+.is-line.accent{background:var(--yellow);width:30%}
+.is-header-y{background:var(--yellow);height:5mm;margin:-3mm -3mm 3mm}
+
+/* ══════════════════════
+   P21 — PROPUESTAS PORTADAS
+══════════════════════ */
+.prop-head{padding:10mm 15mm 5mm}
+.prop-body{padding:5mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.prop-covers{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm}
+.prop-cover{width:100%;aspect-ratio:.707;position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.prop-cover.pc-a{background:var(--navy)}
+.prop-cover.pc-b{background:var(--sand)}
+.prop-cover.pc-c{background:#fff;border:1px solid #E8E4DB}
+.pc-stripe{height:2px;background:var(--yellow);width:100%}
+.pc-top{padding:5mm 5mm 0;flex:1;display:flex;flex-direction:column}
+.pc-logo{font-family:var(--serif);font-style:italic;font-size:14pt;line-height:1}
+.prop-cover.pc-a .pc-logo{color:#fff}
+.prop-cover.pc-b .pc-logo,.prop-cover.pc-c .pc-logo{color:var(--navy)}
+.pc-spacer{flex:1}
+.pc-label{font-size:5.5pt;letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:2mm}
+.prop-cover.pc-a .pc-label{color:var(--yellow)}
+.prop-cover.pc-b .pc-label,.prop-cover.pc-c .pc-label{color:var(--blue)}
+.pc-title{font-family:var(--serif);font-size:13pt;line-height:1.2}
+.prop-cover.pc-a .pc-title{color:#fff;font-style:italic}
+.prop-cover.pc-b .pc-title{color:var(--navy);font-style:italic}
+.prop-cover.pc-c .pc-title{color:var(--navy)}
+.pc-ref{font-size:6pt;letter-spacing:.1em;margin-top:2mm}
+.prop-cover.pc-a .pc-ref{color:rgba(255,255,255,.3)}
+.prop-cover.pc-b .pc-ref,.prop-cover.pc-c .pc-ref{color:#BBB}
+.pc-bot{padding:4mm 5mm;border-top:1px solid rgba(255,255,255,.1)}
+.prop-cover.pc-b .pc-bot,.prop-cover.pc-c .pc-bot{border-top-color:#E8E4DB}
+.pc-bot-info{font-size:6pt;letter-spacing:.06em}
+.prop-cover.pc-a .pc-bot-info{color:rgba(255,255,255,.3)}
+.prop-cover.pc-b .pc-bot-info,.prop-cover.pc-c .pc-bot-info{color:#BBB}
+.prop-name{font-size:7pt;font-weight:700;color:var(--navy);margin-top:3mm;text-align:center}
+.pc-accent{position:absolute;bottom:0;right:0;width:20mm;height:20mm;background:var(--yellow);opacity:.18}
+.prop-cover.pc-b .pc-accent{background:var(--navy);opacity:.06}
+
+/* ══════════════════════
+   P22 — PROPUESTAS ÍNDICE + INTERIOR
+══════════════════════ */
+.prop-pages-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.prop-index-row{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.prop-index{aspect-ratio:.707;border:1px solid #E8E4DB;display:flex;flex-direction:column;overflow:hidden}
+.pi-top{padding:4mm 5mm 3mm;border-bottom:2px solid var(--yellow)}
+.pi-top .wm{font-size:10pt;color:var(--navy)}
+.pi-top small{display:block;font-size:6pt;letter-spacing:.15em;text-transform:uppercase;color:#BBB;margin-top:1mm}
+.pi-body{padding:3mm 5mm;flex:1;display:flex;flex-direction:column;gap:2mm}
+.pi-item{display:flex;align-items:baseline;gap:2mm;padding:2mm 0;border-bottom:1px solid #F5F2EE;font-size:7pt}
+.pi-item-n{color:#DDD;font-family:var(--serif);font-style:italic;font-size:11pt;min-width:6mm}
+.pi-item-title{color:var(--navy);font-weight:500}
+.pi-item-dot{flex:1;border-bottom:1px dotted #DDD;margin:0 2mm}
+.pi-item-pg{color:#999;font-size:6.5pt}
+.prop-interior{aspect-ratio:.707;border:1px solid #E8E4DB;display:flex;flex-direction:column;overflow:hidden}
+.pri-header{background:var(--navy);padding:3mm 5mm;display:flex;justify-content:space-between;align-items:center}
+.pri-header .wm{font-size:9pt;color:#fff}
+.pri-header small{font-size:6pt;color:rgba(255,255,255,.3);letter-spacing:.1em}
+.pri-stripe{height:1.5px;background:var(--yellow)}
+.pri-body{padding:5mm;flex:1;display:flex;flex-direction:column;gap:3mm}
+.pri-section-tag{font-size:5pt;letter-spacing:.25em;text-transform:uppercase;font-weight:700;color:var(--blue)}
+.pri-h{font-family:var(--serif);font-style:italic;font-size:12pt;color:var(--navy);line-height:1.2;margin-bottom:2mm}
+.pri-lines{display:flex;flex-direction:column;gap:1.5mm}
+.pri-line{height:1.5mm;background:#EEE;border-radius:1px}
+.pri-line.sh{width:75%}.pri-line.md{width:90%}.pri-line.ac{background:var(--yellow);width:25%}
+.table-mini{border:1px solid #E8E4DB;overflow:hidden;font-size:6pt}
+.tm-head{display:grid;grid-template-columns:3fr 1fr 1fr;background:var(--navy)}
+.tm-head div{padding:2mm 3mm;color:rgba(255,255,255,.5);font-weight:600;letter-spacing:.1em}
+.tm-row{display:grid;grid-template-columns:3fr 1fr 1fr;border-top:1px solid #E8E4DB}
+.tm-row div{padding:2mm 3mm;color:#666}
+.tm-row.total{background:var(--sand)}
+.tm-row.total div{font-weight:700;color:var(--navy)}
+.prop-final{aspect-ratio:.707;background:var(--navy);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;border:none}
+.pf-top{padding:5mm 5mm 0}
+.pf-stripe{height:2px;background:var(--yellow)}
+.pf-mid{padding:5mm;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3mm}
+.pf-wm{font-family:var(--serif);font-style:italic;font-size:38pt;color:rgba(255,255,255,.08);line-height:1;text-align:right}
+.pf-msg{font-family:var(--serif);font-style:italic;font-size:13pt;color:#fff;line-height:1.35}
+.pf-sub{font-size:7pt;color:rgba(255,255,255,.4);line-height:1.6}
+.pf-bot{padding:4mm 5mm;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between}
+.pf-bot span{font-size:6pt;color:rgba(255,255,255,.25);letter-spacing:.08em}
+
+/* ══════════════════════
+   P23 — UNIFORMES
+══════════════════════ */
+.uniform-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.garment-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.garment{display:flex;flex-direction:column;align-items:center;gap:3mm}
+.garment svg{display:block}
+.garment-name{font-size:7.5pt;font-weight:700;color:var(--navy);text-align:center}
+.garment-spec{font-size:6.5pt;color:#999;text-align:center;line-height:1.5}
+.epi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.epi{padding:4mm;border:1px solid #E8E4DB;display:flex;flex-direction:column;align-items:center;gap:3mm}
+.epi svg{display:block}
+.epi-name{font-size:7.5pt;font-weight:700;color:var(--navy);text-align:center}
+.epi-note{font-size:6.5pt;color:#AAA;text-align:center;line-height:1.5}
+.embroidery-note{padding:4mm 5mm;background:var(--sand);border-left:3px solid var(--yellow);display:flex;flex-direction:column;gap:1.5mm}
+.en-label{font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy)}
+.en-text{font-size:7.5pt;color:#666;line-height:1.65}
+
+/* ══════════════════════
+   P24 — FURGONETA + SEÑALÉTICA
+══════════════════════ */
+.vehicle-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.van-wrap{border:1px solid #E8E4DB;padding:5mm;background:var(--sand)}
+.van-label{font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:4mm}
+.van-mockup{display:flex;justify-content:center;padding:3mm 0}
+.signage-row{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.sign-card{border:1px solid #E8E4DB;overflow:hidden}
+.sign-preview{height:32mm;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3mm;padding:5mm}
+.sign-preview.valla{background:var(--navy)}
+.sign-preview.cartel{background:var(--yellow)}
+.sign-info{padding:3mm 4mm;border-top:1px solid #E8E4DB}
+.sign-name{font-size:7.5pt;font-weight:700;color:var(--navy);margin-bottom:1mm}
+.sign-note{font-size:7pt;color:#888;line-height:1.5}
+
+/* ══════════════════════
+   P25 — MERCHANDISING 1
+══════════════════════ */
+.merch-body{padding:7mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm}
+.merch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}
+.merch-item{display:flex;flex-direction:column;gap:3mm}
+.merch-visual{border:1px solid #E8E4DB;display:flex;align-items:center;justify-content:center;padding:5mm;flex-direction:column;gap:2mm}
+.merch-name{font-size:7.5pt;font-weight:700;color:var(--navy);text-align:center}
+.merch-spec{font-size:6.5pt;color:#AAA;text-align:center;line-height:1.5}
+
+/* ══════════════════════
+   P26 — MERCHANDISING 2
+══════════════════════ */
+
+/* ══════════════════════
+   P27 — PÁGINA FINAL
+══════════════════════ */
+.final-page{background:var(--navy);justify-content:space-between}
+.fp-top{padding:12mm 15mm 0;border-bottom:2px solid rgba(255,255,255,.06);padding-bottom:10mm}
+.fp-top .wm{font-size:68pt;color:rgba(255,255,255,.06);line-height:1;display:block;margin-bottom:5mm}
+.fp-tagline{font-family:var(--serif);font-style:italic;font-size:24pt;color:#fff;line-height:1.2}
+.fp-tagline em{color:var(--yellow)}
+.fp-body{padding:10mm 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8mm;align-content:start}
+.fp-col-label{font-size:6.5pt;letter-spacing:.25em;text-transform:uppercase;color:var(--yellow);font-weight:600;margin-bottom:4mm}
+.fp-contact-item{display:flex;flex-direction:column;gap:1.5mm;padding:3mm 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.fp-contact-item strong{font-size:8.5pt;color:#fff;font-weight:600}
+.fp-contact-item span{font-size:8pt;color:rgba(255,255,255,.35)}
+.fp-resources{display:flex;flex-direction:column;gap:2.5mm}
+.fp-res-item{padding:3mm 4mm;background:rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center}
+.fp-res-name{font-size:8pt;color:rgba(255,255,255,.7)}
+.fp-res-type{font-size:6.5pt;color:var(--yellow);letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.fp-bot{padding:8mm 15mm;display:flex;justify-content:space-between;align-items:center}
+.fp-bot-wm{font-family:var(--serif);font-style:italic;font-size:14pt;color:#fff}
+.fp-bot-info{font-size:7pt;color:rgba(255,255,255,.2);text-align:right;letter-spacing:.06em;line-height:1.7}
+
+</style>
+</head>
+<body>
+
+<!-- DOWNLOAD BAR -->
+<div class="dl-bar">
+  <span class="dl-bar-brand">obreko — Manual de Identidad</span>
+  <div class="dl-bar-actions">
+    <a class="dl-btn primary" href="obreko-manual-identidad.pdf" download>
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 2v7M4 6l3 3 3-3M2 11h10"/></svg>
+      Descargar PDF
+    </a>
+    <a class="dl-btn secondary" href="obreko-manual-identidad.docx" download>
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 2v7M4 6l3 3 3-3M2 11h10"/></svg>
+      Descargar Word
+    </a>
+  </div>
+</div>
+
+<!-- ══════════════════════
+     P1 — PORTADA
+══════════════════════ -->
+<div class="page cover">
+  <div class="cover-accent"></div>
+  <div class="cover-dots">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="cover-top">
+    <span class="wm" style="font-size:22pt;color:#fff">obreko</span>
+    <div class="cover-top-right">
+      <span>TENERIFE · MADRID</span>
+      <span>obreko.com</span>
+    </div>
+  </div>
+  <div class="cover-mid">
+    <div class="cover-eyebrow">
+      <span class="tag yellow">Documento oficial de marca</span>
+    </div>
+    <h1 class="cover-h1">Manual<br>de <em>Identidad</em><br>Corporativa</h1>
+    <p class="cover-desc">Directrices de uso de marca, identidad visual, comunicación y aplicaciones para todos los soportes y equipos de obreko.</p>
+  </div>
+  <div class="cover-bot">
+    <div class="cover-bot-l">Versión 1.0 · 2026<br>Uso interno y proveedores</div>
+    <div class="cover-bot-r">hola@obreko.com<br>obreko.com</div>
+  </div>
+  <span class="pg-num w">01</span>
+</div>
+
+<!-- ══════════════════════
+     P2 — ÍNDICE
+══════════════════════ -->
+<div class="page">
+  <div class="toc-head">
+    <div class="toc-h">Índice <em>general</em></div>
+  </div>
+  <div class="toc-body">
+    <div class="toc-item">
+      <div class="toc-n">01</div>
+      <div class="toc-info">
+        <div class="toc-cat">Fundamentos de marca</div>
+        <div class="toc-lines">Historia y origen<br>Misión · Visión · Valores<br>Personalidad y tono de voz</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">02</div>
+      <div class="toc-info">
+        <div class="toc-cat">Logotipo</div>
+        <div class="toc-lines">Construcción y geometría<br>Variantes de color y fondo<br>Usos incorrectos</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">03</div>
+      <div class="toc-info">
+        <div class="toc-cat">Color</div>
+        <div class="toc-lines">Paleta primaria (HEX · RGB · CMYK)<br>Paleta secundaria · Combinaciones</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">04</div>
+      <div class="toc-info">
+        <div class="toc-cat">Tipografía</div>
+        <div class="toc-lines">Playfair Display — especímenes<br>DM Sans — jerarquía y escala<br>Reglas de uso</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">05</div>
+      <div class="toc-info">
+        <div class="toc-cat">Elementos visuales</div>
+        <div class="toc-lines">Iconografía corporativa<br>Símbolos para presentaciones<br>Directrices de fotografía</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">06</div>
+      <div class="toc-info">
+        <div class="toc-cat">Papelería corporativa</div>
+        <div class="toc-lines">Tarjeta de visita<br>Membrete + sobre<br>Firma de correo electrónico</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">07</div>
+      <div class="toc-info">
+        <div class="toc-cat">Digital y redes sociales</div>
+        <div class="toc-lines">Perfiles Instagram · LinkedIn<br>Posts, Stories y Reels<br>Plantillas PPT</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">08</div>
+      <div class="toc-info">
+        <div class="toc-cat">Propuestas comerciales</div>
+        <div class="toc-lines">3 modelos de portada<br>Índice · Páginas interiores<br>Presupuesto · Página final</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">09</div>
+      <div class="toc-info">
+        <div class="toc-cat">Uniformes y EPIs</div>
+        <div class="toc-lines">Camiseta · Polo · Buzo<br>Casco y EPIs corporativos</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">10</div>
+      <div class="toc-info">
+        <div class="toc-cat">Vehículo y señalética</div>
+        <div class="toc-lines">Furgoneta (vehicle wrap)<br>Valla · Carteles de obra</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">11</div>
+      <div class="toc-info">
+        <div class="toc-cat">Merchandising</div>
+        <div class="toc-lines">Taza · Bolígrafo · Libreta · Carpeta<br>Bolsa · Roll-up · Llavero · Casco</div>
+      </div>
+    </div>
+    <div class="toc-item">
+      <div class="toc-n">—</div>
+      <div class="toc-info">
+        <div class="toc-cat">Cierre</div>
+        <div class="toc-lines">Archivos y recursos<br>Contacto de marca · Página final</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">02</span></div>
+</div>
+
+<!-- ══════════════════════
+     P3 — HISTORIA Y ORIGEN
+══════════════════════ -->
+<div class="page" style="flex-direction:row">
+  <div class="split2" style="width:100%">
+    <div class="col-navy">
+      <div class="tag yellow" style="margin-bottom:6mm">01 · Fundamentos de marca</div>
+      <blockquote class="big-quote">"Obra y empresa.<br>Construir es<br>comprometerse."</blockquote>
+      <div style="margin-top:auto">
+        <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:3mm">FILOSOFÍA FUNDACIONAL</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,.4);line-height:1.75">
+          <strong style="color:rgba(255,255,255,.7)">obr</strong> — del latín <em>opera</em>, obra, trabajo con manos y talento.<br>
+          <strong style="color:rgba(255,255,255,.7)">eko</strong> — eficiencia, economía, responsabilidad con el entorno.
+        </div>
+        <div class="big-num">obreko</div>
+      </div>
+    </div>
+    <div class="col-white">
+      <div class="origin-tag">Historia y origen</div>
+      <div class="origin-h">Construyendo con <em>propósito</em> desde 2018</div>
+      <p class="body-text">obreko nació en Tenerife con una idea clara: que reformar un espacio sea una experiencia sin fricción para el cliente. Sin sorpresas en el presupuesto, sin excusas en los plazos, sin ambigüedad en los acabados.</p>
+      <p class="body-text" style="margin-top:4mm">Hoy operamos en Tenerife y Madrid, con un equipo técnico propio y una red de proveedores locales que comparten nuestra filosofía de trabajo.</p>
+      <div class="timeline">
+        <div class="tl-row"><span class="tl-yr">2018</span><span class="tl-txt">Fundación en Tenerife. Primeros proyectos de reforma integral residencial.</span></div>
+        <div class="tl-row"><span class="tl-yr">2020</span><span class="tl-txt">Expansión a proyectos comerciales y hostelería. Consolidación del equipo técnico.</span></div>
+        <div class="tl-row"><span class="tl-yr">2023</span><span class="tl-txt">Apertura de delegación en Madrid. Presencia en dos mercados nacionales.</span></div>
+        <div class="tl-row"><span class="tl-yr">2026</span><span class="tl-txt">Nueva identidad renovada y plataforma digital. Nueva etapa de crecimiento.</span></div>
+      </div>
+    </div>
+  </div>
+  <span class="pg-num">03</span>
+</div>
+
+<!-- ══════════════════════
+     P4 — MISIÓN · VISIÓN · VALORES
+══════════════════════ -->
+<div class="page">
+  <div class="mvv-top">
+    <h2>Misión · <em>Visión</em> · Valores</h2>
+  </div>
+  <div class="mvv-grid" style="padding:5mm 15mm 4mm">
+    <div class="mvv-card accent">
+      <div class="mvv-label">Misión</div>
+      <div class="mvv-card-h">Hacer que reformar sea fácil</div>
+      <p class="mvv-card-p">Transformamos espacios con precisión, honestidad y trato humano. Cada proyecto, una promesa cumplida.</p>
+    </div>
+    <div class="mvv-card sand">
+      <div class="mvv-label">Visión</div>
+      <div class="mvv-card-h">Referente de confianza en reformas</div>
+      <p class="mvv-card-p">Ser la empresa de referencia en el sector de la reforma y el mantenimiento en España, reconocida por su transparencia y calidad de ejecución.</p>
+    </div>
+  </div>
+  <div class="values-grid">
+    <div class="val-item">
+      <div class="val-num">I</div>
+      <div class="val-name">Transparencia</div>
+      <div class="val-desc">Presupuestos claros. Sin costes ocultos, sin sorpresas al finalizar.</div>
+    </div>
+    <div class="val-item">
+      <div class="val-num">II</div>
+      <div class="val-name">Compromiso</div>
+      <div class="val-desc">Lo que firmamos, lo cumplimos. En plazos, calidad y materiales.</div>
+    </div>
+    <div class="val-item">
+      <div class="val-num">III</div>
+      <div class="val-name">Artesanía</div>
+      <div class="val-desc">Cada detalle importa. La obra bien hecha es nuestra firma.</div>
+    </div>
+    <div class="val-item">
+      <div class="val-num">IV</div>
+      <div class="val-name">Proximidad</div>
+      <div class="val-desc">Equipo propio, trato directo. Siempre hay alguien al otro lado.</div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">04</span></div>
+</div>
+
+<!-- ══════════════════════
+     P5 — TONO DE VOZ
+══════════════════════ -->
+<div class="page">
+  <div class="voice-head">
+    <div class="tag blue" style="margin-bottom:3mm">01 · Fundamentos de marca</div>
+    <div class="voice-h">Personalidad y <em>tono de voz</em></div>
+  </div>
+  <div class="voice-body">
+    <div class="pillars-row">
+      <div class="pillar">
+        <div class="pillar-icon">◈</div>
+        <div class="pillar-name">Directo</div>
+        <div class="pillar-desc">Sin rodeos. Información clara en el primer mensaje.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◉</div>
+        <div class="pillar-name">Confiable</div>
+        <div class="pillar-desc">Cada comunicación refuerza la promesa de la marca.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◐</div>
+        <div class="pillar-name">Cercano</div>
+        <div class="pillar-desc">Humano y accesible, sin perder profesionalidad.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◆</div>
+        <div class="pillar-name">Preciso</div>
+        <div class="pillar-desc">Datos concretos. Medidas, fechas y materiales, siempre.</div>
+      </div>
+    </div>
+    <div class="voice-examples">
+      <div class="ve-col">
+        <div class="ve-head good">✓ Decimos esto</div>
+        <div class="ve-item">"El presupuesto incluye materiales, mano de obra y limpieza final."</div>
+        <div class="ve-item">"Empezamos el lunes. Terminamos en tres semanas."</div>
+        <div class="ve-item">"Si hay un imprevisto, te llamamos antes de actuar."</div>
+        <div class="ve-item">"Sin sorpresas. Sin excusas."</div>
+      </div>
+      <div class="ve-col">
+        <div class="ve-head bad">✕ No decimos esto</div>
+        <div class="ve-item bad">"¡Los mejores profesionales de la zona con años de experiencia!"</div>
+        <div class="ve-item bad">"Podría estar listo en unos días, más o menos."</div>
+        <div class="ve-item bad">"Es que los materiales subieron y bueno, ya sabes..."</div>
+        <div class="ve-item bad">"Somos apasionados de la construcción desde siempre."</div>
+      </div>
+    </div>
+    <div>
+      <div class="tag muted" style="margin-bottom:3mm">Vocabulario propio de obreko</div>
+      <div class="vocab-row">
+        <span class="vocab-chip">sin sorpresas</span>
+        <span class="vocab-chip">sin excusas</span>
+        <span class="vocab-chip">reforma integral</span>
+        <span class="vocab-chip">presupuesto cerrado</span>
+        <span class="vocab-chip">equipo propio</span>
+        <span class="vocab-chip">plazo garantizado</span>
+        <span class="vocab-chip">trato directo</span>
+        <span class="vocab-chip">materiales de calidad</span>
+        <span class="vocab-chip">acabado profesional</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">05</span></div>
+</div>
+
+<!-- ══════════════════════
+     P6 — LOGOTIPO CONSTRUCCIÓN
+══════════════════════ -->
+<div class="page">
+  <div class="logo-build-head">
+    <div class="tag blue" style="margin-bottom:3mm">02 · Logotipo</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Construcción y <em style="font-style:italic">anatomía</em></div>
+  </div>
+  <div class="logo-build-body">
+    <div class="logo-center">
+      <span class="wordmark-display">obreko</span>
+    </div>
+    <div class="anatomy-row">
+      <div class="anat-item">
+        <div class="anat-label">Tipografía</div>
+        <div class="anat-val">Playfair Display</div>
+        <div class="anat-sub">Italic · Weight 400<br>No modificar tracking</div>
+      </div>
+      <div class="anat-item">
+        <div class="anat-label">Color principal</div>
+        <div class="anat-val">#1A2236</div>
+        <div class="anat-sub">Navy · Siempre minúscula<br>Sin alteraciones</div>
+      </div>
+      <div class="anat-item">
+        <div class="anat-label">Tamaño mínimo</div>
+        <div class="anat-val">16 px / 6 mm</div>
+        <div class="anat-sub">Digital: 16 px mínimo<br>Impresión: 6 mm mínimo</div>
+      </div>
+    </div>
+    <div class="clear-space">
+      <div class="tag blue" style="text-align:center;margin-bottom:4mm">Espacio de respeto — zona de exclusión</div>
+      <div class="cs-demo">
+        <div class="cs-wm">obreko</div>
+      </div>
+      <p class="cs-note">El espacio de respeto mínimo equivale a la altura de la letra «o» del wordmark.<br>Ningún elemento gráfico, texto o fotografía debe invadir esta zona.</p>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">06</span></div>
+</div>
+
+<!-- ══════════════════════
+     P7 — VARIANTES DE COLOR
+══════════════════════ -->
+<div class="page">
+  <div class="variants-head">
+    <div class="tag blue" style="margin-bottom:3mm">02 · Logotipo</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Variantes <em style="font-style:italic">autorizadas</em></div>
+  </div>
+  <div class="variants-body">
+    <div class="var-row">
+      <div class="var-card bg-navy">
+        <div class="var-wm cn">obreko</div>
+        <div class="var-card-label lw">Blanca · sobre navy</div>
+        <div class="var-card-note nw">Versión principal para fondos oscuros, email, redes</div>
+      </div>
+      <div class="var-card bg-white">
+        <div class="var-wm cna">obreko</div>
+        <div class="var-card-label ld">Navy · sobre blanco</div>
+        <div class="var-card-note nd">Documentos, papelería, fondos claros</div>
+      </div>
+      <div class="var-card bg-sand">
+        <div class="var-wm cna">obreko</div>
+        <div class="var-card-label ld">Navy · sobre arena</div>
+        <div class="var-card-note nd">Para materiales con fondo arena corporativo</div>
+      </div>
+      <div class="var-card bg-yellow">
+        <div class="var-wm cna">obreko</div>
+        <div class="var-card-label ld">Navy · sobre amarillo</div>
+        <div class="var-card-note nd">Solo en elementos de acento o badges</div>
+      </div>
+    </div>
+    <div class="usage-table">
+      <div class="usage-row head">
+        <div>Fondo</div><div>Variante correcta</div><div>Uso típico</div>
+      </div>
+      <div class="usage-row">
+        <div><span class="dot-navy"></span>Navy #1A2236</div>
+        <div>Wordmark blanco</div>
+        <div>Portadas, email, redes sociales</div>
+      </div>
+      <div class="usage-row">
+        <div><span class="dot-white"></span>Blanco #FFFFFF</div>
+        <div>Wordmark navy</div>
+        <div>Documentos, web, papelería</div>
+      </div>
+      <div class="usage-row">
+        <div><span class="dot-sand"></span>Arena #F1EDE0</div>
+        <div>Wordmark navy</div>
+        <div>Membrete, propuestas, sobres</div>
+      </div>
+      <div class="usage-row">
+        <div><span class="dot-yellow"></span>Amarillo #FED544</div>
+        <div>Wordmark navy</div>
+        <div>Badges, CTAs, detalles de acento</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">07</span></div>
+</div>
+
+<!-- ══════════════════════
+     P8 — USOS INCORRECTOS
+══════════════════════ -->
+<div class="page">
+  <div class="wrong-head">
+    <div class="tag blue" style="margin-bottom:3mm">02 · Logotipo</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Usos <em style="font-style:italic">incorrectos</em></div>
+  </div>
+  <div class="wrong-grid">
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-bold">obreko</span></div>
+      <div class="wrong-label">No usar negrita</div>
+      <div class="wrong-reason">El wordmark siempre es weight 400 Italic. Nunca bold.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-rotate">obreko</span></div>
+      <div class="wrong-label">No rotar</div>
+      <div class="wrong-reason">El wordmark siempre en posición horizontal.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-stretch">obreko</span></div>
+      <div class="wrong-label">No deformar</div>
+      <div class="wrong-reason">Nunca distorsionar las proporciones originales.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-outline">obreko</span></div>
+      <div class="wrong-label">No usar outline</div>
+      <div class="wrong-reason">El wordmark es siempre sólido, nunca trazo vacío.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-caps">OBREKO</span></div>
+      <div class="wrong-label">No usar mayúsculas</div>
+      <div class="wrong-reason">«obreko» siempre en minúscula. Es parte de la identidad.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-blue">obreko</span></div>
+      <div class="wrong-label">No cambiar el color</div>
+      <div class="wrong-reason">Solo navy, blanco o variantes autorizadas en pág. 07.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap"><span class="w-shadow">obreko</span></div>
+      <div class="wrong-label">No añadir sombras</div>
+      <div class="wrong-reason">Sin efectos: sombra, bisel, relieve, resplandor.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap" style="padding:0;width:100%">
+        <div class="w-bgwrong" style="width:100%;height:35px"><span class="wm" style="font-size:20pt">obreko</span></div>
+      </div>
+      <div class="wrong-label">No sobre fotografías</div>
+      <div class="wrong-reason">El wordmark no va sobre fotos sin capa de fondo plano.</div>
+    </div>
+    <div class="wrong-card">
+      <div class="wrong-badge"></div>
+      <div class="wrong-wm-wrap" style="padding:0;width:100%">
+        <div class="w-lowcontrast" style="width:100%;height:35px"><span class="wm cna" style="font-size:20pt;color:#C8C2B0">obreko</span></div>
+      </div>
+      <div class="wrong-label">No bajo contraste</div>
+      <div class="wrong-reason">El wordmark debe ser siempre legible con alto contraste.</div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">08</span></div>
+</div>
+
+<!-- ══════════════════════
+     P9 — COLORES PRIMARIOS
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">03 · Color</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Paleta <em style="font-style:italic">primaria</em></div>
+  </div>
+  <div class="color-body">
+    <div class="primary-swatches">
+      <div class="swatch-card">
+        <div class="swatch-block" style="background:#1A2236"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Navy</div>
+          <div class="swatch-hex">#1A2236</div>
+          <div class="swatch-vals">RGB 26 · 34 · 54<br>CMYK 52 · 37 · 0 · 79<br>Pantone 539 C</div>
+          <div class="swatch-use">Color principal · Fondos · Texto</div>
+        </div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-block" style="background:#FED544"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Amarillo</div>
+          <div class="swatch-hex">#FED544</div>
+          <div class="swatch-vals">RGB 254 · 213 · 68<br>CMYK 0 · 16 · 73 · 0<br>Pantone 116 C</div>
+          <div class="swatch-use">Acento · CTA · Detalles</div>
+        </div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-block" style="background:#F1EDE0"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Arena</div>
+          <div class="swatch-hex">#F1EDE0</div>
+          <div class="swatch-vals">RGB 241 · 237 · 224<br>CMYK 0 · 2 · 7 · 5<br>Pantone 9183 C</div>
+          <div class="swatch-use">Fondos secundarios · Papelería</div>
+        </div>
+      </div>
+      <div class="swatch-card">
+        <div class="swatch-block" style="background:#5C7CD9"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Azul</div>
+          <div class="swatch-hex">#5C7CD9</div>
+          <div class="swatch-vals">RGB 92 · 124 · 217<br>CMYK 58 · 43 · 0 · 15<br>Pantone 2718 C</div>
+          <div class="swatch-use">Digital · Etiquetas · Apoyo</div>
+        </div>
+      </div>
+    </div>
+    <div class="color-ratio">
+      <div class="ratio-label">Proporciones de uso recomendadas</div>
+      <div class="ratio-bar">
+        <div class="ratio-seg navy"><span>60%</span></div>
+        <div class="ratio-seg sand"><span style="color:var(--navy)">25%</span></div>
+        <div class="ratio-seg yellow"><span style="color:var(--navy)">10%</span></div>
+        <div class="ratio-seg blue"><span>5%</span></div>
+      </div>
+      <div style="display:flex;gap:6mm;margin-top:3mm">
+        <span style="font-size:7pt;color:#666">■ <span style="color:var(--navy)">Navy 60%</span> — Fondos principales, texto</span>
+        <span style="font-size:7pt;color:#666">■ <span style="color:#AAA">Arena 25%</span> — Papelería, propuestas</span>
+        <span style="font-size:7pt;color:#666">■ <span style="color:#C4922A">Amarillo 10%</span> — Acentos, botones</span>
+        <span style="font-size:7pt;color:#666">■ <span style="color:var(--blue)">Azul 5%</span> — Etiquetas digitales</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">09</span></div>
+</div>
+
+<!-- ══════════════════════
+     P10 — COLORES SECUNDARIOS
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">03 · Color</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Paleta <em style="font-style:italic">extendida</em></div>
+  </div>
+  <div class="sec-color-body">
+    <div class="sec-swatches">
+      <div class="sec-sw"><div class="sec-sw-block" style="background:#222E50"></div><div class="sec-sw-info"><div class="sec-sw-name">Navy 2</div><div class="sec-sw-hex">#222E50</div></div></div>
+      <div class="sec-sw"><div class="sec-sw-block" style="background:#3C528E"></div><div class="sec-sw-info"><div class="sec-sw-name">Navy Claro</div><div class="sec-sw-hex">#3C528E</div></div></div>
+      <div class="sec-sw"><div class="sec-sw-block" style="background:#8896B3"></div><div class="sec-sw-info"><div class="sec-sw-name">Pizarra</div><div class="sec-sw-hex">#8896B3</div></div></div>
+      <div class="sec-sw"><div class="sec-sw-block" style="background:#E8E2D3"></div><div class="sec-sw-info"><div class="sec-sw-name">Arena 2</div><div class="sec-sw-hex">#E8E2D3</div></div></div>
+      <div class="sec-sw"><div class="sec-sw-block" style="background:#C4922A"></div><div class="sec-sw-info"><div class="sec-sw-name">Cobre</div><div class="sec-sw-hex">#C4922A</div></div></div>
+      <div class="sec-sw"><div class="sec-sw-block" style="background:#9E9484"></div><div class="sec-sw-info"><div class="sec-sw-name">Piedra</div><div class="sec-sw-hex">#9E9484</div></div></div>
+    </div>
+    <div>
+      <div class="combos-label">Combinaciones autorizadas</div>
+      <div class="combos-grid">
+        <div class="combo" style="background:#1a2236"><span style="color:#fff">obreko</span><small style="color:rgba(255,255,255,.4)">Navy + Blanco</small></div>
+        <div class="combo" style="background:#1a2236"><span style="color:#FED544">obreko</span><small style="color:rgba(255,255,255,.3)">Navy + Amarillo</small></div>
+        <div class="combo" style="background:#F1EDE0"><span style="color:#1a2236">obreko</span><small style="color:#9E9484">Arena + Navy</small></div>
+        <div class="combo" style="background:#FED544"><span style="color:#1a2236">obreko</span><small style="color:rgba(26,34,54,.4)">Amarillo + Navy</small></div>
+        <div class="combo" style="background:#fff;border:1px solid #E8E2D3"><span style="color:#1a2236">obreko</span><small style="color:#BBB">Blanco + Navy</small></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">
+      <div style="padding:4mm;background:#F1F8F1;border-top:2px solid #4CAF50">
+        <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#2E7D32;margin-bottom:3mm">✓ Combinaciones sí</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.8">Navy + Amarillo (alto contraste)<br>Navy + Blanco (máxima legibilidad)<br>Arena + Navy (calidez documental)<br>Amarillo + Navy (impacto)</div>
+      </div>
+      <div style="padding:4mm;background:#FFF5F5;border-top:2px solid #ef9a9a">
+        <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#C62828;margin-bottom:3mm">✕ Combinaciones no</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.8">Azul + Amarillo (vibración visual)<br>Amarillo + Blanco (bajo contraste)<br>Arena + Azul (sin relación)<br>Navy + Cobre (no autorizado)</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">10</span></div>
+</div>
+
+<!-- ══════════════════════
+     P11 — TIPOGRAFÍA PLAYFAIR
+══════════════════════ -->
+<div class="page">
+  <div class="type-head">
+    <div class="tag blue" style="margin-bottom:3mm">04 · Tipografía</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Playfair Display — <em style="font-style:italic">especímenes</em></div>
+  </div>
+  <div class="type-body">
+    <div class="type-specimen">
+      <div class="spec-tag">Alphabet · Regular 400</div>
+      <div class="spec-alphabet">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br>a b c d e f g h i j k l m n o p q r s t u v w x y z<br>0 1 2 3 4 5 6 7 8 9 · , . ; : ! ? ( ) " " ' '</div>
+    </div>
+    <div class="type-specimen">
+      <div class="spec-tag">Alphabet · Italic 400 — uso principal en marca</div>
+      <div class="spec-italic">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br>a b c d e f g h i j k l m n o p q r s t u v w x y z</div>
+    </div>
+    <div class="type-scale">
+      <div class="ts-row">
+        <span class="ts-label">Display</span>
+        <span class="ts-sample" style="font-size:32pt;color:var(--navy);font-style:italic">obreko</span>
+        <span class="ts-spec">32pt · Italic · Wordmark</span>
+      </div>
+      <div class="ts-row">
+        <span class="ts-label">H1 · Titular</span>
+        <span class="ts-sample" style="font-size:22pt;color:var(--navy);font-style:italic">Reforma integral</span>
+        <span class="ts-spec">22pt · Italic · Portadas</span>
+      </div>
+      <div class="ts-row">
+        <span class="ts-label">H2 · Sección</span>
+        <span class="ts-sample" style="font-size:16pt;color:var(--navy);font-style:italic">Calidad garantizada</span>
+        <span class="ts-spec">16pt · Italic · Encabezados</span>
+      </div>
+      <div class="ts-row">
+        <span class="ts-label">H3 · Subsección</span>
+        <span class="ts-sample" style="font-size:13pt;color:var(--navy);font-style:italic">Sin sorpresas. Sin excusas.</span>
+        <span class="ts-spec">13pt · Italic · Subtítulos</span>
+      </div>
+      <div class="ts-row">
+        <span class="ts-label">Quote / Cita</span>
+        <span class="ts-sample" style="font-size:11pt;color:var(--slate);font-style:italic">"Construir es comprometerse."</span>
+        <span class="ts-spec">11pt · Italic · Citas</span>
+      </div>
+    </div>
+    <div class="type-pair">
+      <div class="pair-card">
+        <div class="pair-heading">Reforma con propósito</div>
+        <div class="pair-body">Transformamos cada espacio con precisión milimétrica. Nuestro equipo trabaja con materiales seleccionados y acabados que duran décadas.</div>
+      </div>
+      <div class="pair-card" style="background:var(--navy)">
+        <div class="pair-heading" style="color:#fff">Diseño que <em>comunica</em></div>
+        <div class="pair-body" style="color:rgba(255,255,255,.5)">El titular en Playfair Display Italic sobre fondo navy con cuerpo en DM Sans es la combinación principal de obreko en cualquier soporte.</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">11</span></div>
+</div>
+
+<!-- ══════════════════════
+     P12 — TIPOGRAFÍA DM SANS
+══════════════════════ -->
+<div class="page">
+  <div class="type-head">
+    <div class="tag blue" style="margin-bottom:3mm">04 · Tipografía</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">DM Sans — <em style="font-style:italic">jerarquía y escala</em></div>
+  </div>
+  <div class="type-body">
+    <div class="type-specimen">
+      <div class="spec-tag">Alphabet · DM Sans Regular 400</div>
+      <div class="dmsans-spec">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z<br>a b c d e f g h i j k l m n o p q r s t u v w x y z · 0 1 2 3 4 5 6 7 8 9</div>
+    </div>
+    <div class="dmsans-weights">
+      <div class="weight-card">
+        <div class="weight-label">Light 300</div>
+        <div class="weight-sample w300">obreko</div>
+        <div style="font-size:7pt;color:#AAA;margin-top:2mm">Textos secundarios, notas al pie</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-label">Regular 400</div>
+        <div class="weight-sample w400">obreko</div>
+        <div style="font-size:7pt;color:#AAA;margin-top:2mm">Cuerpo de texto principal</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-label">SemiBold 600</div>
+        <div class="weight-sample w600">obreko</div>
+        <div style="font-size:7pt;color:#AAA;margin-top:2mm">Etiquetas, labels, UI</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-label">Bold 700</div>
+        <div class="weight-sample w700">obreko</div>
+        <div style="font-size:7pt;color:#AAA;margin-top:2mm">Datos, precios, énfasis</div>
+      </div>
+    </div>
+    <div class="ui-scale">
+      <div class="ui-row">
+        <span class="ui-label">Etiqueta / Tag</span>
+        <span class="ui-sample" style="font-size:6.5pt;letter-spacing:.25em;text-transform:uppercase;font-weight:700;color:var(--blue)">REFORMA INTEGRAL</span>
+        <span class="ui-spec">6.5pt · 700 · +0.25em · mayúsculas</span>
+      </div>
+      <div class="ui-row">
+        <span class="ui-label">Botón / CTA</span>
+        <span class="ui-sample" style="font-size:8pt;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--navy)">SOLICITAR PRESUPUESTO</span>
+        <span class="ui-spec">8pt · 700 · +0.14em · mayúsculas</span>
+      </div>
+      <div class="ui-row">
+        <span class="ui-label">Subtítulo UI</span>
+        <span class="ui-sample" style="font-size:11pt;font-weight:600;color:var(--navy)">Presupuesto sin compromiso</span>
+        <span class="ui-spec">11pt · 600 · sin tracking</span>
+      </div>
+      <div class="ui-row">
+        <span class="ui-label">Cuerpo</span>
+        <span class="ui-sample" style="font-size:9pt;color:#555">Transformamos tu espacio con precisión y garantía.</span>
+        <span class="ui-spec">9pt · 400 · line-height 1.8</span>
+      </div>
+      <div class="ui-row">
+        <span class="ui-label">Secundario</span>
+        <span class="ui-sample" style="font-size:8pt;color:#888;font-weight:300">Tenerife · Madrid · hola@obreko.com</span>
+        <span class="ui-spec">8pt · 300 · color muted</span>
+      </div>
+    </div>
+    <div class="dos-donts-type">
+      <div class="dt-col good">
+        <div class="dt-head">✓ Correcto</div>
+        <div class="dt-item">Playfair Italic para titulares y el wordmark</div>
+        <div class="dt-item">DM Sans para todo el cuerpo de texto</div>
+        <div class="dt-item">Interlineado 1.7–1.85 en cuerpo</div>
+        <div class="dt-item">Etiquetas en mayúsculas con tracking +0.22em</div>
+      </div>
+      <div class="dt-col bad">
+        <div class="dt-head">✕ Incorrecto</div>
+        <div class="dt-item">Mezclar otras tipografías en documentos de marca</div>
+        <div class="dt-item">Playfair Display en peso 700 o Regular (sin itálica)</div>
+        <div class="dt-item">DM Sans en titulares principales</div>
+        <div class="dt-item">Texto en menos de 7pt en impresión</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">12</span></div>
+</div>
+
+<!-- ══════════════════════
+     P13 — ICONOGRAFÍA + SÍMBOLOS PPT
+══════════════════════ -->
+<div class="page">
+  <div class="type-head">
+    <div class="tag blue" style="margin-bottom:3mm">05 · Elementos visuales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Iconografía y <em style="font-style:italic">símbolos</em></div>
+  </div>
+  <div class="inner" style="gap:6mm">
+    <div>
+      <div class="tag muted" style="margin-bottom:4mm">Iconos corporativos — stroke, sin relleno, trazo 1.5px</div>
+      <div class="icon-grid">
+        <!-- Llave inglesa -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span class="icon-name">Herramienta</span>
+        </div>
+        <!-- Casa -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="icon-name">Vivienda</span>
+        </div>
+        <!-- Calendario -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span class="icon-name">Plazo</span>
+        </div>
+        <!-- Check -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="icon-name">Garantía</span>
+        </div>
+        <!-- Casco obra -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20M12 2a8 8 0 0 1 8 8H4a8 8 0 0 1 8-8z"/><line x1="12" y1="2" x2="12" y2="10"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="10" x2="16" y2="14"/></svg>
+          <span class="icon-name">Seguridad</span>
+        </div>
+        <!-- Documento -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span class="icon-name">Propuesta</span>
+        </div>
+        <!-- Estrella -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="icon-name">Calidad</span>
+        </div>
+        <!-- Ubicación -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="icon-name">Ubicación</span>
+        </div>
+        <!-- Teléfono -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.75a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span class="icon-name">Contacto</span>
+        </div>
+        <!-- Euro -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M14.5 8.5a5 5 0 1 0 0 7M9 12h6"/></svg>
+          <span class="icon-name">Presupuesto</span>
+        </div>
+        <!-- Equipo -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="icon-name">Equipo</span>
+        </div>
+        <!-- Tiempo -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="icon-name">Tiempo</span>
+        </div>
+        <!-- Wifi/Domotica -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          <span class="icon-name">Domótica</span>
+        </div>
+        <!-- Settings/Config -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="icon-name">Instalación</span>
+        </div>
+        <!-- Flecha arriba -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          <span class="icon-name">Mejora</span>
+        </div>
+        <!-- Escudo -->
+        <div class="icon-item">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1a2236" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="icon-name">Garantía</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="tag muted" style="margin-bottom:4mm">Símbolos para presentaciones PPT — sobre fondo navy</div>
+      <div class="ppt-symbols">
+        <div class="sym-item">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FED544" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="sym-name">Grid</span>
+        </div>
+        <div class="sym-item">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FED544" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span class="sym-name">Progreso</span>
+        </div>
+        <div class="sym-item">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FED544" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span class="sym-name">Global</span>
+        </div>
+        <div class="sym-item">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FED544" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span class="sym-name">Lista</span>
+        </div>
+        <div class="sym-item">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FED544" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span class="sym-name">Precio</span>
+        </div>
+        <div class="sym-item">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FED544" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span class="sym-name">OK</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:4mm;background:var(--sand);border-left:3px solid var(--yellow)">
+      <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm">Norma de uso</div>
+      <div style="font-size:7.5pt;color:#666;line-height:1.7">Todos los iconos usan trazo stroke, sin relleno. Grosor 1.5px. Redondeado en extremos (round linecap). Tamaño mínimo 16×16px. En fondo navy, usar color <strong style="color:var(--yellow)">#FED544</strong> (amarillo). En fondo claro, usar <strong style="color:var(--navy)">#1A2236</strong> (navy).</div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">13</span></div>
+</div>
+
+<!-- ══════════════════════
+     P14 — FOTOGRAFÍA
+══════════════════════ -->
+<div class="page">
+  <div class="photo-head">
+    <div class="tag blue" style="margin-bottom:3mm">05 · Elementos visuales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Directrices de <em style="font-style:italic">fotografía</em></div>
+  </div>
+  <div class="photo-body">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5mm">
+      <div class="photo-rule">
+        <div class="photo-rule-label">Encuadre y composición</div>
+        <div class="photo-rule-text">Planos limpios, espacios ordenados. Sin desorden de obra. El foco en el acabado, no en el proceso.</div>
+      </div>
+      <div class="photo-rule">
+        <div class="photo-rule-label">Paleta cromática</div>
+        <div class="photo-rule-text">Tonos neutros y cálidos. Espacios luminosos, blancos limpios, madera natural, piedra. Sin filtros saturados.</div>
+      </div>
+      <div class="photo-rule">
+        <div class="photo-rule-label">Personas y equipo</div>
+        <div class="photo-rule-text">Uniforme limpio, actitud profesional. Sin poses forzadas. Siempre con EPIs en obra activa.</div>
+      </div>
+    </div>
+    <div class="do-dont-grid">
+      <div class="photo-ex good">
+        <div class="photo-ex-img" style="background:linear-gradient(135deg,#2d3a56 0%,#1a2236 100%)">
+          <span style="color:rgba(255,255,255,.5);letter-spacing:.15em;font-size:7pt">ACABADO · LUMINOSO · LIMPIO</span>
+        </div>
+        <div class="photo-ex-label">✓ Fotografía correcta</div>
+        <div class="photo-ex-note">Espacio terminado, bien iluminado, sin elementos ajenos al acabado. Tono cálido y natural.</div>
+      </div>
+      <div class="photo-ex good">
+        <div class="photo-ex-img" style="background:linear-gradient(135deg,#8896B3 0%,#5C7CD9 100%)">
+          <span style="color:rgba(255,255,255,.6);letter-spacing:.15em;font-size:7pt">DETALLE · MATERIAL · TEXTURA</span>
+        </div>
+        <div class="photo-ex-label">✓ Detalle de material</div>
+        <div class="photo-ex-note">Primer plano de acabados: madera, piedra, azulejo. Resalta la calidad del trabajo realizado.</div>
+      </div>
+      <div class="photo-ex bad">
+        <div class="photo-ex-img" style="background:#F5F5F5;filter:none">
+          <span style="color:#CCC;letter-spacing:.1em;font-size:7pt">OBRA SUCIA · DESORDEN · POLVO</span>
+        </div>
+        <div class="photo-ex-label">✕ Fotografía incorrecta</div>
+        <div class="photo-ex-note">Espacios en medio de obra, suciedad visible, materiales apilados. No transmite calidad.</div>
+      </div>
+      <div class="photo-ex bad">
+        <div class="photo-ex-img" style="background:#FFF;filter:none">
+          <span style="color:#DDD;letter-spacing:.1em;font-size:7pt;font-weight:700">FILTRO SATURADO · HDR · GRUNGE</span>
+        </div>
+        <div class="photo-ex-label">✕ Filtros incorrectos</div>
+        <div class="photo-ex-note">Sin HDR, sin viñetas extremas, sin colores irreales. La fotografía debe ser natural y profesional.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3mm">
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Formato</div>
+        <div style="font-size:7.5pt;color:var(--navy);font-weight:600">16:9 · 4:3 · 1:1</div>
+        <div style="font-size:6.5pt;color:#888;margin-top:1mm">Según soporte. Web siempre 16:9.</div>
+      </div>
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Resolución</div>
+        <div style="font-size:7.5pt;color:var(--navy);font-weight:600">Min. 2000 px</div>
+        <div style="font-size:6.5pt;color:#888;margin-top:1mm">Impresión: 300 DPI mínimo.</div>
+      </div>
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Formato archivo</div>
+        <div style="font-size:7.5pt;color:var(--navy);font-weight:600">JPG · WebP · PNG</div>
+        <div style="font-size:6.5pt;color:#888;margin-top:1mm">Web: WebP optimizado.</div>
+      </div>
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Banco de imágenes</div>
+        <div style="font-size:7.5pt;color:var(--navy);font-weight:600">Unsplash · Pexels</div>
+        <div style="font-size:6.5pt;color:#888;margin-top:1mm">Solo si no hay foto propia.</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">14</span></div>
+</div>
+
+<!-- ══════════════════════
+     P15 — TARJETA DE VISITA
+══════════════════════ -->
+<div class="page">
+  <div class="card-head">
+    <div class="tag blue" style="margin-bottom:3mm">06 · Papelería corporativa</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Tarjeta <em style="font-style:italic">de visita</em></div>
+  </div>
+  <div class="card-body">
+    <div class="bc-row">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2mm">
+        <div class="bc front">
+          <div class="bc-stripe"></div>
+          <div style="padding:5mm 6mm;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+            <div class="bc-logo">obreko</div>
+            <div>
+              <div class="bc-name">Nombre Apellido</div>
+              <div class="bc-role">Director · Tenerife</div>
+            </div>
+            <div class="bc-contact">
+              <span>+34 600 000 000</span>
+              <span>nombre@obreko.com</span>
+              <span>obreko.com</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:6.5pt;color:#AAA;letter-spacing:.1em;text-transform:uppercase">Anverso</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2mm">
+        <div class="bc back">
+          <div style="padding:5mm 6mm;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+            <div class="bc-back-logo">obreko</div>
+            <div>
+              <div class="bc-back-web">obreko.com</div>
+              <div class="bc-back-info" style="margin-top:2mm">
+                <span>Tenerife — Madrid</span>
+                <span>hola@obreko.com</span>
+              </div>
+            </div>
+          </div>
+          <div style="height:3px;background:var(--navy)"></div>
+        </div>
+        <div style="font-size:6.5pt;color:#AAA;letter-spacing:.1em;text-transform:uppercase">Reverso</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3mm;padding-top:2mm">
+        <div style="padding:4mm;background:var(--sand);border-left:3px solid var(--yellow)">
+          <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm">Especificaciones</div>
+          <div style="font-size:7.5pt;color:#666;line-height:1.9">Tamaño: 85 × 50 mm<br>Papel: 350–400 g/m² mate<br>Acabado anverso: plastificado mate<br>Impresión: 4/1 (color/B&N)</div>
+        </div>
+        <div style="padding:4mm;background:var(--sand);border-left:3px solid var(--navy)">
+          <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm">Variante oscura</div>
+          <div style="font-size:7.5pt;color:#666;line-height:1.7">Para entregas premium o eventos se puede usar la versión con anverso navy y tipografía blanca.</div>
+        </div>
+      </div>
+    </div>
+    <div class="bc-spec">
+      <div class="bc-spec-item"><div class="bc-spec-label">Fondo anverso</div><div class="bc-spec-val">Navy #1A2236</div></div>
+      <div class="bc-spec-item"><div class="bc-spec-label">Fondo reverso</div><div class="bc-spec-val">Arena #F1EDE0</div></div>
+      <div class="bc-spec-item"><div class="bc-spec-label">Franja acento</div><div class="bc-spec-val">Amarillo #FED544</div></div>
+      <div class="bc-spec-item"><div class="bc-spec-label">Tipografía</div><div class="bc-spec-val">DM Sans 400/700</div></div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">15</span></div>
+</div>
+
+<!-- ══════════════════════
+     P16 — MEMBRETE + SOBRE
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">06 · Papelería corporativa</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Membrete y <em style="font-style:italic">sobre</em></div>
+  </div>
+  <div class="paper-body">
+    <div class="letterhead">
+      <div class="lh-top">
+        <div class="lh-logo">obreko</div>
+        <div class="lh-contact-mini">
+          <span>obreko.com</span>
+          <span>hola@obreko.com</span>
+          <span>Tenerife · Madrid</span>
+        </div>
+      </div>
+      <div class="lh-stripe"></div>
+      <div class="lh-body">
+        <div class="lh-date">Tenerife, 14 de abril de 2026</div>
+        <div class="lh-to"><strong>Cliente / Empresa</strong><br>Dirección del destinatario<br>Ciudad, Provincia</div>
+        <div class="lh-content">
+          <p>Estimado/a [nombre],</p>
+          <p style="margin-top:3mm;color:#CCC">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation...</p>
+          <p style="margin-top:3mm;color:#CCC">Atentamente,<br><strong style="color:#888">Nombre Apellido</strong><br><span style="color:#CCC">Director · obreko</span></p>
+        </div>
+      </div>
+      <div class="lh-bot">
+        <span>obreko · Tenerife — Madrid</span>
+        <span>hola@obreko.com · obreko.com</span>
+      </div>
+    </div>
+    <div class="envelope-wrap">
+      <div class="envelope">
+        <div class="env-flap"></div>
+        <div class="env-logo">obreko</div>
+        <div class="env-address">obreko<br>C/ Ejemplo, 00<br>38001 Tenerife</div>
+        <div class="env-stamp"><span>SELLO</span></div>
+      </div>
+      <div class="env-specs">
+        <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:3mm">Especificaciones del sobre</div>
+        <div class="env-spec-row"><div class="env-spec-dot"></div><div class="env-spec-text">Formato DL (110 × 220 mm) o C5 para documentos doblados</div></div>
+        <div class="env-spec-row"><div class="env-spec-dot"></div><div class="env-spec-text">Papel offset 90 g/m², fondo arena #F1EDE0</div></div>
+        <div class="env-spec-row"><div class="env-spec-dot"></div><div class="env-spec-text">Logo en navy, esquina superior izquierda</div></div>
+        <div class="env-spec-row"><div class="env-spec-dot"></div><div class="env-spec-text">Franja amarilla en la solapa posterior (opcional)</div></div>
+        <div class="env-spec-row"><div class="env-spec-dot"></div><div class="env-spec-text">Sin plástico, sin ventana — solo para envíos premium</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">16</span></div>
+</div>
+
+<!-- ══════════════════════
+     P17 — FIRMA EMAIL
+══════════════════════ -->
+<div class="page">
+  <div class="email-head">
+    <div class="tag blue" style="margin-bottom:3mm">06 · Papelería corporativa</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Firma de <em style="font-style:italic">correo electrónico</em></div>
+  </div>
+  <div class="email-body">
+    <div class="sig-preview">
+      <div style="font-size:7pt;color:#AAA;margin-bottom:4mm;letter-spacing:.1em;text-transform:uppercase">Vista previa en cliente de correo</div>
+      <div class="sig-inner">
+        <div class="sig-name">Nombre Apellido</div>
+        <div class="sig-role">Director Comercial · Tenerife</div>
+        <div class="sig-company">obreko</div>
+        <div class="sig-divider"></div>
+        <div class="sig-contact-row">
+          <span class="sig-contact-item">📞 +34 600 000 000</span>
+          <span class="sig-contact-item">✉ nombre@obreko.com</span>
+        </div>
+        <div class="sig-web">obreko.com</div>
+      </div>
+    </div>
+    <div class="sig-code-block">
+<span class="html-tag">&lt;table</span> <span class="html-attr">cellpadding=</span><span class="html-val">"0"</span> <span class="html-attr">cellspacing=</span><span class="html-val">"0"</span> <span class="html-attr">style=</span><span class="html-val">"font-family:Arial,sans-serif;border-left:3px solid #FED544;padding-left:12px"</span><span class="html-tag">&gt;</span><br>
+  <span class="html-tag">&lt;tr&gt;&lt;td</span> <span class="html-attr">style=</span><span class="html-val">"font-size:13px;font-weight:700;color:#1a2236"</span><span class="html-tag">&gt;</span><span class="html-txt">Nombre Apellido</span><span class="html-tag">&lt;/td&gt;&lt;/tr&gt;</span><br>
+  <span class="html-tag">&lt;tr&gt;&lt;td</span> <span class="html-attr">style=</span><span class="html-val">"font-size:10px;color:#8896B3;text-transform:uppercase;letter-spacing:1px"</span><span class="html-tag">&gt;</span><span class="html-txt">Cargo · Delegación</span><span class="html-tag">&lt;/td&gt;&lt;/tr&gt;</span><br>
+  <span class="html-tag">&lt;tr&gt;&lt;td</span> <span class="html-attr">style=</span><span class="html-val">"font-family:Georgia,serif;font-style:italic;font-size:16px;color:#1a2236;padding:4px 0"</span><span class="html-tag">&gt;</span><span class="html-txt">obreko</span><span class="html-tag">&lt;/td&gt;&lt;/tr&gt;</span><br>
+  <span class="html-tag">&lt;tr&gt;&lt;td</span> <span class="html-attr">style=</span><span class="html-val">"font-size:11px;color:#555;padding-top:4px"</span><span class="html-tag">&gt;</span><span class="html-txt">+34 600 000 000 · hola@obreko.com</span><span class="html-tag">&lt;/td&gt;&lt;/tr&gt;</span><br>
+  <span class="html-tag">&lt;tr&gt;&lt;td</span> <span class="html-attr">style=</span><span class="html-val">"font-size:11px;color:#5C7CD9;font-weight:700"</span><span class="html-tag">&gt;</span><span class="html-txt">obreko.com</span><span class="html-tag">&lt;/td&gt;&lt;/tr&gt;</span><br>
+<span class="html-tag">&lt;/table&gt;</span>
+    </div>
+    <div class="sig-rules">
+      <div class="sig-rule"><div class="sig-rule-label">Borde izquierdo</div><div class="sig-rule-text">Siempre amarillo #FED544, 3px. Es el elemento identificador de la firma obreko.</div></div>
+      <div class="sig-rule"><div class="sig-rule-label">Wordmark</div><div class="sig-rule-text">Georgia Italic como fallback de Playfair Display para compatibilidad con todos los clientes de correo.</div></div>
+      <div class="sig-rule"><div class="sig-rule-label">Sin imágenes</div><div class="sig-rule-text">La firma no usa imágenes incrustadas. Solo HTML puro para máxima compatibilidad.</div></div>
+      <div class="sig-rule"><div class="sig-rule-label">Tamaño</div><div class="sig-rule-text">No añadir banners, fotos ni elementos adicionales. La firma debe ser limpia y ligera.</div></div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">17</span></div>
+</div>
+
+<!-- ══════════════════════
+     P18 — REDES SOCIALES
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">07 · Digital y redes sociales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Perfiles <em style="font-style:italic">sociales</em></div>
+  </div>
+  <div class="social-body">
+    <div class="profile-row">
+      <div class="profile-card">
+        <div class="profile-cover ig">
+          <span>Instagram</span>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding:0 4mm;gap:4mm">
+          <div class="profile-avatar"><span class="wm" style="font-size:9pt;color:var(--navy)">o</span></div>
+          <div style="padding-bottom:3mm">
+            <div class="profile-name">@obreko_reformas</div>
+            <div class="profile-handle">obreko.com</div>
+          </div>
+        </div>
+        <div class="profile-info">
+          <div class="profile-bio">Reformas e instalaciones sin sorpresas. Tenerife · Madrid 🏗️<br>📩 hola@obreko.com</div>
+          <div class="profile-spec">
+            <span class="spec-chip">Avatar 110×110px</span>
+            <span class="spec-chip">Foto de perfil: wordmark sobre navy</span>
+            <span class="spec-chip">Bio: 150 car. max</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-cover li">
+          <span>LinkedIn</span>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding:0 4mm;gap:4mm">
+          <div class="profile-avatar" style="background:var(--navy)"><span class="wm" style="font-size:9pt;color:#fff">o</span></div>
+          <div style="padding-bottom:3mm">
+            <div class="profile-name">obreko</div>
+            <div class="profile-handle">Empresa · Construcción y reformas</div>
+          </div>
+        </div>
+        <div class="profile-info">
+          <div class="profile-bio">Reformas integrales, domótica y mantenimiento. Equipo propio. Sin sorpresas en presupuesto, sin excusas en plazos.</div>
+          <div class="profile-spec">
+            <span class="spec-chip">Logo 400×400px</span>
+            <span class="spec-chip">Cover 1128×191px navy</span>
+            <span class="spec-chip">Sector: Construcción</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="social-specs-grid">
+      <div class="spec-card">
+        <div class="spec-card-label">Foto de perfil</div>
+        <div class="spec-card-val">400 × 400 px</div>
+        <div class="spec-card-note">Wordmark «obreko» centrado sobre fondo navy. Sin bordes, sin marcos adicionales.</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-label">Portada LinkedIn</div>
+        <div class="spec-card-val">1128 × 191 px</div>
+        <div class="spec-card-note">Fondo navy con franja amarilla en la parte inferior y tagline en blanco.</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-label">Post cuadrado</div>
+        <div class="spec-card-val">1080 × 1080 px</div>
+        <div class="spec-card-note">Formato principal para Instagram. Tres variantes: navy, arena o amarillo.</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-label">Stories / Reels</div>
+        <div class="spec-card-val">1080 × 1920 px</div>
+        <div class="spec-card-note">Formato vertical. Franja amarilla arriba. Logo en esquina. Texto centrado.</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">18</span></div>
+</div>
+
+<!-- ══════════════════════
+     P19 — POSTS Y STORIES
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">07 · Digital y redes sociales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Posts y <em style="font-style:italic">stories</em></div>
+  </div>
+  <div class="content-body">
+    <div>
+      <div class="tag muted" style="margin-bottom:4mm">Posts cuadrados — 3 modelos</div>
+      <div class="post-examples">
+        <div class="post p1">
+          <div class="post-logo">obreko</div>
+          <div class="post-accent"></div>
+          <div class="post-eyebrow">Reforma integral</div>
+          <div class="post-text">Sin sorpresas.<br>Sin excusas.</div>
+        </div>
+        <div class="post p2">
+          <div class="post-logo">obreko</div>
+          <div class="post-accent" style="background:var(--navy)"></div>
+          <div class="post-eyebrow">Tenerife · Madrid</div>
+          <div class="post-text">Tu espacio,<br>transformado.</div>
+        </div>
+        <div class="post p3">
+          <div class="post-logo">obreko</div>
+          <div class="post-accent" style="background:var(--navy)"></div>
+          <div class="post-eyebrow">Presupuesto cerrado</div>
+          <div class="post-text">Lo que firmamos,<br>lo cumplimos.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="tag muted" style="margin-bottom:4mm">Stories — 4 modelos (ratio 9:16)</div>
+      <div class="story-examples">
+        <div class="story s1">
+          <div class="story-stripe"></div>
+          <div class="story-tag">Reforma</div>
+          <div class="story-text">Resultados que hablan por sí solos.</div>
+        </div>
+        <div class="story s2">
+          <div class="story-stripe"></div>
+          <div class="story-tag">Equipo</div>
+          <div class="story-text">Profesionales propios. Sin subcontratas.</div>
+        </div>
+        <div class="story s3">
+          <div class="story-stripe"></div>
+          <div class="story-tag">Plazo</div>
+          <div class="story-text" style="color:var(--navy)">Fecha acordada.<br>Fecha cumplida.</div>
+        </div>
+        <div class="story s4">
+          <div class="story-stripe"></div>
+          <div class="story-tag">Contacto</div>
+          <div class="story-text">Pide tu presupuesto gratuito hoy.</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4mm">
+      <div style="padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Frecuencia</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.7">3–4 posts por semana en Instagram. 1–2 artículos por semana en LinkedIn.</div>
+      </div>
+      <div style="padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Contenido</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.7">Antes/después · Proceso · Equipo · Testimonios · Consejos de reforma · Noticias del sector.</div>
+      </div>
+      <div style="padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Tono en RRSS</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.7">Cercano pero profesional. Sin jerga técnica excesiva. Mensajes cortos y directos.</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">19</span></div>
+</div>
+
+<!-- ══════════════════════
+     P20 — PRESENTACIONES PPT
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">07 · Digital y redes sociales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Plantillas <em style="font-style:italic">PPT</em></div>
+  </div>
+  <div class="ppt-body">
+    <div>
+      <div class="tag muted" style="margin-bottom:4mm">3 modelos de portada para presentaciones</div>
+      <div class="slide-types">
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="slide cover-a">
+            <div class="slide-inner">
+              <div class="slide-top"><span class="slide-logo">obreko</span><div style="width:8px;height:8px;background:var(--yellow)"></div></div>
+              <div class="slide-mid">
+                <div class="slide-tag">Propuesta comercial</div>
+                <div class="slide-title">Reforma<br><em>integral</em></div>
+              </div>
+            </div>
+            <div class="slide-bar"></div>
+            <div class="slide-accent-dot"></div>
+          </div>
+          <div class="slide-label">A — Navy total</div>
+          <div class="slide-label-note">Presentaciones premium</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="slide cover-b">
+            <div class="slide-inner">
+              <div class="slide-top"><span class="slide-logo">obreko</span></div>
+              <div class="slide-mid">
+                <div class="slide-tag">Empresa de reformas</div>
+                <div class="slide-title">Soluciones<br><em>integrales</em></div>
+              </div>
+            </div>
+            <div class="slide-bar"></div>
+            <div class="slide-accent-dot"></div>
+          </div>
+          <div class="slide-label">B — Arena · Suave</div>
+          <div class="slide-label-note">Presentaciones de empresa</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="slide cover-c">
+            <div class="slide-inner">
+              <div class="slide-top"><span class="slide-logo">obreko</span><div style="height:2px;flex:1;background:var(--yellow);margin-left:4mm;margin-top:4pt"></div></div>
+              <div class="slide-mid">
+                <div class="slide-tag">Presupuesto</div>
+                <div class="slide-title">Tu <em>reforma</em>,<br>nuestro compromiso</div>
+              </div>
+            </div>
+            <div class="slide-bar" style="background:var(--navy)"></div>
+          </div>
+          <div class="slide-label">C — Blanco · Minimalista</div>
+          <div class="slide-label-note">Dossier y propuestas</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="tag muted" style="margin-bottom:4mm">Tipos de diapositivas interiores</div>
+      <div class="inner-slides">
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="inner-slide">
+            <div class="is-header"><span>Sección</span></div>
+            <div class="is-content">
+              <div class="is-line accent"></div>
+              <div class="is-line"></div>
+              <div class="is-line short"></div>
+              <div class="is-line" style="margin-top:4px"></div>
+              <div class="is-line short"></div>
+            </div>
+          </div>
+          <div style="font-size:6pt;color:#AAA;text-align:center;letter-spacing:.1em">Texto + datos</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="inner-slide">
+            <div class="is-header-y"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px">
+              <div style="background:#EEE;height:20px"></div>
+              <div style="background:#DDD;height:20px"></div>
+              <div style="background:#F5F5F5;height:20px"></div>
+              <div style="background:#EEE;height:20px"></div>
+            </div>
+          </div>
+          <div style="font-size:6pt;color:#AAA;text-align:center;letter-spacing:.1em">Galería / Antes·Después</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="inner-slide">
+            <div class="is-header"><span>Presupuesto</span></div>
+            <div style="padding:2px">
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:1px;font-size:5pt">
+                <div style="background:#2d3a56;padding:2px;color:rgba(255,255,255,.5)">Partida</div>
+                <div style="background:#2d3a56;padding:2px;color:rgba(255,255,255,.5)">€</div>
+                <div style="background:#f5f5f5;padding:2px;color:#777">Demolición</div>
+                <div style="background:#f5f5f5;padding:2px;color:#555">1.200</div>
+                <div style="background:#fff;padding:2px;color:#777">Fontanería</div>
+                <div style="background:#fff;padding:2px;color:#555">800</div>
+                <div style="background:#FED544;padding:2px;font-weight:700;color:#1a2236">TOTAL</div>
+                <div style="background:#FED544;padding:2px;font-weight:700;color:#1a2236">2.000</div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:6pt;color:#AAA;text-align:center;letter-spacing:.1em">Tabla de presupuesto</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2mm">
+          <div class="inner-slide" style="background:var(--navy)">
+            <div style="padding:4px;height:100%;display:flex;flex-direction:column;justify-content:space-between">
+              <div style="font-family:var(--serif);font-style:italic;font-size:9pt;color:#fff;line-height:1.2">Gracias<br>por <em>confiar</em></div>
+              <div style="font-family:var(--serif);font-style:italic;font-size:8pt;color:#FED544">obreko</div>
+            </div>
+          </div>
+          <div style="font-size:6pt;color:#AAA;text-align:center;letter-spacing:.1em">Slide final / Cierre</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:4mm;background:var(--sand);border-left:3px solid var(--yellow)">
+      <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm">Normas PPT</div>
+      <div style="font-size:7.5pt;color:#666;line-height:1.75">Formato 16:9 (1920×1080 px) · Titulares en Playfair Display Italic · Cuerpo en DM Sans · Máximo 6 líneas por diapositiva · Nunca más de 2 tipografías · Logo siempre en esquina superior izquierda</div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">20</span></div>
+</div>
+
+<!-- ══════════════════════
+     P21 — PROPUESTAS PORTADAS
+══════════════════════ -->
+<div class="page">
+  <div class="prop-head">
+    <div class="tag blue" style="margin-bottom:3mm">08 · Propuestas comerciales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Portadas de <em style="font-style:italic">propuesta</em></div>
+  </div>
+  <div class="prop-body">
+    <div class="prop-covers">
+      <div style="display:flex;flex-direction:column;gap:2mm">
+        <div class="prop-cover pc-a">
+          <div class="pc-stripe"></div>
+          <div class="pc-top">
+            <div class="pc-logo">obreko</div>
+            <div class="pc-spacer"></div>
+            <div class="pc-label">Propuesta comercial</div>
+            <div class="pc-title">Reforma<br><em>Integral</em><br>Vivienda</div>
+            <div class="pc-ref">REF: OBR-2026-001</div>
+          </div>
+          <div class="pc-bot">
+            <div class="pc-bot-info">Cliente · Tenerife · Abril 2026</div>
+          </div>
+          <div class="pc-accent"></div>
+        </div>
+        <div class="prop-name">A — Navy · Formal</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2mm">
+        <div class="prop-cover pc-b">
+          <div class="pc-stripe" style="background:var(--navy)"></div>
+          <div class="pc-top">
+            <div class="pc-logo">obreko</div>
+            <div class="pc-spacer"></div>
+            <div class="pc-label">Propuesta de adecuación</div>
+            <div class="pc-title">Local<br>Comercial</div>
+            <div class="pc-ref">REF: OBR-2026-014</div>
+          </div>
+          <div class="pc-bot">
+            <div class="pc-bot-info">Empresa · Madrid · Abril 2026</div>
+          </div>
+          <div class="pc-accent"></div>
+        </div>
+        <div class="prop-name">B — Arena · Cálido</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2mm">
+        <div class="prop-cover pc-c">
+          <div class="pc-stripe" style="background:var(--navy)"></div>
+          <div class="pc-top">
+            <div class="pc-logo">obreko</div>
+            <div class="pc-spacer"></div>
+            <div class="pc-label">Mantenimiento y reformas</div>
+            <div class="pc-title" style="font-weight:400">Presupuesto<br>de Obra</div>
+            <div class="pc-ref">REF: OBR-2026-007</div>
+          </div>
+          <div class="pc-bot">
+            <div class="pc-bot-info">Cliente · Tenerife · Abril 2026</div>
+          </div>
+          <div class="pc-accent" style="background:var(--yellow);opacity:.15"></div>
+        </div>
+        <div class="prop-name">C — Blanco · Minimalista</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4mm">
+      <div style="padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Cuándo usar A</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.7">Clientes premium, reformas de alta gama, primeras presentaciones de empresa.</div>
+      </div>
+      <div style="padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Cuándo usar B</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.7">Propuestas para viviendas, obras residenciales, clientes particulares.</div>
+      </div>
+      <div style="padding:4mm;background:var(--sand);border-top:2px solid var(--yellow)">
+        <div style="font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:2mm">Cuándo usar C</div>
+        <div style="font-size:7.5pt;color:#555;line-height:1.7">Presupuestos estándar, mantenimiento, locales comerciales de menor inversión.</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">21</span></div>
+</div>
+
+<!-- ══════════════════════
+     P22 — PROPUESTAS INTERIOR + FINAL
+══════════════════════ -->
+<div class="page">
+  <div class="prop-head">
+    <div class="tag blue" style="margin-bottom:3mm">08 · Propuestas comerciales</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Índice · Interior · <em style="font-style:italic">Final</em></div>
+  </div>
+  <div class="prop-pages-body">
+    <div class="prop-index-row">
+      <div style="display:flex;flex-direction:column;gap:2mm">
+        <div class="prop-index">
+          <div class="pi-top"><div class="wm" style="font-size:10pt;color:var(--navy)">obreko</div><small>Índice de contenidos</small></div>
+          <div class="pi-body">
+            <div class="pi-item"><span class="pi-item-n">01</span><span class="pi-item-title">Presentación del proyecto</span><span class="pi-item-dot"></span><span class="pi-item-pg">03</span></div>
+            <div class="pi-item"><span class="pi-item-n">02</span><span class="pi-item-title">Alcance de los trabajos</span><span class="pi-item-dot"></span><span class="pi-item-pg">05</span></div>
+            <div class="pi-item"><span class="pi-item-n">03</span><span class="pi-item-title">Presupuesto desglosado</span><span class="pi-item-dot"></span><span class="pi-item-pg">08</span></div>
+            <div class="pi-item"><span class="pi-item-n">04</span><span class="pi-item-title">Planificación y plazos</span><span class="pi-item-dot"></span><span class="pi-item-pg">11</span></div>
+            <div class="pi-item"><span class="pi-item-n">05</span><span class="pi-item-title">Condiciones y garantías</span><span class="pi-item-dot"></span><span class="pi-item-pg">13</span></div>
+          </div>
+        </div>
+        <div style="font-size:6.5pt;color:#AAA;text-align:center;letter-spacing:.1em">Índice clásico</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2mm">
+        <div class="prop-interior">
+          <div class="pri-header"><div class="wm" style="font-size:9pt;color:#fff">obreko</div><small>03 · Presupuesto</small></div>
+          <div class="pri-stripe"></div>
+          <div class="pri-body">
+            <div class="pri-section-tag">Desglose por capítulos</div>
+            <div class="pri-h">Presupuesto<br>detallado</div>
+            <div class="table-mini">
+              <div class="tm-head"><div>Capítulo</div><div>Und.</div><div>€</div></div>
+              <div class="tm-row"><div>01 Demolición</div><div>Partida</div><div>1.200</div></div>
+              <div class="tm-row"><div>02 Albañilería</div><div>Partida</div><div>3.400</div></div>
+              <div class="tm-row"><div>03 Fontanería</div><div>Partida</div><div>1.800</div></div>
+              <div class="tm-row"><div>04 Electricidad</div><div>Partida</div><div>2.200</div></div>
+              <div class="tm-row total"><div>TOTAL</div><div></div><div>8.600 €</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:6.5pt;color:#AAA;text-align:center;letter-spacing:.1em">Página interior tipo</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2mm">
+        <div class="prop-final">
+          <div class="pf-top"><div class="pf-stripe"></div></div>
+          <div class="pf-mid">
+            <div class="pf-wm">obreko</div>
+            <div class="pf-msg">Gracias por<br>confiar en <em>obreko</em>.</div>
+            <div class="pf-sub">Ante cualquier duda, estamos a tu disposición.<br>hola@obreko.com · obreko.com</div>
+          </div>
+          <div class="pf-bot">
+            <span>obreko · Tenerife — Madrid</span>
+            <span>REF: OBR-2026-001</span>
+          </div>
+        </div>
+        <div style="font-size:6.5pt;color:#AAA;text-align:center;letter-spacing:.1em">Página final</div>
+      </div>
+    </div>
+    <div style="padding:4mm 5mm;background:var(--sand);border-left:3px solid var(--yellow)">
+      <div style="font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--navy);margin-bottom:2mm">Estructura estándar de propuesta</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:2mm">
+        <div style="padding:3mm;background:#fff;text-align:center;border-top:2px solid var(--navy)"><div style="font-size:6pt;font-weight:700;color:var(--navy)">01</div><div style="font-size:6.5pt;color:#666;margin-top:1mm">Portada</div></div>
+        <div style="padding:3mm;background:#fff;text-align:center;border-top:2px solid var(--navy)"><div style="font-size:6pt;font-weight:700;color:var(--navy)">02</div><div style="font-size:6.5pt;color:#666;margin-top:1mm">Índice</div></div>
+        <div style="padding:3mm;background:#fff;text-align:center;border-top:2px solid var(--navy)"><div style="font-size:6pt;font-weight:700;color:var(--navy)">03</div><div style="font-size:6.5pt;color:#666;margin-top:1mm">Proyecto</div></div>
+        <div style="padding:3mm;background:#fff;text-align:center;border-top:2px solid var(--yellow)"><div style="font-size:6pt;font-weight:700;color:var(--navy)">04</div><div style="font-size:6.5pt;color:#666;margin-top:1mm">Presupuesto</div></div>
+        <div style="padding:3mm;background:#fff;text-align:center;border-top:2px solid var(--navy)"><div style="font-size:6pt;font-weight:700;color:var(--navy)">05</div><div style="font-size:6.5pt;color:#666;margin-top:1mm">Condiciones</div></div>
+        <div style="padding:3mm;background:var(--navy);text-align:center;border-top:2px solid var(--yellow)"><div style="font-size:6pt;font-weight:700;color:var(--yellow)">FIN</div><div style="font-size:6.5pt;color:rgba(255,255,255,.4);margin-top:1mm">Cierre</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">22</span></div>
+</div>
+
+<!-- ══════════════════════
+     P23 — UNIFORMES
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">09 · Uniformes y EPIs</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Ropa de <em style="font-style:italic">trabajo</em></div>
+  </div>
+  <div class="uniform-body">
+    <div class="garment-row">
+      <!-- Camiseta -->
+      <div class="garment">
+        <svg viewBox="0 0 100 110" width="80" height="90" fill="none">
+          <path d="M30 12 L18 12 L4 34 L20 42 L20 96 L80 96 L80 42 L96 34 L82 12 L70 12 C68 24 32 24 30 12Z" fill="#1a2236" stroke="#FED544" stroke-width="2" stroke-linejoin="round"/>
+          <text x="50" y="65" font-family="Georgia,serif" font-style="italic" font-size="11" fill="rgba(255,255,255,0.5)" text-anchor="middle">obreko</text>
+        </svg>
+        <div class="garment-name">Camiseta navy</div>
+        <div class="garment-spec">Logo bordado pecho izq.<br>100% algodón peinado<br>Peso: 180 g/m²</div>
+      </div>
+      <!-- Polo -->
+      <div class="garment">
+        <svg viewBox="0 0 100 110" width="80" height="90" fill="none">
+          <path d="M30 12 L18 12 L4 34 L20 42 L20 96 L80 96 L80 42 L96 34 L82 12 L70 12 C68 24 32 24 30 12Z" fill="#F1EDE0" stroke="#1a2236" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="50" y1="12" x2="50" y2="28" stroke="#1a2236" stroke-width="1.5"/>
+          <text x="50" y="65" font-family="Georgia,serif" font-style="italic" font-size="11" fill="rgba(26,34,54,0.4)" text-anchor="middle">obreko</text>
+          <line x1="20" y1="96" x2="80" y2="96" stroke="#FED544" stroke-width="3"/>
+        </svg>
+        <div class="garment-name">Polo arena</div>
+        <div class="garment-spec">Logo bordado pecho izq.<br>Piqué 100% algodón<br>Franja amarilla bajo</div>
+      </div>
+      <!-- Buzo/Sudadera -->
+      <div class="garment">
+        <svg viewBox="0 0 100 120" width="80" height="90" fill="none">
+          <path d="M28 14 L14 14 L2 40 L22 48 L22 106 L78 106 L78 48 L98 40 L86 14 L72 14 C70 28 30 28 28 14Z" fill="#1a2236" stroke="#FED544" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M22 106 L22 112 L78 112 L78 106" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+          <text x="50" y="72" font-family="Georgia,serif" font-style="italic" font-size="11" fill="rgba(255,255,255,0.5)" text-anchor="middle">obreko</text>
+        </svg>
+        <div class="garment-name">Sudadera navy</div>
+        <div class="garment-spec">Logo bordado pecho izq.<br>Felpa francesa 320g<br>Puños y bajo en canalé</div>
+      </div>
+      <!-- Chaleco -->
+      <div class="garment">
+        <svg viewBox="0 0 100 110" width="80" height="90" fill="none">
+          <path d="M35 10 L20 10 L5 30 L22 38 L22 95 L78 95 L78 38 L95 30 L80 10 L65 10 C63 22 37 22 35 10Z" fill="#FED544" stroke="#1a2236" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M35 10 C37 22 63 22 65 10 L62 10 C60 20 40 20 38 10Z" fill="#1a2236" opacity="0.3"/>
+          <text x="50" y="62" font-family="Georgia,serif" font-style="italic" font-size="11" fill="rgba(26,34,54,0.6)" text-anchor="middle">obreko</text>
+        </svg>
+        <div class="garment-name">Chaleco alta visib.</div>
+        <div class="garment-spec">Amarillo corporativo<br>Logo navy en pecho<br>EN ISO 20471 Clase 2</div>
+      </div>
+    </div>
+    <div class="epi-row">
+      <div class="epi">
+        <svg viewBox="0 0 50 50" width="44" height="44" fill="none">
+          <path d="M8 30 Q8 14 25 10 Q42 14 42 30 L42 38 L8 38Z" fill="#FED544" stroke="#1a2236" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="6" y="36" width="38" height="6" rx="2" fill="#1a2236"/>
+          <text x="25" y="29" font-family="Georgia,serif" font-style="italic" font-size="8" fill="rgba(26,34,54,0.5)" text-anchor="middle">o</text>
+        </svg>
+        <div class="epi-name">Casco</div>
+        <div class="epi-note">Amarillo · Clase 1<br>EN 397 · Logo navy</div>
+      </div>
+      <div class="epi">
+        <svg viewBox="0 0 50 50" width="44" height="44" fill="none">
+          <rect x="8" y="15" width="34" height="28" rx="3" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+          <rect x="16" y="8" width="18" height="10" rx="3" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+          <line x1="16" y1="25" x2="34" y2="25" stroke="#FED544" stroke-width="1"/>
+          <line x1="16" y1="30" x2="34" y2="30" stroke="rgba(254,213,68,.3)" stroke-width="1"/>
+          <line x1="16" y1="35" x2="28" y2="35" stroke="rgba(254,213,68,.3)" stroke-width="1"/>
+        </svg>
+        <div class="epi-name">Peto</div>
+        <div class="epi-note">Navy · Logo bordado<br>EN 13726 resistente</div>
+      </div>
+      <div class="epi">
+        <svg viewBox="0 0 50 50" width="44" height="44" fill="none">
+          <path d="M14 12 L10 42 L22 42 L24 26 L26 26 L28 42 L40 42 L36 12 Z" fill="#1a2236" stroke="#FED544" stroke-width="1.5" stroke-linejoin="round"/>
+          <text x="25" y="30" font-family="Georgia,serif" font-style="italic" font-size="7" fill="rgba(254,213,68,0.5)" text-anchor="middle">o</text>
+        </svg>
+        <div class="epi-name">Pantalón</div>
+        <div class="epi-note">Navy · Multibolsillos<br>Logo en muslo derecho</div>
+      </div>
+      <div class="epi">
+        <svg viewBox="0 0 50 50" width="44" height="44" fill="none">
+          <ellipse cx="18" cy="32" rx="8" ry="14" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+          <ellipse cx="32" cy="32" rx="8" ry="14" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+          <rect x="12" y="14" width="26" height="8" rx="2" fill="#FED544"/>
+        </svg>
+        <div class="epi-name">Botas</div>
+        <div class="epi-note">Negro · S3 SRC<br>Puntera de acero</div>
+      </div>
+    </div>
+    <div class="embroidery-note">
+      <div class="en-label">Norma de bordado y serigrafía</div>
+      <div class="en-text">El wordmark «obreko» se aplica siempre bordado en pecho izquierdo (5–7 cm de ancho). En el chaleco de alta visibilidad, serigrafía navy en espalda (20 cm ancho mínimo). Nunca transferencia de vinilo. El logo del casco es adhesivo de vinilo de corte en navy.</div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">23</span></div>
+</div>
+
+<!-- ══════════════════════
+     P24 — FURGONETA + SEÑALÉTICA
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">10 · Vehículo y señalética</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Vehículo y <em style="font-style:italic">señalética de obra</em></div>
+  </div>
+  <div class="vehicle-body">
+    <div class="van-wrap">
+      <div class="van-label">Furgoneta corporativa — vehicle wrap lateral</div>
+      <div class="van-mockup">
+        <!-- SVG de furgoneta simplificado -->
+        <svg viewBox="0 0 420 160" width="360" height="138" fill="none">
+          <!-- Carrocería -->
+          <rect x="10" y="50" width="370" height="85" rx="8" fill="#1a2236"/>
+          <!-- Capó -->
+          <path d="M380 80 L410 85 L410 120 L380 135Z" fill="#1a2236"/>
+          <!-- Parabrisas trasero -->
+          <rect x="360" y="58" width="18" height="35" rx="2" fill="#2d3a56" opacity="0.7"/>
+          <!-- Ventanas laterales -->
+          <rect x="20" y="58" width="55" height="30" rx="2" fill="#2d3a56" opacity="0.7"/>
+          <rect x="85" y="58" width="85" height="30" rx="2" fill="#2d3a56" opacity="0.7"/>
+          <!-- Zona de diseño (mitad inferior) -->
+          <rect x="10" y="102" width="370" height="33" rx="0" fill="#FED544"/>
+          <rect x="10" y="98" width="370" height="6" rx="0" fill="#FED544"/>
+          <!-- Wordmark -->
+          <text x="190" y="88" font-family="Georgia,serif" font-style="italic" font-size="28" fill="white" text-anchor="middle" opacity="0.9">obreko</text>
+          <!-- Ruedas -->
+          <circle cx="80" cy="138" r="20" fill="#111" stroke="#444" stroke-width="2"/>
+          <circle cx="80" cy="138" r="10" fill="#333"/>
+          <circle cx="310" cy="138" r="20" fill="#111" stroke="#444" stroke-width="2"/>
+          <circle cx="310" cy="138" r="10" fill="#333"/>
+          <!-- URL en franja amarilla -->
+          <text x="190" y="122" font-family="Arial,sans-serif" font-size="10" fill="#1a2236" text-anchor="middle" font-weight="700" letter-spacing="2">obreko.com · Tenerife · Madrid</text>
+        </svg>
+      </div>
+    </div>
+    <div class="signage-row">
+      <div class="sign-card">
+        <div class="sign-preview valla">
+          <div style="font-family:var(--serif);font-style:italic;font-size:22pt;color:#fff">obreko</div>
+          <div style="font-size:7pt;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4)">REFORMA EN CURSO</div>
+          <div style="height:2px;background:var(--yellow);width:60%;margin-top:3mm"></div>
+        </div>
+        <div class="sign-info">
+          <div class="sign-name">Valla de obra</div>
+          <div class="sign-note">240×120 cm · Chapa galvanizada 0.6mm · Fondo navy · Logo blanco · Franja amarilla inferior · Incluir teléfono y web</div>
+        </div>
+      </div>
+      <div class="sign-card">
+        <div class="sign-preview cartel">
+          <div style="font-family:var(--serif);font-style:italic;font-size:16pt;color:var(--navy)">obreko</div>
+          <div style="font-size:7pt;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);opacity:.6;margin-top:2mm">EN OBRAS</div>
+          <div style="font-size:8pt;color:var(--navy);margin-top:2mm;font-weight:600">obreko.com</div>
+        </div>
+        <div class="sign-info">
+          <div class="sign-name">Cartel de obra A3</div>
+          <div class="sign-note">A3 (297×420mm) · PVC rígido · Fondo amarillo · Logo navy · Para zonas públicas y escaparates durante la obra</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3mm">
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)"><div style="font-size:6pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:1.5mm">Furgoneta</div><div style="font-size:7pt;color:#555;line-height:1.7">Vinilo de corte + impresión · Color base: navy lacado mate · Vinilo mínimo 5 años exterior</div></div>
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)"><div style="font-size:6pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:1.5mm">Valla</div><div style="font-size:7pt;color:#555;line-height:1.7">Impresión UV sobre chapa · Tratamiento anticorrosión · Con anclajes para cerramiento de obra</div></div>
+      <div style="padding:3mm 4mm;background:var(--sand);border-top:2px solid var(--yellow)"><div style="font-size:6pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--blue);margin-bottom:1.5mm">Cartel A3</div><div style="font-size:7pt;color:#555;line-height:1.7">PVC espumado 5mm · Impresión digital 4+0 · Con ojales para colgar o con peana de suelo</div></div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">24</span></div>
+</div>
+
+<!-- ══════════════════════
+     P25 — MERCHANDISING 1
+══════════════════════ -->
+<div class="page">
+  <div class="color-head">
+    <div class="tag blue" style="margin-bottom:3mm">11 · Merchandising</div>
+    <div style="font-family:var(--serif);font-size:26pt;font-weight:400;color:var(--navy)">Materiales <em style="font-style:italic">corporativos</em></div>
+  </div>
+  <div class="merch-body">
+    <div class="merch-grid">
+      <!-- Taza -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:var(--navy);height:55mm">
+          <svg viewBox="0 0 60 60" width="60" height="60" fill="none">
+            <rect x="8" y="15" width="34" height="35" rx="3" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+            <path d="M42 22 Q52 22 52 30 Q52 38 42 38" stroke="#FED544" stroke-width="1.5" fill="none"/>
+            <text x="25" y="37" font-family="Georgia,serif" font-style="italic" font-size="10" fill="white" text-anchor="middle">o</text>
+          </svg>
+          <span style="font-size:6.5pt;color:rgba(255,255,255,.4);letter-spacing:.1em">NAVY</span>
+        </div>
+        <div class="merch-name">Taza 330ml</div>
+        <div class="merch-spec">Cerámica blanca / navy<br>Logo en navy o blanco<br>Impresión cerámica permanente</div>
+      </div>
+      <!-- Bolígrafo -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:var(--sand);height:55mm;flex-direction:row;gap:3mm">
+          <svg viewBox="0 0 20 80" width="16" height="64" fill="none">
+            <rect x="3" y="2" width="14" height="68" rx="2" fill="#1a2236"/>
+            <rect x="3" y="2" width="14" height="8" rx="2" fill="#FED544"/>
+            <path d="M3 70 L10 78 L17 70Z" fill="#1a2236"/>
+          </svg>
+          <svg viewBox="0 0 20 80" width="16" height="64" fill="none">
+            <rect x="3" y="2" width="14" height="68" rx="2" fill="#F1EDE0" stroke="#1a2236" stroke-width="1"/>
+            <rect x="3" y="2" width="14" height="8" rx="2" fill="#1a2236"/>
+            <path d="M3 70 L10 78 L17 70Z" fill="#1a2236"/>
+          </svg>
+        </div>
+        <div class="merch-name">Bolígrafo premium</div>
+        <div class="merch-spec">Metal lacado navy + arena<br>Grabado láser wordmark<br>Recarga de tinta azul</div>
+      </div>
+      <!-- Libreta -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:#EEE;height:55mm;padding:3mm">
+          <svg viewBox="0 0 70 90" width="60" height="78" fill="none">
+            <rect x="5" y="5" width="60" height="80" rx="2" fill="#1a2236"/>
+            <rect x="5" y="5" width="60" height="6" rx="2" fill="#FED544"/>
+            <rect x="2" y="20" width="6" height="50" rx="1" fill="#FED544"/>
+            <text x="35" y="55" font-family="Georgia,serif" font-style="italic" font-size="14" fill="rgba(255,255,255,0.4)" text-anchor="middle">obreko</text>
+          </svg>
+        </div>
+        <div class="merch-name">Libreta A5</div>
+        <div class="merch-spec">Tapa dura navy<br>Banda elástica amarilla<br>80 hojas rayadas 90g</div>
+      </div>
+      <!-- Carpeta -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:#EEE;height:55mm;padding:3mm">
+          <svg viewBox="0 0 80 100" width="66" height="82" fill="none">
+            <rect x="5" y="5" width="70" height="90" rx="3" fill="#F1EDE0" stroke="#1a2236" stroke-width="1.5"/>
+            <rect x="5" y="5" width="70" height="5" fill="#1a2236"/>
+            <text x="40" y="58" font-family="Georgia,serif" font-style="italic" font-size="14" fill="rgba(26,34,54,0.3)" text-anchor="middle">obreko</text>
+            <rect x="5" y="92" width="70" height="3" fill="#FED544"/>
+          </svg>
+        </div>
+        <div class="merch-name">Carpeta A4</div>
+        <div class="merch-spec">Cartón forrado arena<br>Portadas personalizadas<br>Goma elástica negra</div>
+      </div>
+    </div>
+    <div class="merch-grid">
+      <!-- Bolsa tote -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:#EEE;height:50mm">
+          <svg viewBox="0 0 60 70" width="54" height="63" fill="none">
+            <path d="M10 20 L5 65 L55 65 L50 20Z" fill="#1a2236" stroke="#FED544" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M20 20 Q20 8 30 8 Q40 8 40 20" stroke="#FED544" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <text x="30" y="48" font-family="Georgia,serif" font-style="italic" font-size="10" fill="rgba(255,255,255,0.5)" text-anchor="middle">obreko</text>
+          </svg>
+        </div>
+        <div class="merch-name">Tote bag</div>
+        <div class="merch-spec">Canvas 340g navy<br>Logo serigrafía blanca<br>Asas largas naturales</div>
+      </div>
+      <!-- Roll-up -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:#DDD;height:50mm;padding:3mm">
+          <svg viewBox="0 0 35 90" width="30" height="77" fill="none">
+            <rect x="2" y="2" width="31" height="78" rx="1" fill="#1a2236"/>
+            <rect x="2" y="2" width="31" height="5" fill="#FED544"/>
+            <text x="17" y="50" font-family="Georgia,serif" font-style="italic" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle">obreko</text>
+            <rect x="2" y="75" width="31" height="5" fill="#333"/>
+          </svg>
+        </div>
+        <div class="merch-name">Roll-up 85×200cm</div>
+        <div class="merch-spec">Lona sublimación<br>Base de acero incluida<br>Transporte en bolsa</div>
+      </div>
+      <!-- Llavero -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:#EEE;height:50mm">
+          <svg viewBox="0 0 60 60" width="54" height="54" fill="none">
+            <rect x="10" y="20" width="40" height="24" rx="12" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+            <circle cx="30" cy="12" r="8" stroke="#1a2236" stroke-width="2" fill="none"/>
+            <circle cx="30" cy="12" r="4" fill="#FED544"/>
+            <text x="30" y="36" font-family="Georgia,serif" font-style="italic" font-size="9" fill="white" text-anchor="middle">o</text>
+          </svg>
+        </div>
+        <div class="merch-name">Llavero</div>
+        <div class="merch-spec">Metal navy + amarillo<br>Grabado láser<br>Anilla acero inoxidable</div>
+      </div>
+      <!-- Termo -->
+      <div class="merch-item">
+        <div class="merch-visual" style="background:#EEE;height:50mm">
+          <svg viewBox="0 0 40 80" width="36" height="72" fill="none">
+            <rect x="8" y="8" width="24" height="62" rx="5" fill="#1a2236" stroke="#FED544" stroke-width="1.5"/>
+            <rect x="8" y="8" width="24" height="10" rx="5" fill="#222E50"/>
+            <rect x="8" y="64" width="24" height="6" rx="3" fill="#222E50"/>
+            <text x="20" y="46" font-family="Georgia,serif" font-style="italic" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle">o</text>
+          </svg>
+        </div>
+        <div class="merch-name">Termo 500ml</div>
+        <div class="merch-spec">Acero inox. doble pared<br>Logo grabado láser<br>Mantiene temp. 12h</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer"><span class="wm">obreko</span><span class="pf-num">25</span></div>
+</div>
+
+<!-- ══════════════════════
+     P26 — PÁGINA FINAL
+══════════════════════ -->
+<div class="page final-page">
+  <div class="fp-top">
+    <span class="wm" style="font-size:72pt;color:rgba(255,255,255,.05);line-height:1;display:block;margin-bottom:6mm">obreko</span>
+    <div style="font-family:var(--serif);font-style:italic;font-size:26pt;color:#fff;line-height:1.2">Sin sorpresas.<br><em style="color:var(--yellow)">Sin excusas.</em></div>
+  </div>
+  <div class="fp-body">
+    <div>
+      <div class="fp-col-label">Contacto de marca</div>
+      <div class="fp-contact-item"><strong>Email</strong><span>hola@obreko.com</span></div>
+      <div class="fp-contact-item"><strong>Web</strong><span>obreko.com</span></div>
+      <div class="fp-contact-item"><strong>Instagram</strong><span>@obreko_reformas</span></div>
+      <div class="fp-contact-item"><strong>LinkedIn</strong><span>linkedin.com/company/obreko</span></div>
+      <div class="fp-contact-item"><strong>Tenerife</strong><span>+34 600 000 000</span></div>
+      <div class="fp-contact-item"><strong>Madrid</strong><span>+34 600 000 001</span></div>
+    </div>
+    <div>
+      <div class="fp-col-label">Archivos y recursos</div>
+      <div class="fp-resources">
+        <div class="fp-res-item"><span class="fp-res-name">obreko-navy.svg</span><span class="fp-res-type">SVG</span></div>
+        <div class="fp-res-item"><span class="fp-res-name">obreko-white.svg</span><span class="fp-res-type">SVG</span></div>
+        <div class="fp-res-item"><span class="fp-res-name">brand-colors.ase</span><span class="fp-res-type">ASE</span></div>
+        <div class="fp-res-item"><span class="fp-res-name">plantilla-propuesta.docx</span><span class="fp-res-type">DOCX</span></div>
+        <div class="fp-res-item"><span class="fp-res-name">plantilla-ppt.pptx</span><span class="fp-res-type">PPTX</span></div>
+        <div class="fp-res-item"><span class="fp-res-name">guia-marca.pdf</span><span class="fp-res-type">PDF</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="fp-bot">
+    <div class="fp-bot-wm">obreko</div>
+    <div class="fp-bot-info">Manual de Identidad Corporativa<br>Versión 1.0 · 2026 · Uso interno y proveedores</div>
+  </div>
+  <span class="pg-num w">26</span>
+</div>
+
+</body>
+</html>

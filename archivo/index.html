@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Archivo de propuestas</title>
+<style>
+@font-face{font-family:'Playfair Display';src:url('../fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'Playfair Display';src:url('../fonts/playfair.woff2') format('woff2');font-style:normal;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('../fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#1A2236;--yellow:#FED544;--sand:#F1EDE0;--sand-lt:#FAF7EE;--blue:#5C7CD9;--slate:#8896B3;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;}
+body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100vh;}
+
+/* Top bar */
+.topbar{background:var(--navy);color:#fff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.topbar-brand{font-family:var(--serif);font-style:italic;font-size:22px;}
+.topbar-meta{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--yellow);margin-top:2px;}
+.topbar-actions{display:flex;align-items:center;gap:14px;font-size:12px;}
+.topbar-actions a{color:rgba(255,255,255,.7);text-decoration:none;border-bottom:1px solid transparent;}
+.topbar-actions a:hover{color:#fff;border-color:rgba(255,255,255,.3);}
+.topbar-logout{background:rgba(255,255,255,.1);border:none;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-family:var(--sans);font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+.topbar-logout:hover{background:rgba(255,255,255,.2);}
+
+/* Login */
+.login-wrap{min-height:calc(100vh - 70px);display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.login-card{background:#fff;border-radius:14px;padding:40px 36px;max-width:400px;width:100%;box-shadow:0 10px 40px rgba(26,34,54,.12);}
+.login-title{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--navy);margin-bottom:8px;}
+.login-sub{font-size:12.5px;color:var(--slate);line-height:1.6;margin-bottom:24px;}
+.login-form{display:flex;flex-direction:column;gap:14px;}
+.login-form label{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--blue);font-weight:700;}
+.login-form input{padding:12px 14px;border:1px solid rgba(26,34,54,.15);border-radius:8px;font-family:var(--sans);font-size:14px;outline:none;}
+.login-form input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,34,54,.08);}
+.login-form button{background:var(--navy);color:var(--yellow);border:none;padding:12px 16px;border-radius:8px;font-family:var(--sans);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;transition:background .18s;margin-top:8px;}
+.login-form button:hover{background:#2a3450;}
+.login-form button:disabled{background:rgba(26,34,54,.3);cursor:wait;}
+.login-err{color:#C62828;font-size:12px;margin-top:6px;display:none;}
+.login-err.show{display:block;}
+
+/* Main */
+.main{display:none;padding:28px 32px 60px;max-width:1280px;margin:0 auto;}
+.main.show{display:block;}
+.main-head{margin-bottom:24px;}
+.main-h1{font-family:var(--serif);font-style:italic;font-size:32px;color:var(--navy);letter-spacing:.02em;}
+.main-h1 em{color:var(--blue);}
+.main-rule{width:48px;height:3px;background:var(--yellow);margin:12px 0 10px;}
+.main-sub{font-size:12px;color:var(--slate);line-height:1.6;max-width:600px;}
+
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:22px 0 18px;}
+.summary-card{background:#fff;border-radius:10px;padding:14px 18px;border:1px solid rgba(26,34,54,.08);}
+.summary-label{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--slate);font-weight:700;}
+.summary-value{font-family:var(--serif);font-style:italic;font-size:24px;color:var(--navy);margin-top:4px;line-height:1;}
+.summary-extra{font-size:10px;color:var(--slate);margin-top:4px;}
+
+.filters{background:#fff;border-radius:10px;padding:14px 18px;border:1px solid rgba(26,34,54,.08);margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.filter-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px;}
+.filter-group label{font-size:8.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--blue);font-weight:700;}
+.filter-group input, .filter-group select{padding:7px 10px;border:1px solid rgba(26,34,54,.12);border-radius:6px;font-family:var(--sans);font-size:12px;background:#fff;outline:none;}
+.filter-group input:focus, .filter-group select:focus{border-color:var(--navy);}
+.filter-count{font-size:11px;color:var(--slate);font-weight:600;align-self:flex-end;padding-bottom:8px;}
+
+/* Table/list */
+.items{background:#fff;border-radius:10px;border:1px solid rgba(26,34,54,.08);overflow:hidden;}
+.items-empty{padding:48px 32px;text-align:center;color:var(--slate);font-size:13px;line-height:1.6;}
+.item{display:grid;grid-template-columns:160px 1.8fr 1fr 0.8fr 100px 260px;gap:14px;padding:14px 18px;border-bottom:1px solid rgba(26,34,54,.06);align-items:center;}
+.item:last-child{border-bottom:none;}
+.item:hover{background:#FAF7EE;}
+.item-ref{font-family:'Courier New',monospace;font-size:10.5px;color:var(--blue);font-weight:600;}
+.item-client{font-size:13px;color:var(--navy);font-weight:500;}
+.item-client .meta{display:block;font-size:10.5px;color:var(--slate);margin-top:2px;font-weight:400;}
+.item-type{font-size:11px;color:var(--navy);text-transform:capitalize;}
+.item-amount{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--navy);text-align:right;}
+.item-date{font-size:11px;color:var(--slate);text-align:right;}
+.item-actions{display:flex;gap:6px;justify-content:flex-end;}
+.item-btn{padding:6px 11px;border-radius:6px;font-size:10px;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:.08em;transition:background .15s,color .15s;}
+.item-btn-open{background:var(--yellow);color:var(--navy);border:1px solid var(--yellow);}
+.item-btn-open:hover{background:#2a3450;color:var(--yellow);border-color:#2a3450;}
+.item-btn-edit{background:transparent;color:var(--navy);border:1px solid var(--navy);}
+.item-btn-edit:hover{background:var(--navy);color:var(--yellow);}
+.item-btn-hs{background:transparent;color:var(--blue);border:1px solid rgba(92,124,217,.3);}
+.item-btn-hs:hover{background:var(--blue);color:#fff;}
+
+@media (max-width:900px){
+  .item{grid-template-columns:1fr;gap:6px;padding:16px 18px;}
+  .item-actions{justify-content:flex-start;margin-top:6px;}
+  .item-amount{text-align:left;}
+  .item-date{text-align:left;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta">ARCHIVO DE PROPUESTAS</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="/propuestas/">← Volver a Propuestas</a>
+    <button class="topbar-logout" id="btnLogout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- Login -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-title">Archivo interno</div>
+    <div class="login-sub">Las propuestas guardadas se conservan <strong>1 año</strong>. Introduce el PIN del equipo para acceder.</div>
+    <form class="login-form" id="loginForm">
+      <label for="pinInput">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main" id="main">
+  <div class="main-head">
+    <h1 class="main-h1">Archivo de <em>propuestas</em></h1>
+    <div class="main-rule"></div>
+    <div class="main-sub">Snapshot inmutable de cada propuesta guardada desde obreko.pages.dev/propuestas. Retención automática 1 año.</div>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Buscar (cliente, ref, email)</label>
+      <input type="search" id="fSearch" placeholder="María, REF-2026-…">
+    </div>
+    <div class="filter-group" style="flex:0 0 180px">
+      <label>Tipo</label>
+      <select id="fType">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group" style="flex:0 0 140px">
+      <label>Desde</label>
+      <input type="date" id="fFrom">
+    </div>
+    <div class="filter-group" style="flex:0 0 140px">
+      <label>Hasta</label>
+      <input type="date" id="fTo">
+    </div>
+    <div class="filter-count" id="fCount">—</div>
+  </div>
+
+  <div class="items" id="itemsWrap">
+    <div class="items-empty">Cargando…</div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+async function checkAuth(){
+  const r = await fetch('/api/archive/auth');
+  const j = await r.json().catch(() => ({authenticated: false}));
+  return j.authenticated;
+}
+
+async function login(pin){
+  const r = await fetch('/api/archive/auth', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({pin}),
+  });
+  return r.ok;
+}
+
+async function logout(){
+  await fetch('/api/archive/auth', {method:'DELETE'});
+  location.reload();
+}
+window.logout = logout;
+
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pin = $('pinInput').value.trim();
+  $('loginBtn').disabled = true;
+  $('loginBtn').textContent = 'Comprobando…';
+  $('loginErr').classList.remove('show');
+  const ok = await login(pin);
+  $('loginBtn').disabled = false;
+  $('loginBtn').textContent = 'Acceder';
+  if (!ok){
+    $('loginErr').classList.add('show');
+    $('pinInput').select();
+    return;
+  }
+  enterApp();
+});
+
+async function enterApp(){
+  $('loginWrap').style.display = 'none';
+  $('main').classList.add('show');
+  $('btnLogout').style.display = 'inline-block';
+  await loadList();
+  // Si venían de /archivo/[id] por redirect con ?next=...
+  const next = new URL(location.href).searchParams.get('next');
+  if (next && next.startsWith('/archivo/')) location.href = next;
+}
+
+let allItems = [];
+
+async function loadList(){
+  const r = await fetch('/api/archive/list');
+  if (!r.ok){
+    $('itemsWrap').innerHTML = '<div class="items-empty">Error cargando archivo (HTTP '+r.status+')</div>';
+    return;
+  }
+  const j = await r.json();
+  allItems = j.items || [];
+  renderSummary();
+  buildTypeFilter();
+  renderList();
+}
+
+function renderSummary(){
+  const total = allItems.length;
+  const sumAmount = allItems.reduce((s, it) => s + (Number(it.amount) || 0), 0);
+  const recurring = allItems.filter(it => /recurrente|mantenimiento/i.test(it.type || it.slug)).length;
+  const last30 = allItems.filter(it => {
+    const d = new Date(it.savedAt); return (Date.now() - d.getTime()) < 30*24*3600*1000;
+  }).length;
+  $('summary').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">Total archivadas</div>
+      <div class="summary-value">${total}</div>
+      <div class="summary-extra">En el último año</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Últimos 30 días</div>
+      <div class="summary-value">${last30}</div>
+      <div class="summary-extra">Actividad reciente</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Valor total</div>
+      <div class="summary-value">${sumAmount.toLocaleString('es-ES',{maximumFractionDigits:0})} €</div>
+      <div class="summary-extra">Suma de todas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Mantenimiento</div>
+      <div class="summary-value">${recurring}</div>
+      <div class="summary-extra">Servicios recurrentes</div>
+    </div>
+  `;
+}
+
+function buildTypeFilter(){
+  const types = [...new Set(allItems.map(it => it.slug || it.type).filter(Boolean))];
+  const sel = $('fType');
+  sel.innerHTML = '<option value="">Todos</option>' + types.sort().map(t => `<option value="${t}">${labelType(t)}</option>`).join('');
+}
+
+function labelType(slug){
+  const map = {
+    'reformas':'Reformas', 'adecuacion':'Adecuación', 'obras-pequenas':'Obras pequeñas',
+    'mantenimiento':'Mantenimiento', 'manitas':'Manitas', 'hogar-conectado':'Hogar conectado',
+    'inversion-alquiler':'Inversión y alquiler', 'mantenimiento-pronexo':'Mantenimiento Pronexo',
+  };
+  return map[slug] || slug;
+}
+
+function renderList(){
+  const q = ($('fSearch').value || '').toLowerCase().trim();
+  const t = $('fType').value;
+  const from = $('fFrom').value ? new Date($('fFrom').value) : null;
+  const to = $('fTo').value ? new Date($('fTo').value + 'T23:59:59') : null;
+
+  const filtered = allItems.filter(it => {
+    if (q){
+      const hay = [it.client, it.ref, it.email, it.phone, it.slug, it.type].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (t && (it.slug || it.type) !== t) return false;
+    if (from && new Date(it.savedAt) < from) return false;
+    if (to && new Date(it.savedAt) > to) return false;
+    return true;
+  });
+
+  $('fCount').textContent = `${filtered.length} de ${allItems.length}`;
+
+  if (filtered.length === 0){
+    $('itemsWrap').innerHTML = '<div class="items-empty">No hay propuestas que coincidan con estos filtros.<br>Cuando guardes una propuesta en el CRM, aparecerá aquí automáticamente.</div>';
+    return;
+  }
+
+  $('itemsWrap').innerHTML = filtered.map(it => {
+    const dt = new Date(it.savedAt);
+    const fecha = dt.toLocaleDateString('es-ES', {day:'2-digit', month:'short', year:'numeric'});
+    const hora = dt.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+    const amount = (Number(it.amount)||0).toLocaleString('es-ES',{maximumFractionDigits:0}) + ' €';
+    const hsUrl = it.hubspotDealId ? `https://app.hubspot.com/contacts/_/record/0-3/${it.hubspotDealId}` : '';
+    return `
+      <div class="item">
+        <div class="item-ref">${escapeHtml(it.ref || '—')}</div>
+        <div class="item-client">
+          ${escapeHtml(it.client || '(sin cliente)')}
+          <span class="meta">${escapeHtml(it.email || '')} ${it.email && it.phone ? '·' : ''} ${escapeHtml(it.phone || '')}</span>
+        </div>
+        <div class="item-type">${escapeHtml(labelType(it.slug || it.type))}</div>
+        <div class="item-amount">${amount}</div>
+        <div class="item-date">${fecha}<br><span style="color:#b5bcc9;font-size:10px">${hora}</span></div>
+        <div class="item-actions">
+          <a class="item-btn item-btn-open" href="${it.url}" target="_blank">Ver</a>
+          <a class="item-btn item-btn-edit" href="${it.url}?edit=1" target="_blank">Editar</a>
+          ${hsUrl ? `<a class="item-btn item-btn-hs" href="${hsUrl}" target="_blank">HubSpot</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+['fSearch','fType','fFrom','fTo'].forEach(id => {
+  $(id).addEventListener('input', renderList);
+});
+
+// Bootstrap
+(async () => {
+  const authed = await checkAuth();
+  if (authed) {
+    enterApp();
+  } else {
+    $('loginWrap').style.display = 'flex';
+    $('pinInput').focus();
+  }
+})();
+</script>
+</body>
+</html>

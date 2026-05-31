@@ -1,0 +1,8 @@
+# Redirigir obreko.es a obreko.com
+https://obreko.es/* https://obreko.com/:splat 301!
+
+# Bloquear acceso público a propuestas (contenido interno)
+/propuestas/*  /  301!
+
+# SPA fallback
+/*    /index.html   200

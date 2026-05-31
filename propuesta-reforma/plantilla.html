@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40"
+      lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta de Reforma · obreko</title>
+<!--[if gte mso 9]>
+<xml>
+  <w:WordDocument>
+    <w:View>Print</w:View>
+    <w:Zoom>100</w:Zoom>
+    <w:DoNotOptimizeForBrowser/>
+  </w:WordDocument>
+</xml>
+<![endif]-->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* ── BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#1a2236;--blue:#5C7CD9;--yellow:#FED544;
+  --sand:#F1EDE0;--sand-lt:#F8F4E8;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',Arial,sans-serif;
+}
+body{font-family:var(--sans);background:#d4d0c8;color:var(--navy)}
+
+/* ── PAGE SHELL ── */
+.page{
+  width:210mm;min-height:297mm;background:#fff;
+  margin:0 auto 12mm;position:relative;
+  box-shadow:0 4px 28px rgba(0,0,0,.18);
+  display:flex;flex-direction:column;
+  page-break-after:always;
+}
+@media print{
+  body{background:#fff}
+  .page{margin:0;box-shadow:none;page-break-after:always;min-height:297mm}
+  .no-print{display:none}
+}
+
+/* ── SHARED ── */
+.tag{font-size:6.5pt;letter-spacing:.25em;text-transform:uppercase;font-weight:600;color:var(--blue);font-family:var(--sans)}
+.tag.y{color:var(--yellow)}
+.tag.w{color:rgba(255,255,255,.5)}
+.section-h{font-family:var(--serif);font-weight:400;color:var(--navy)}
+.rule-y{height:2px;background:var(--yellow)}
+.rule-n{height:1px;background:var(--navy)}
+.rule-lt{height:1px;background:#e8e4dc}
+
+/* ── INPUT FIELDS ── */
+.field{
+  border:none;border-bottom:1.5px solid #ddd;
+  background:transparent;font-family:var(--sans);
+  font-size:10pt;color:var(--navy);width:100%;
+  padding:2mm 0;outline:none;
+}
+.field:focus{border-bottom-color:var(--yellow);background:rgba(254,213,68,.05)}
+.field-area{
+  border:1px solid #e0ddd8;background:#fafaf8;
+  font-family:var(--sans);font-size:10pt;color:var(--navy);
+  width:100%;padding:3mm;resize:vertical;outline:none;
+  min-height:20mm;line-height:1.75;
+}
+.field-area:focus{border-color:var(--yellow);background:rgba(254,213,68,.04)}
+.field-label{font-size:7pt;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:1mm;display:block}
+.field-group{margin-bottom:5mm}
+.field-row{display:grid;gap:5mm}
+.field-row.col2{grid-template-columns:1fr 1fr}
+.field-row.col3{grid-template-columns:1fr 1fr 1fr}
+
+/* ── FOOTER ── */
+.page-footer{margin-top:auto;padding:4mm 14mm;border-top:1px solid #ece8df;display:flex;justify-content:space-between;align-items:center}
+.page-footer .logo{font-family:var(--serif);font-style:italic;font-size:9pt;color:rgba(26,34,54,.3)}
+.page-footer .pgnum{font-size:7pt;color:#ccc;letter-spacing:.08em}
+.page-footer .ref{font-size:7pt;color:#bbb}
+
+/* ══ PAGE 1: PORTADA ══ */
+.cover{background:var(--navy);color:#fff;padding:0}
+.cover-stripe{height:3px;background:var(--yellow)}
+.cover-body{flex:1;padding:14mm;display:flex;flex-direction:column;justify-content:space-between}
+.cover-logo{font-family:var(--serif);font-style:italic;font-size:28pt;color:#fff}
+.cover-subtitle{font-size:7pt;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2mm}
+.cover-title-block{margin:auto 0}
+.cover-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:5mm}
+.cover-eyebrow::before{content:'';display:block;width:22px;height:1px;background:var(--yellow)}
+.cover-eyebrow span{font-size:7pt;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.cover-h1{font-family:var(--serif);font-size:40pt;font-weight:400;line-height:.92;color:#fff;margin-bottom:4mm}
+.cover-h1 em{font-style:italic;color:var(--yellow)}
+.cover-field-set{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:6mm 8mm;margin-top:4mm}
+.cover-field{border:none;border-bottom:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-family:var(--sans);font-size:10pt;width:100%;padding:2mm 0;outline:none}
+.cover-field::placeholder{color:rgba(255,255,255,.3);font-style:italic}
+.cover-field:focus{border-bottom-color:var(--yellow)}
+.cover-field-label{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:1mm;display:block}
+.cover-row{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:4mm}
+.cover-foot{display:flex;justify-content:space-between;align-items:flex-end;padding-top:6mm;border-top:1px solid rgba(255,255,255,.08)}
+.cover-foot-left{font-size:8pt;color:rgba(255,255,255,.25);line-height:1.8}
+.cover-foot-right{font-size:8pt;color:rgba(255,255,255,.25);text-align:right;line-height:1.8}
+
+/* ══ SECTION PAGES ══ */
+.sec-header{padding:10mm 14mm 6mm;border-bottom:2px solid var(--yellow)}
+.sec-num{font-family:var(--serif);font-style:italic;font-size:60pt;color:#f0ece4;line-height:1;position:absolute;right:14mm;top:6mm}
+.content-pad{padding:8mm 14mm;flex:1;display:flex;flex-direction:column;gap:4mm}
+
+/* ── TABLES ── */
+.data-table{width:100%;border-collapse:collapse;font-size:9pt}
+.data-table th{background:var(--navy);color:#fff;padding:3mm 4mm;text-align:left;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.data-table th.y{color:var(--yellow)}
+.data-table th.r{text-align:right}
+.data-table td{padding:2.5mm 4mm;border-bottom:1px solid #ece8df;vertical-align:top}
+.data-table td input{border:none;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:0}
+.data-table td input:focus{background:rgba(254,213,68,.08)}
+.data-table td.r input{text-align:right}
+.data-table td.r{text-align:right}
+.data-table tr.section-row td{background:var(--sand-lt);font-weight:700;color:var(--navy);padding:2mm 4mm;font-size:8pt;letter-spacing:.05em}
+.data-table tr:nth-child(even) td{background:#fafaf8}
+.data-table tfoot td{border-top:2px solid var(--navy);font-weight:700;background:var(--sand-lt)}
+.data-table tfoot td.total{color:var(--navy);font-size:11pt}
+.add-row-btn{margin-top:2mm;display:inline-block;padding:2mm 5mm;background:none;border:1px dashed var(--yellow);color:var(--navy);font-size:7.5pt;cursor:pointer;font-family:var(--sans);letter-spacing:.05em}
+.add-row-btn:hover{background:rgba(254,213,68,.1)}
+
+/* ── TIMELINE / GANTT MINI ── */
+.timeline{display:flex;flex-direction:column;gap:2.5mm}
+.tl-row{display:grid;grid-template-columns:40mm 1fr 20mm;align-items:center;gap:3mm}
+.tl-label-input{border:none;border-bottom:1px solid #ddd;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none;padding:1mm 0}
+.tl-label-input:focus{border-bottom-color:var(--yellow)}
+.tl-bar-track{background:#f0ece4;height:8mm;position:relative;border-radius:1px}
+.tl-bar-inner{background:var(--navy);height:100%;position:absolute}
+.tl-weeks{font-size:7pt;color:#888;text-align:right}
+
+/* ── SIGNATURE BLOCK ── */
+.sig-block{display:grid;grid-template-columns:1fr 1fr;gap:8mm;margin-top:4mm}
+.sig-box{border-top:1.5px solid var(--navy);padding-top:3mm}
+.sig-name-field{border:none;border-bottom:1px solid #ddd;background:transparent;font-family:var(--sans);font-size:10pt;color:var(--navy);width:100%;outline:none;padding:2mm 0}
+.sig-label{font-size:7pt;color:#aaa;margin-top:1mm;letter-spacing:.08em;text-transform:uppercase}
+
+/* ── TOOLBAR ── */
+.toolbar{background:var(--navy);padding:4mm 14mm;display:flex;gap:4mm;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.toolbar-btn{padding:2mm 8mm;background:var(--yellow);border:none;font-family:var(--sans);font-size:8pt;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);cursor:pointer}
+.toolbar-btn:hover{background:#ffde5e}
+.toolbar-btn.secondary{background:rgba(255,255,255,.1);color:#fff}
+.toolbar-btn.secondary:hover{background:rgba(255,255,255,.2)}
+.toolbar-info{font-size:7.5pt;color:rgba(255,255,255,.4);margin-left:auto;font-family:var(--sans)}
+</style>
+</head>
+<body>
+
+<!-- ══ TOOLBAR (no imprime) ══ -->
+<div class="toolbar no-print">
+  <span style="font-family:'Playfair Display',serif;font-style:italic;font-size:13pt;color:#fff">obreko</span>
+  <span style="width:1px;height:16px;background:rgba(255,255,255,.2)"></span>
+  <button class="toolbar-btn" onclick="window.print()">Imprimir / Guardar PDF</button>
+  <button class="toolbar-btn secondary" onclick="guardarWord()">Guardar como Word (.doc)</button>
+  <button class="toolbar-btn secondary" onclick="limpiarFormulario()">Nuevo documento</button>
+  <span class="toolbar-info">Rellena todos los campos y guarda como PDF o Word</span>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 1 — PORTADA
+══════════════════ -->
+<div class="page cover">
+  <div class="cover-stripe"></div>
+  <div class="cover-body">
+    <div>
+      <div class="cover-logo">obreko</div>
+      <div class="cover-subtitle">Tenerife · Madrid · obreko.com</div>
+    </div>
+    <div class="cover-title-block">
+      <div class="cover-eyebrow"><span>Documento oficial</span></div>
+      <div class="cover-h1">Propuesta<br>de <em>reforma</em><br>y adecuación</div>
+      <div class="cover-field-set">
+        <div class="field-row col2">
+          <div>
+            <label class="cover-field-label">Cliente / Empresa</label>
+            <input class="cover-field" type="text" placeholder="Nombre Apellido o Razón Social" id="cliente">
+          </div>
+          <div>
+            <label class="cover-field-label">Referencia</label>
+            <input class="cover-field" type="text" placeholder="OBR-2026-001" id="referencia">
+          </div>
+        </div>
+        <div class="cover-row">
+          <div>
+            <label class="cover-field-label">Inmueble / Dirección</label>
+            <input class="cover-field" type="text" placeholder="C/ Ejemplo, 24 — Santa Cruz de Tenerife" id="inmueble">
+          </div>
+          <div>
+            <label class="cover-field-label">Fecha de propuesta</label>
+            <input class="cover-field" type="text" placeholder="Enero 2026" id="fecha">
+          </div>
+        </div>
+        <div style="margin-top:4mm">
+          <label class="cover-field-label">Tipo de intervención</label>
+          <input class="cover-field" type="text" placeholder="Reforma integral · Adecuación de local · Rehabilitación..." id="tipo">
+        </div>
+      </div>
+    </div>
+    <div class="cover-foot">
+      <div class="cover-foot-left">
+        +34 698 900 623<br>
+        hola@obreko.com
+      </div>
+      <div class="cover-foot-right">
+        Documento confidencial<br>
+        Válido 30 días desde emisión
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 2 — DATOS DEL PROYECTO
+══════════════════ -->
+<div class="page">
+  <div class="sec-header" style="position:relative">
+    <div class="sec-num">01</div>
+    <div class="tag" style="margin-bottom:2mm">Datos del proyecto</div>
+    <div class="section-h" style="font-size:22pt">Información <em style="font-style:italic">general</em></div>
+  </div>
+  <div class="content-pad">
+    <!-- DATOS CLIENTE -->
+    <div>
+      <div style="font-size:7.5pt;font-weight:700;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3mm;padding-bottom:1mm;border-bottom:1px solid var(--yellow)">Datos del cliente</div>
+      <div class="field-row col3">
+        <div class="field-group">
+          <label class="field-label">Nombre completo</label>
+          <input class="field" type="text" placeholder="Nombre Apellido">
+        </div>
+        <div class="field-group">
+          <label class="field-label">DNI / NIF</label>
+          <input class="field" type="text" placeholder="00000000A">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Teléfono</label>
+          <input class="field" type="text" placeholder="+34 600 000 000">
+        </div>
+      </div>
+      <div class="field-row col2">
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input class="field" type="text" placeholder="cliente@email.com">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Dirección de contacto</label>
+          <input class="field" type="text" placeholder="C/ Ejemplo, 24 — 38001 Santa Cruz">
+        </div>
+      </div>
+    </div>
+    <!-- DATOS INMUEBLE -->
+    <div>
+      <div style="font-size:7.5pt;font-weight:700;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3mm;padding-bottom:1mm;border-bottom:1px solid var(--yellow)">Datos del inmueble</div>
+      <div class="field-row col3">
+        <div class="field-group">
+          <label class="field-label">Dirección de la obra</label>
+          <input class="field" type="text" placeholder="C/ Obra, 10 — Santa Cruz">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Municipio</label>
+          <input class="field" type="text" placeholder="Santa Cruz de Tenerife">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Código postal</label>
+          <input class="field" type="text" placeholder="38001">
+        </div>
+      </div>
+      <div class="field-row col3">
+        <div class="field-group">
+          <label class="field-label">Tipo de inmueble</label>
+          <input class="field" type="text" placeholder="Piso · Local · Chalet · Nave...">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Superficie aprox. (m²)</label>
+          <input class="field" type="text" placeholder="85 m²">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Planta / Acceso</label>
+          <input class="field" type="text" placeholder="2ª planta · con ascensor">
+        </div>
+      </div>
+    </div>
+    <!-- DESCRIPCIÓN -->
+    <div>
+      <div style="font-size:7.5pt;font-weight:700;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3mm;padding-bottom:1mm;border-bottom:1px solid var(--yellow)">Descripción del proyecto</div>
+      <div class="field-group">
+        <label class="field-label">Resumen del trabajo a realizar</label>
+        <textarea class="field-area" rows="5" placeholder="Describe aquí el alcance general de la reforma: qué zonas se van a intervenir, qué trabajos se contemplan (demolición, albañilería, instalaciones, carpintería, pintura, etc.) y el objetivo final del proyecto..."></textarea>
+      </div>
+      <div class="field-row col2">
+        <div class="field-group">
+          <label class="field-label">Estado actual del inmueble</label>
+          <textarea class="field-area" rows="3" placeholder="Describe el estado actual: si hay obra existente, si hay que demoler, problemas de humedad, instalaciones antiguas..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Uso previsto tras la reforma</label>
+          <textarea class="field-area" rows="3" placeholder="Vivienda principal · Local comercial · Oficina · Alquiler vacacional · Hostelería..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="logo">obreko</span>
+    <span class="ref" id="ref-footer-p2"></span>
+    <span class="pgnum">2</span>
+  </div>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 3 — ALCANCE Y TRABAJOS
+══════════════════ -->
+<div class="page">
+  <div class="sec-header" style="position:relative">
+    <div class="sec-num">02</div>
+    <div class="tag" style="margin-bottom:2mm">Alcance de la obra</div>
+    <div class="section-h" style="font-size:22pt">Trabajos <em style="font-style:italic">contemplados</em></div>
+  </div>
+  <div class="content-pad">
+    <div style="font-size:8.5pt;color:#666;line-height:1.75;margin-bottom:2mm">Marca con una ✓ los trabajos incluidos en esta propuesta y detalla el alcance específico de cada uno.</div>
+    <table style="width:100%;border-collapse:collapse;font-size:9pt">
+      <thead>
+        <tr style="background:var(--navy)">
+          <th style="padding:2.5mm 4mm;color:var(--yellow);text-align:left;font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:6mm">Inc.</th>
+          <th style="padding:2.5mm 4mm;color:rgba(255,255,255,.8);text-align:left;font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:38mm">Trabajo</th>
+          <th style="padding:2.5mm 4mm;color:rgba(255,255,255,.8);text-align:left;font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase">Descripción / Alcance específico</th>
+        </tr>
+      </thead>
+      <tbody id="trabajos-tbody">
+        <tr style="background:var(--sand-lt)"><td colspan="3" style="padding:2mm 4mm;font-weight:700;font-size:7.5pt;color:var(--navy);letter-spacing:.05em">DEMOLICIÓN Y PREPARACIÓN</td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Retirada de revestimientos</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Especificar..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Demolición de tabiques</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Especificar..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Vaciado y gestión de escombros</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Especificar..."></td></tr>
+        <tr style="background:var(--sand-lt)"><td colspan="3" style="padding:2mm 4mm;font-weight:700;font-size:7.5pt;color:var(--navy);letter-spacing:.05em">ALBAÑILERÍA Y SOLADOS</td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Tabiquería nueva</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Especificar material y distribución..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Solado / pavimento</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Material, formato, superficies..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Alicatados y revestimientos</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Cocina, baños, zonas húmedas..."></td></tr>
+        <tr style="background:var(--sand-lt)"><td colspan="3" style="padding:2mm 4mm;font-weight:700;font-size:7.5pt;color:var(--navy);letter-spacing:.05em">INSTALACIONES</td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Instalación eléctrica</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Cuadro, circuitos, luminarias..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Fontanería y saneamiento</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Agua fría/caliente, desagüe..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Climatización / ventilación</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="A/A, recuperador, extractor..."></td></tr>
+        <tr style="background:var(--sand-lt)"><td colspan="3" style="padding:2mm 4mm;font-weight:700;font-size:7.5pt;color:var(--navy);letter-spacing:.05em">CARPINTERÍA Y ACABADOS</td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Puertas interiores</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Modelo, cantidad, acabado..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Ventanas / carpintería exterior</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Material, rotura de puente térmico..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Pintura y acabados</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Zonas, colores, tipo de pintura..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Cocina equipada</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Muebles, encimera, electrodomésticos..."></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2mm 4mm;text-align:center"><input type="checkbox" style="accent-color:var(--navy)"></td><td style="padding:2mm 4mm;font-size:8.5pt;color:#444">Baños completos</td><td style="padding:2mm 4mm"><input style="border:none;border-bottom:1px solid #eee;width:100%;font-family:var(--sans);font-size:8.5pt;outline:none;padding:1mm 0;background:transparent" type="text" placeholder="Sanitarios, grifería, ducha/bañera..."></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="page-footer">
+    <span class="logo">obreko</span>
+    <span class="ref" id="ref-footer-p3"></span>
+    <span class="pgnum">3</span>
+  </div>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 4 — PRESUPUESTO
+══════════════════ -->
+<div class="page">
+  <div class="sec-header" style="position:relative">
+    <div class="sec-num">03</div>
+    <div class="tag" style="margin-bottom:2mm">Presupuesto</div>
+    <div class="section-h" style="font-size:22pt">Desglose <em style="font-style:italic">económico</em></div>
+  </div>
+  <div class="content-pad">
+    <div style="font-size:8.5pt;color:#666;margin-bottom:3mm;line-height:1.7">Presupuesto cerrado. Todos los importes incluyen material y mano de obra salvo indicación expresa. IVA no incluido.</div>
+    <table class="data-table" id="presupuesto-table">
+      <thead>
+        <tr>
+          <th style="width:8mm">#</th>
+          <th>Partida / Descripción</th>
+          <th class="r" style="width:16mm">Uds.</th>
+          <th class="r" style="width:22mm">Precio unit.</th>
+          <th class="r y" style="width:22mm">Total</th>
+        </tr>
+      </thead>
+      <tbody id="presupuesto-tbody">
+        <tr class="section-row"><td colspan="5"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;font-weight:700;color:var(--navy);width:100%;outline:none;letter-spacing:.05em;text-transform:uppercase" type="text" placeholder="1. CAPÍTULO (p.ej: Demolición y preparación)"></td></tr>
+        <tr><td style="color:#aaa;font-size:8pt;padding:2.5mm 4mm">1.1</td><td><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0" type="text" placeholder="Descripción de la partida"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0 m²"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9.5pt;font-weight:600;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+        <tr style="background:#fafaf8"><td style="color:#aaa;font-size:8pt;padding:2.5mm 4mm">1.2</td><td><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0" type="text" placeholder="Descripción de la partida"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0 m²"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9.5pt;font-weight:600;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+        <tr class="section-row"><td colspan="5"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;font-weight:700;color:var(--navy);width:100%;outline:none;letter-spacing:.05em;text-transform:uppercase" type="text" placeholder="2. CAPÍTULO (p.ej: Instalaciones)"></td></tr>
+        <tr><td style="color:#aaa;font-size:8pt;padding:2.5mm 4mm">2.1</td><td><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0" type="text" placeholder="Descripción de la partida"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0 ud."></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9.5pt;font-weight:600;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+        <tr style="background:#fafaf8"><td style="color:#aaa;font-size:8pt;padding:2.5mm 4mm">2.2</td><td><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0" type="text" placeholder="Descripción de la partida"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0 ud."></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9.5pt;font-weight:600;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+        <tr class="section-row"><td colspan="5"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;font-weight:700;color:var(--navy);width:100%;outline:none;letter-spacing:.05em;text-transform:uppercase" type="text" placeholder="3. CAPÍTULO (p.ej: Carpintería y acabados)"></td></tr>
+        <tr><td style="color:#aaa;font-size:8pt;padding:2.5mm 4mm">3.1</td><td><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0" type="text" placeholder="Descripción de la partida"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0 ud."></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9pt;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td><td class="r"><input style="border:none;border-bottom:1px solid #eee;background:transparent;font-family:var(--sans);font-size:9.5pt;font-weight:600;color:var(--navy);width:100%;outline:none;padding:1.5mm 0;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="4" style="padding:3mm 4mm;text-align:right;color:#666;font-size:8.5pt">Base imponible</td><td class="r" style="padding:3mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:10pt;font-weight:600;color:var(--navy);width:100%;outline:none;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+        <tr><td colspan="4" style="padding:2mm 4mm;text-align:right;color:#666;font-size:8.5pt">IVA (10% obra o 21% servicios)</td><td class="r" style="padding:2mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:10pt;font-weight:600;color:var(--navy);width:100%;outline:none;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+        <tr><td colspan="4" style="padding:3mm 4mm;text-align:right;font-weight:700;color:var(--navy);font-size:10pt">TOTAL PROPUESTA</td><td class="r total" style="padding:3mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:13pt;font-weight:700;color:var(--navy);width:100%;outline:none;text-align:right" type="text" placeholder="0,00 €"></td></tr>
+      </tfoot>
+    </table>
+    <div style="margin-top:3mm;padding:3mm 5mm;background:var(--sand-lt);border-left:2px solid var(--yellow)">
+      <div style="font-size:7.5pt;color:#555;line-height:1.7">
+        <strong style="color:var(--navy)">Condiciones:</strong> Presupuesto cerrado válido 30 días. No incluye licencias ni tasas municipales, salvo indicación expresa. Gastos de gestión de residuos incluidos. Materiales y calidades según memoria descriptiva anexa.
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="logo">obreko</span>
+    <span class="ref" id="ref-footer-p4"></span>
+    <span class="pgnum">4</span>
+  </div>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 5 — PLANIFICACIÓN
+══════════════════ -->
+<div class="page">
+  <div class="sec-header" style="position:relative">
+    <div class="sec-num">04</div>
+    <div class="tag" style="margin-bottom:2mm">Planificación</div>
+    <div class="section-h" style="font-size:22pt">Plazos <em style="font-style:italic">y calendario</em></div>
+  </div>
+  <div class="content-pad">
+    <div class="field-row col3" style="margin-bottom:4mm">
+      <div class="field-group">
+        <label class="field-label">Fecha prevista de inicio</label>
+        <input class="field" type="text" placeholder="15 de febrero de 2026">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Duración estimada</label>
+        <input class="field" type="text" placeholder="8 semanas">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Fecha prevista de entrega</label>
+        <input class="field" type="text" placeholder="15 de abril de 2026">
+      </div>
+    </div>
+    <!-- PLANNING TABLE -->
+    <div style="font-size:7pt;font-weight:700;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2mm">Diagrama de fases</div>
+    <table style="width:100%;border-collapse:collapse;font-size:8pt">
+      <thead>
+        <tr style="background:var(--navy)">
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.7);text-align:left;width:45mm;font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase">Fase / Trabajo</th>
+          <th style="padding:2mm 4mm;color:var(--yellow);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 1</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 2</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 3</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 4</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 5</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 6</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 7</th>
+          <th style="padding:2mm 4mm;color:rgba(255,255,255,.5);font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;width:14mm;text-align:center">Sem 8</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="1. Demolición"></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="2. Albañilería"></td><td></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td></td><td></td><td></td><td></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="3. Instalaciones"></td><td></td><td></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td></td><td></td><td></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="4. Carpintería"></td><td></td><td></td><td></td><td></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td></td><td></td></tr>
+        <tr style="border-bottom:1px solid #ece8df"><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="5. Pinturas y acabados"></td><td></td><td></td><td></td><td></td><td></td><td style="background:var(--navy);opacity:.85"></td><td style="background:var(--navy);opacity:.85"></td><td></td></tr>
+        <tr style="border-bottom:1px solid #ece8df;background:#fafaf8"><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="6. Revisión y entrega"></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:var(--yellow);opacity:.9"></td><td style="background:var(--yellow);opacity:.9"></td></tr>
+        <tr><td style="padding:2.5mm 4mm"><input style="border:none;background:transparent;font-family:var(--sans);font-size:8pt;color:var(--navy);width:100%;outline:none" type="text" placeholder="7. (añadir fase)"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:2mm;display:flex;gap:5mm;align-items:center;font-size:7pt;color:#888">
+      <div style="display:flex;align-items:center;gap:2mm"><div style="width:10mm;height:4mm;background:var(--navy);opacity:.85"></div>Trabajo activo</div>
+      <div style="display:flex;align-items:center;gap:2mm"><div style="width:10mm;height:4mm;background:var(--yellow);opacity:.9"></div>Revisión / entrega</div>
+    </div>
+    <div class="field-group" style="margin-top:4mm">
+      <label class="field-label">Condiciones y observaciones de plazo</label>
+      <textarea class="field-area" rows="3" placeholder="Ej: El plazo puede verse afectado por la disponibilidad de materiales especiales o por modificaciones solicitadas por el cliente una vez iniciada la obra. Cualquier ampliación de alcance será presupuestada por separado y acordada por escrito."></textarea>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="logo">obreko</span>
+    <span class="ref" id="ref-footer-p5"></span>
+    <span class="pgnum">5</span>
+  </div>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 6 — CONDITIONS + FIRMA
+══════════════════ -->
+<div class="page">
+  <div class="sec-header" style="position:relative">
+    <div class="sec-num">05</div>
+    <div class="tag" style="margin-bottom:2mm">Condiciones y aceptación</div>
+    <div class="section-h" style="font-size:22pt">Garantías <em style="font-style:italic">y firma</em></div>
+  </div>
+  <div class="content-pad">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:4mm">
+      <div style="padding:4mm 5mm;background:var(--sand-lt);border-top:2px solid var(--yellow)">
+        <div style="font-size:7pt;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:2mm">Forma de pago</div>
+        <div style="font-size:8.5pt;color:#555;line-height:1.75">
+          <div style="display:flex;gap:2mm;margin-bottom:1mm"><span style="color:var(--yellow);font-weight:700">·</span><span>30% a la firma del contrato</span></div>
+          <div style="display:flex;gap:2mm;margin-bottom:1mm"><span style="color:var(--yellow);font-weight:700">·</span><span>40% al inicio de la obra</span></div>
+          <div style="display:flex;gap:2mm"><span style="color:var(--yellow);font-weight:700">·</span><span>30% a la entrega de llaves</span></div>
+        </div>
+        <div style="margin-top:3mm">
+          <label class="field-label">Adaptar condiciones de pago</label>
+          <textarea class="field-area" rows="2" placeholder="Si se acuerdan condiciones diferentes, indicarlas aquí..."></textarea>
+        </div>
+      </div>
+      <div style="padding:4mm 5mm;background:var(--sand-lt);border-top:2px solid var(--yellow)">
+        <div style="font-size:7pt;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:2mm">Garantías</div>
+        <div style="font-size:8.5pt;color:#555;line-height:1.75">
+          <div style="display:flex;gap:2mm;margin-bottom:1mm"><span style="color:var(--yellow);font-weight:700">·</span><span>Garantía estructural: 10 años</span></div>
+          <div style="display:flex;gap:2mm;margin-bottom:1mm"><span style="color:var(--yellow);font-weight:700">·</span><span>Instalaciones: 3 años</span></div>
+          <div style="display:flex;gap:2mm"><span style="color:var(--yellow);font-weight:700">·</span><span>Acabados: 1 año</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Notas adicionales y exclusiones</label>
+      <textarea class="field-area" rows="4" placeholder="Indicar aquí trabajos expresamente excluidos del presupuesto, materiales que aporta el cliente, condiciones especiales de acceso, etc."></textarea>
+    </div>
+    <div style="padding:4mm 5mm;background:var(--navy);margin-bottom:4mm">
+      <div style="font-size:7pt;letter-spacing:.2em;text-transform:uppercase;color:var(--yellow);font-weight:600;margin-bottom:2mm">Cláusula de aceptación</div>
+      <div style="font-size:8pt;color:rgba(255,255,255,.7);line-height:1.75">
+        El cliente declara haber leído y comprendido la presente propuesta en su totalidad y acepta los trabajos, precios y condiciones descritos. La firma de este documento implica la aceptación formal del presupuesto y la autorización para iniciar los trabajos en la fecha acordada. Cualquier modificación posterior al alcance o materiales deberá ser pactada por escrito entre ambas partes.
+      </div>
+    </div>
+    <!-- FIRMAS -->
+    <div class="sig-block">
+      <div>
+        <div class="sig-box">
+          <div style="margin-bottom:4mm">
+            <label class="field-label">Nombre del cliente (firmante)</label>
+            <input class="sig-name-field" type="text" placeholder="Nombre Apellido">
+          </div>
+          <div class="field-row col2" style="margin-bottom:3mm">
+            <div>
+              <label class="field-label">DNI / NIF</label>
+              <input class="sig-name-field" type="text" placeholder="00000000A">
+            </div>
+            <div>
+              <label class="field-label">Fecha</label>
+              <input class="sig-name-field" type="text" placeholder="__ / __ / 2026">
+            </div>
+          </div>
+          <div style="height:14mm;border-bottom:1px solid #ccc;margin-bottom:1mm"></div>
+          <div class="sig-label">Firma del cliente</div>
+        </div>
+      </div>
+      <div>
+        <div class="sig-box">
+          <div style="margin-bottom:4mm">
+            <div style="font-family:var(--serif);font-style:italic;font-size:13pt;color:var(--navy)">obreko</div>
+            <div style="font-size:7pt;color:#888;margin-top:1mm">Reformas y Construcción · NIF: B-00000000</div>
+          </div>
+          <div class="field-row col2" style="margin-bottom:3mm">
+            <div>
+              <label class="field-label">Responsable de obra</label>
+              <input class="sig-name-field" type="text" placeholder="Nombre Apellido">
+            </div>
+            <div>
+              <label class="field-label">Fecha</label>
+              <input class="sig-name-field" type="text" placeholder="__ / __ / 2026">
+            </div>
+          </div>
+          <div style="height:14mm;border-bottom:1px solid #ccc;margin-bottom:1mm"></div>
+          <div class="sig-label">Firma y sello obreko</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="logo">obreko</span>
+    <span class="ref" id="ref-footer-p6"></span>
+    <span class="pgnum">6</span>
+  </div>
+</div>
+
+<!-- ══════════════════
+     PÁGINA 7 — PÁGINA FINAL
+══════════════════ -->
+<div class="page" style="background:var(--navy)">
+  <div style="height:3px;background:var(--yellow)"></div>
+  <div style="flex:1;padding:16mm 14mm;display:flex;flex-direction:column;justify-content:space-between">
+    <div>
+      <div style="font-size:7pt;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6mm;display:flex;align-items:center;gap:8px">
+        <span style="display:block;width:20px;height:1px;background:var(--yellow)"></span>
+        Propuesta de reforma · obreko
+      </div>
+      <div style="font-family:var(--serif);font-size:38pt;font-weight:400;color:#fff;line-height:.92">
+        Gracias<br>por <em style="font-style:italic;color:var(--yellow)">confiar</em><br>en nosotros.
+      </div>
+    </div>
+    <div>
+      <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:5mm"></div>
+      <div style="font-size:7pt;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:3mm">¿Tienes dudas? Estamos a tu disposición</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">
+        <div style="padding:5mm 6mm;border:1px solid rgba(255,255,255,.1)">
+          <div style="font-size:6pt;letter-spacing:.25em;text-transform:uppercase;color:var(--yellow);font-weight:600;margin-bottom:3mm">Llámanos</div>
+          <div style="font-size:12pt;font-weight:700;color:#fff">+34 698 900 623</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,.5);margin-top:1mm">Lunes a viernes · 8:00 – 19:00</div>
+        </div>
+        <div style="padding:5mm 6mm;border:1px solid rgba(255,255,255,.1)">
+          <div style="font-size:6pt;letter-spacing:.25em;text-transform:uppercase;color:var(--yellow);font-weight:600;margin-bottom:3mm">Escríbenos</div>
+          <div style="font-size:10pt;font-weight:600;color:#fff">hola@obreko.com</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,.5);margin-top:1mm">obreko.com · Tenerife · Madrid</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(255,255,255,.08);padding-top:5mm">
+      <div style="font-family:var(--serif);font-style:italic;font-size:18pt;color:rgba(255,255,255,.12)">obreko</div>
+      <div style="font-size:7pt;color:rgba(255,255,255,.2);text-align:right;line-height:1.8">
+        Documento confidencial<br>
+        © 2026 obreko · Todos los derechos reservados
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sync reference field across all footers
+document.getElementById('referencia').addEventListener('input', function(){
+  var val = this.value || '';
+  ['ref-footer-p2','ref-footer-p3','ref-footer-p4','ref-footer-p5','ref-footer-p6'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = val;
+  });
+});
+
+// Auto-populate portada reference
+document.getElementById('referencia').addEventListener('input', function(){
+  var val = this.value || '';
+  document.title = val ? 'Propuesta · ' + val + ' · obreko' : 'Propuesta de Reforma · obreko';
+});
+
+function guardarWord(){
+  var html = document.documentElement.outerHTML;
+  var blob = new Blob([html], {type:'application/msword'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  var ref = document.getElementById('referencia').value || 'propuesta';
+  a.download = 'obreko-' + ref + '.doc';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function limpiarFormulario(){
+  if(!confirm('¿Limpiar todos los campos para empezar de nuevo?')) return;
+  document.querySelectorAll('input[type=text], textarea').forEach(function(el){
+    el.value = '';
+  });
+  document.querySelectorAll('input[type=checkbox]').forEach(function(el){
+    el.checked = false;
+  });
+}
+</script>
+</body>
+</html>
