@@ -161,38 +161,29 @@ const $ = (id) => document.getElementById(id);
 // Cloudflare Access distinta a la de esta página estática. La primera vez
 // que el navegador la visita, Access necesita completar una autenticación
 // silenciosa (una redirección) que un fetch() normal no puede seguir, y la
-// petición falla con "Failed to fetch". Cargar la ruta una vez en un iframe
-// oculto deja que esa redirección se complete y la cookie de esa sub-app
-// quede fijada, sin sacar al usuario de la página.
-function warmUpApiAccess(){
-  return new Promise((resolve) => {
-    const done = () => { clearTimeout(t); resolve(); };
-    const t = setTimeout(done, 3000);
-    const f = document.createElement('iframe');
-    f.style.display = 'none';
-    f.src = '/api/archive/auth';
-    f.onload = done;
-    f.onerror = done;
-    document.body.appendChild(f);
-  });
+// petición falla con "Failed to fetch". Access además bloquea que su propia
+// pantalla se cargue en un iframe, así que la única forma de completar esa
+// redirección es una navegación de página real: mandamos al navegador a
+// /api/archive/warmup, que rebota de vuelta aquí en cuanto Access deja
+// pasar la petición. Se protege con sessionStorage para no entrar en bucle.
+function warmUpApiAccessAndReturn(){
+  const key = 'ar_warmup_' + location.pathname;
+  if (sessionStorage.getItem(key)) return false;
+  sessionStorage.setItem(key, '1');
+  location.href = '/api/archive/warmup?return=' + encodeURIComponent(location.href);
+  return true;
 }
 
+// Devuelve true/false, o null si la página está navegando fuera (rebote).
 async function checkAuth(){
   try {
     const r = await fetch('/api/archive/auth');
     const j = await r.json().catch(() => ({authenticated: false}));
-    if (j.authenticated) return true;
+    return !!j.authenticated;
   } catch {
-    await warmUpApiAccess();
-    try {
-      const r2 = await fetch('/api/archive/auth');
-      const j2 = await r2.json().catch(() => ({authenticated: false}));
-      return !!j2.authenticated;
-    } catch {
-      return false;
-    }
+    if (warmUpApiAccessAndReturn()) return null;
+    return false;
   }
-  return false;
 }
 
 async function login(pin){
@@ -364,7 +355,9 @@ function escapeHtml(s){
 // Bootstrap
 (async () => {
   const authed = await checkAuth();
-  if (authed) {
+  if (authed === null) {
+    return; // la página está navegando fuera (rebote de Access), no seguir
+  } else if (authed) {
     enterApp();
   } else {
     $('loginWrap').style.display = 'flex';

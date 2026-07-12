@@ -51,20 +51,18 @@ window.BT = (function () {
   // Cloudflare Access distinta a la de esta página estática. La primera vez
   // que el navegador la visita, Access necesita completar una autenticación
   // silenciosa (una redirección) que un fetch() normal no puede seguir, y la
-  // petición falla con "Failed to fetch". Cargar la ruta una vez en un
-  // iframe oculto deja que esa redirección se complete y la cookie de esa
-  // sub-app quede fijada, sin sacar al usuario de la página.
-  function warmUpApiAccess() {
-    return new Promise((resolve) => {
-      const done = () => { clearTimeout(t); resolve(); };
-      const t = setTimeout(done, 3000);
-      const f = document.createElement('iframe');
-      f.style.display = 'none';
-      f.src = '/api/budget-tool/auth';
-      f.onload = done;
-      f.onerror = done;
-      document.body.appendChild(f);
-    });
+  // petición falla con "Failed to fetch". Access además bloquea que su
+  // propia pantalla se cargue en un iframe (X-Frame-Options), así que la
+  // única forma de completar esa redirección es una navegación de página
+  // real: mandamos al navegador a /api/budget-tool/warmup, que rebota de
+  // vuelta aquí en cuanto Access deja pasar la petición. Se protege con
+  // sessionStorage para no entrar en bucle si algo sigue sin funcionar.
+  function warmUpApiAccessAndReturn() {
+    const key = 'bt_warmup_' + location.pathname;
+    if (sessionStorage.getItem(key)) return false;
+    sessionStorage.setItem(key, '1');
+    location.href = '/api/budget-tool/warmup?return=' + encodeURIComponent(location.href);
+    return true;
   }
 
   function initAuth(onEnter) {
@@ -106,17 +104,11 @@ window.BT = (function () {
         const j = await r.json().catch(() => ({ authenticated: false }));
         if (j.authenticated) { enter(); return; }
       } catch {
-        // Primera visita en este navegador: dejamos que Access complete su
-        // autenticación silenciosa y reintentamos una vez.
-        await warmUpApiAccess();
-        try {
-          const r2 = await fetch('/api/budget-tool/auth');
-          const j2 = await r2.json().catch(() => ({ authenticated: false }));
-          if (j2.authenticated) { enter(); return; }
-        } catch {
-          // Sigue sin ir: mostramos el login igualmente en vez de dejar la
-          // página en blanco.
-        }
+        // Primera visita en este navegador: la petición a la API falla
+        // porque Access aún no ha fijado su cookie para esta sub-app.
+        // Rebotamos con una navegación real; si eso también falla (o ya lo
+        // intentamos antes), mostramos el login en vez de dejarlo en blanco.
+        if (warmUpApiAccessAndReturn()) return;
       }
       showLogin();
     })();
