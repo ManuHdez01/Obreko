@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Números</title>
+<link rel="stylesheet" href="_styles.css">
+<style>
+.viz-root{
+  --chart-surface:#fff;
+  --chart-grid:#EEEAE0;
+  --chart-axis:rgba(26,34,54,.25);
+  --chart-ink:var(--navy);
+  --chart-ink-muted:var(--slate);
+}
+.period-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.period-bar label{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--slate);font-weight:700;}
+.period-bar select{padding:8px 12px;border:1px solid rgba(26,34,54,.15);border-radius:7px;font-family:var(--sans);font-size:12.5px;background:#fff;}
+.chart-wrap{overflow-x:auto;}
+.chart-wrap svg{display:block;}
+.chart-pt{cursor:pointer;}
+.chart-pt:hover{r:6;}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--slate);}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.bar-row{display:grid;grid-template-columns:170px 1fr 74px;gap:10px;align-items:center;margin-bottom:9px;}
+.bar-row .lbl{font-size:11.5px;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{background:var(--sand-lt);border-radius:5px;height:16px;position:relative;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;min-width:3px;}
+.bar-row .val{font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--navy);}
+.note{font-size:11px;color:var(--slate);line-height:1.6;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta">PRESUPUESTOS INTERNOS</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="/intranet/">🏠 Intranet</a>
+    <a href="index.html">Proyectos</a>
+    <a href="panel.html">Panel económico</a>
+    <a href="numeros.html" class="on">Números</a>
+    <a href="proveedores.html">Proveedores</a>
+    <a href="costes-config.html">Costes</a>
+    <a href="/propuestas-interno/">Propuestas cliente →</a>
+    <button class="topbar-logout" id="btnLogout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="login-wrap" id="loginWrap" style="display:none">
+  <div class="login-card">
+    <div class="login-title">Acceso interno</div>
+    <div class="login-sub">Introduce el PIN del equipo para acceder.</div>
+    <form class="login-form" id="loginForm">
+      <label for="pinInput">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<div class="main viz-root" id="main">
+  <div class="main-head">
+    <div>
+      <h1 class="main-h1">Control <em>financiero</em></h1>
+      <div class="main-rule"></div>
+      <div class="main-sub">Datos reales de contabilidad (Holded): ingresos, gastos indirectos y tesorería. Los materiales de cada proyecto no se incluyen aquí — van dentro del propio presupuesto.</div>
+    </div>
+  </div>
+
+  <div class="period-bar">
+    <label for="periodSel">Periodo</label>
+    <select id="periodSel" onchange="loadNumeros()">
+      <option value="3">Últimos 3 meses</option>
+      <option value="6" selected>Últimos 6 meses</option>
+      <option value="12">Últimos 12 meses</option>
+    </select>
+  </div>
+
+  <div class="summary" id="kpiRow"></div>
+
+  <div id="numerosBody">
+    <div class="state">Cargando datos de Holded…</div>
+  </div>
+</div>
+
+<script src="_common.js"></script>
+<script>
+const { $, escapeHtml, fmtMoney, api } = window.BT;
+
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function fmtMonth(key) {
+  const [y, m] = key.split('-');
+  return MESES[Number(m) - 1] + ' ' + y.slice(2);
+}
+
+const CAT_COLORS = ['#5C7CD9', '#1a8c4a', '#8896B3', '#3d4868', '#B98900', '#7A5AC9'];
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+// Gráfica de línea simple, un único valor por mes.
+function renderLineChart(points, color) {
+  const W = Math.max(480, points.length * 90);
+  const H = 160;
+  const padL = 54, padR = 16, padT = 16, padB = 30;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  const max = Math.max(1, ...points.map((p) => p.total));
+  const x = (i) => padL + (points.length > 1 ? (i / (points.length - 1)) * plotW : plotW / 2);
+  const y = (v) => padT + plotH - (v / max) * plotH;
+
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: 'img' });
+
+  // Gridlines horizontales (4 franjas)
+  for (let i = 0; i <= 3; i++) {
+    const gy = padT + (plotH / 3) * i;
+    svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: gy, y2: gy, stroke: 'var(--chart-grid)', 'stroke-width': 1 }));
+    const val = max - (max / 3) * i;
+    const t = svgEl('text', { x: padL - 8, y: gy + 3, 'text-anchor': 'end', 'font-size': 9.5, fill: 'var(--chart-ink-muted)', 'font-family': 'var(--sans)' });
+    t.textContent = val >= 1000 ? Math.round(val / 1000) + 'k' : Math.round(val);
+    svg.appendChild(t);
+  }
+  // Eje base
+  svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: padT + plotH, y2: padT + plotH, stroke: 'var(--chart-axis)', 'stroke-width': 1 }));
+
+  // Área suave bajo la línea
+  const areaPath = ['M', x(0), padT + plotH].concat(points.flatMap((p, i) => ['L', x(i), y(p.total)])).concat(['L', x(points.length - 1), padT + plotH, 'Z']).join(' ');
+  svg.appendChild(svgEl('path', { d: areaPath, fill: color, opacity: 0.08 }));
+
+  // Línea
+  const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + ' ' + x(i) + ' ' + y(p.total)).join(' ');
+  svg.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+
+  // Puntos + etiquetas de mes + tooltip nativo
+  points.forEach((p, i) => {
+    const c = svgEl('circle', { class: 'chart-pt', cx: x(i), cy: y(p.total), r: 4, fill: color });
+    c.appendChild(svgEl('title')).textContent = `${fmtMonth(p.month)}: ${fmtMoney(p.total)}`;
+    svg.appendChild(c);
+    const lbl = svgEl('text', { x: x(i), y: H - 6, 'text-anchor': 'middle', 'font-size': 9.5, fill: 'var(--chart-ink-muted)', 'font-family': 'var(--sans)' });
+    lbl.textContent = fmtMonth(p.month);
+    svg.appendChild(lbl);
+  });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-wrap';
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+function renderAccountBars(items) {
+  const wrap = document.createElement('div');
+  if (!items.length) {
+    wrap.innerHTML = '<div class="state">Sin gastos indirectos en este periodo.</div>';
+    return wrap;
+  }
+  const MAX_ROWS = 6;
+  const top = items.slice(0, MAX_ROWS);
+  const rest = items.slice(MAX_ROWS);
+  const restTotal = rest.reduce((s, r) => s + r.total, 0);
+  const rows = restTotal > 0 ? top.concat([{ account_num: '', name: 'Otros', total: restTotal }]) : top;
+  const max = Math.max(...rows.map((r) => r.total), 1);
+
+  rows.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    const color = CAT_COLORS[i % CAT_COLORS.length];
+    row.innerHTML = `
+      <div class="lbl" title="${escapeHtml(r.name)}${r.account_num ? ' · ' + r.account_num : ''}">${escapeHtml(r.name)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (r.total / max) * 100)}%;background:${color}"></div></div>
+      <div class="val">${fmtMoney(r.total)}</div>`;
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+async function loadNumeros() {
+  const months = $('periodSel').value;
+  $('numerosBody').innerHTML = '<div class="state">Cargando datos de Holded…</div>';
+  try {
+    const d = await api('numeros?months=' + months);
+
+    $('kpiRow').innerHTML = `
+      <div class="summary-card"><div class="summary-label">Ingresos (${d.period.months} meses)</div><div class="summary-value">${fmtMoney(d.revenue.total)}</div></div>
+      <div class="summary-card"><div class="summary-label">Gastos indirectos</div><div class="summary-value">${fmtMoney(d.indirectExpenses.total)}</div></div>
+      <div class="summary-card"><div class="summary-label">Saldo en bancos</div><div class="summary-value">${fmtMoney(d.cash.total)}</div><div class="summary-extra">${d.cash.byAccount.map((a) => escapeHtml(a.name)).join(', ') || '—'}</div></div>
+    `;
+
+    const body = $('numerosBody');
+    body.innerHTML = '';
+
+    const cardIngresos = document.createElement('div');
+    cardIngresos.className = 'card';
+    cardIngresos.innerHTML = '<div class="card-h">Ingresos por mes</div>';
+    cardIngresos.appendChild(renderLineChart(d.revenue.byMonth, '#5C7CD9'));
+    body.appendChild(cardIngresos);
+
+    const cardGastos = document.createElement('div');
+    cardGastos.className = 'card';
+    cardGastos.innerHTML = '<div class="card-h">Gastos indirectos por mes</div><div class="card-hint">Servicios exteriores: alquiler, seguros, profesionales, suministros, publicidad… No incluye materiales de proyecto ni nóminas.</div>';
+    cardGastos.appendChild(renderLineChart(d.indirectExpenses.byMonth, '#1A2236'));
+    body.appendChild(cardGastos);
+
+    const cardDesglose = document.createElement('div');
+    cardDesglose.className = 'card';
+    cardDesglose.innerHTML = '<div class="card-h">Desglose de gastos indirectos por cuenta</div>';
+    cardDesglose.appendChild(renderAccountBars(d.indirectExpenses.byAccount));
+    body.appendChild(cardDesglose);
+
+    const noteCard = document.createElement('div');
+    noteCard.className = 'note';
+    noteCard.textContent = `${d.note} · ${d.documentsScanned} documentos de compra analizados en el periodo${d.linesUnmatched ? `, ${d.linesUnmatched} línea(s) sin cuenta reconocida` : ''}.`;
+    body.appendChild(noteCard);
+  } catch (e) {
+    $('numerosBody').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+window.loadNumeros = loadNumeros;
+
+window.BT.initAuth(async () => {
+  await loadNumeros();
+  window.BT.mountAssistant('Números', () => ({
+    pantalla: 'Control financiero (Holded): ingresos, gastos indirectos y tesorería de los últimos meses.',
+  }));
+});
+</script>
+</body>
+</html>
