@@ -131,19 +131,28 @@ function pickFile(kind) {
 }
 window.pickFile = pickFile;
 
+const MAX_ANALYZE_FILES = 6;
+
 $('fileInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
+  let fileList = Array.from(e.target.files || []);
   e.target.value = '';
-  if (!file) return;
-  $('analysisResult').innerHTML = '<div class="state">Comprimiendo imagen…</div>';
+  if (!fileList.length) return;
+  if (fileList.length > MAX_ANALYZE_FILES) {
+    toast(`Máximo ${MAX_ANALYZE_FILES} archivos por análisis; se usarán los primeros ${MAX_ANALYZE_FILES}.`, 'error');
+    fileList = fileList.slice(0, MAX_ANALYZE_FILES);
+  }
+  const multi = fileList.length > 1;
+  $('analysisResult').innerHTML = `<div class="state">${multi ? `Leyendo ${fileList.length} archivos…` : (fileList[0].type === 'application/pdf' ? 'Leyendo PDF…' : 'Comprimiendo imagen…')}</div>`;
   try {
-    const { base64, mediaType } = await compressImage(file);
+    const files = await Promise.all(fileList.map((file) => (
+      file.type === 'application/pdf' ? readFileAsBase64(file) : compressImage(file)
+    ).then(({ base64, mediaType }) => ({ mediaType, imageBase64: base64 }))));
     $('analysisResult').innerHTML = '<div class="state">Analizando con IA… (puede tardar unos segundos)</div>';
     const data = await api('analyze', {
       method: 'POST',
-      body: { projectId: project.id, kind: pendingKind, mediaType, imageBase64: base64 },
+      body: { projectId: project.id, kind: pendingKind, files },
     });
-    project.analysis = { ...data.analysis, kind: data.kind, imageKey: data.imageKey, analyzedAt: new Date().toISOString() };
+    project.analysis = { ...data.analysis, kind: data.kind, imageKeys: data.imageKeys, analyzedAt: new Date().toISOString() };
     renderAnalysis();
     toast('Análisis completado', 'success');
   } catch (err) {
@@ -172,6 +181,15 @@ function compressImage(file) {
     };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen')); };
     img.src = url;
+  });
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({ base64: reader.result.split(',')[1], mediaType: file.type });
+    reader.onerror = () => reject(new Error('No se pudo leer el PDF'));
+    reader.readAsDataURL(file);
   });
 }
 

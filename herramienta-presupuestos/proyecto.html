@@ -141,13 +141,13 @@
 
     <div class="card">
       <div class="card-h">Análisis de plano o fotografía (IA)</div>
-      <div class="card-hint">Sube un plano o una foto del inmueble: la IA estima superficie, estancias, estado y trabajos, y puedes aplicar el resultado a los campos de arriba.</div>
+      <div class="card-hint">Sube uno o varios planos/fotos del inmueble (puedes seleccionar varios a la vez): la IA combina todo en una sola estimación de superficie, estancias, estado y trabajos, y puedes aplicar el resultado a los campos de arriba.</div>
       <div style="display:grid;grid-template-columns:180px 180px 1fr;gap:12px;align-items:start;flex-wrap:wrap">
-        <div class="drop" id="dropPlano" onclick="pickFile('plano')">📐<br><strong>Subir plano</strong><br>JPG · PNG · WebP</div>
-        <div class="drop" id="dropFoto" onclick="pickFile('foto')">📷<br><strong>Subir foto</strong><br>JPG · PNG · WebP</div>
+        <div class="drop" id="dropPlano" onclick="pickFile('plano')">📐<br><strong>Subir plano(s)</strong><br>JPG · PNG · WebP · PDF</div>
+        <div class="drop" id="dropFoto" onclick="pickFile('foto')">📷<br><strong>Subir foto(s)</strong><br>JPG · PNG · WebP · PDF</div>
         <div id="analysisResult"><div class="state">Sin análisis todavía.</div></div>
       </div>
-      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,application/pdf" multiple style="display:none">
     </div>
   </div>
 
