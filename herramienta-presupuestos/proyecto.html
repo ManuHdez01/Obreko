@@ -217,6 +217,15 @@
       <div class="totals-box" id="costBreakdown"></div>
       <div class="notice" style="margin-top:12px">El PVP sugerido aplica el margen objetivo sobre el precio de venta (PVP = coste ÷ (1 − margen)). El IVA/IGIC se aplica en la propuesta al cliente, no aquí.</div>
     </div>
+
+    <div class="card">
+      <div class="card-h">
+        <span>Comparativa con el mercado</span>
+        <button class="btn btn-sm btn-blue" id="benchBtn" onclick="compararMercado()">Comparar con mercado</button>
+      </div>
+      <div class="card-hint">Contrasta tu PVP en €/m² con lo que cobra la competencia: tu tabla de referencia (en <a href="costes-config.html">Costes</a>) + estimación de mercado de la IA. Así ves si el margen deja un precio competitivo.</div>
+      <div id="benchResult"><div class="state">Pulsa «Comparar con mercado» cuando tengas el coste y el margen definidos.</div></div>
+    </div>
   </div>
 
   <!-- ═══ TAB RFQ ═══ -->
@@ -314,6 +323,58 @@
   </div>
 </div>
 
+<!-- ═══ ASISTENTE IA ═══ -->
+<button id="aiFab" title="Asistente de presupuestos" onclick="toggleAssistant()" aria-label="Abrir asistente">
+  <svg viewBox="0 0 100 90" width="42" height="38" aria-hidden="true">
+    <g transform="rotate(-9 50 45)"><ellipse cx="50" cy="45" rx="38" ry="32" fill="#1A2236"/><ellipse cx="50" cy="45" rx="19" ry="16" fill="#FED544"/></g>
+    <g transform="translate(42 42)"><circle r="3.6" fill="#1A2236"/></g>
+    <g transform="translate(58 42)"><circle r="3.6" fill="#1A2236"/></g>
+    <path d="M 45 51 Q 50 55.5 55 51" stroke="#1A2236" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </svg>
+</button>
+<aside id="aiPanel" role="dialog" aria-label="Asistente de presupuestos">
+  <div class="ai-head">
+    <div class="ai-avatar">o</div>
+    <div>
+      <div class="ai-title">Asistente de presupuestos</div>
+      <div class="ai-sub">Te ayudo a completar este proyecto</div>
+    </div>
+    <button class="ai-close" onclick="toggleAssistant()" aria-label="Cerrar">×</button>
+  </div>
+  <div class="ai-body" id="aiBody"></div>
+  <div class="ai-input">
+    <textarea id="aiInputField" rows="1" placeholder="Cuéntame el proyecto o pregúntame…"></textarea>
+    <button id="aiSend" onclick="sendAssistant()">Enviar</button>
+  </div>
+</aside>
+<style>
+#aiFab{position:fixed;bottom:22px;right:22px;z-index:9000;width:62px;height:62px;border-radius:50%;background:var(--yellow);border:none;cursor:pointer;box-shadow:0 6px 20px rgba(26,34,54,.35);display:flex;align-items:center;justify-content:center;transition:transform .15s;}
+#aiFab:hover{transform:scale(1.07);}
+#aiPanel{position:fixed;bottom:96px;right:22px;z-index:9001;width:390px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 130px);background:#fff;border-radius:14px;box-shadow:0 18px 60px rgba(10,15,30,.4);display:none;flex-direction:column;overflow:hidden;}
+#aiPanel.open{display:flex;}
+.ai-head{background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ai-avatar{width:34px;height:34px;border-radius:50%;background:var(--yellow);color:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;font-size:19px;}
+.ai-title{font-size:13px;font-weight:700;}
+.ai-sub{font-size:10px;color:rgba(255,255,255,.5);}
+.ai-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;line-height:1;}
+.ai-close:hover{color:#fff;}
+.ai-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--sand-lt);}
+.ai-msg{max-width:85%;padding:9px 13px;border-radius:12px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;}
+.ai-msg.bot{background:#fff;border:1px solid rgba(26,34,54,.08);align-self:flex-start;border-bottom-left-radius:4px;}
+.ai-msg.user{background:var(--navy);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.ai-msg.action{background:rgba(26,140,74,.1);border:1px solid rgba(26,140,74,.25);color:var(--green);align-self:flex-start;font-size:11px;font-weight:600;}
+.ai-typing{display:inline-flex;gap:4px;align-items:center;padding:6px 0;align-self:flex-start;}
+.ai-typing span{width:6px;height:6px;border-radius:50%;background:var(--navy);opacity:.3;animation:aiTyping 1.1s infinite;}
+.ai-typing span:nth-child(2){animation-delay:.15s;}
+.ai-typing span:nth-child(3){animation-delay:.3s;}
+@keyframes aiTyping{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.ai-input{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(26,34,54,.08);background:#fff;flex-shrink:0;}
+.ai-input textarea{flex:1;resize:none;border:1px solid rgba(26,34,54,.15);border-radius:8px;padding:8px 10px;font-family:var(--sans);font-size:12.5px;outline:none;max-height:90px;}
+.ai-input textarea:focus{border-color:var(--navy);}
+.ai-input button{background:var(--yellow);color:var(--navy);border:none;border-radius:8px;padding:0 16px;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;}
+.ai-input button:disabled{background:rgba(26,34,54,.15);color:var(--slate);cursor:wait;}
+@media print{#aiFab,#aiPanel{display:none !important;}}
+</style>
 <script src="_common.js"></script>
 <script src="proyecto.js"></script>
 </body>

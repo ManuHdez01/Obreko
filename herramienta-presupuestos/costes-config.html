@@ -108,6 +108,13 @@ body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-h">Precios de mercado (€/m², sin impuestos)</div>
+    <div class="card-hint">Tu referencia de lo que cobra la competencia, por tipo de intervención y calidad. La usa la comparativa de mercado de cada proyecto junto con la estimación de la IA. Región vacía = vale para ambas.</div>
+    <div id="marketWrap"></div>
+    <button type="button" class="add-row-btn" onclick="addMarketRow()">+ Añadir referencia</button>
+  </div>
+
   <button class="save-btn" onclick="saveConfig()">Guardar configuración</button>
   <span class="save-msg" id="saveMsg"></span>
 </div>
@@ -164,6 +171,44 @@ function readRows(section) {
   return out;
 }
 
+const TIPOS = ['reforma integral', 'adecuacion', 'obras-pequenas', 'mantenimiento', 'amueblar'];
+function addMarketRow(r) {
+  r = r || {};
+  const row = document.createElement('div');
+  row.className = 'rate-row market-row';
+  row.style.gridTemplateColumns = '1.3fr 1fr 1fr 90px 90px 28px';
+  row.innerHTML = `
+    <select class="mr-tipo" style="padding:9px 10px;border:1px solid rgba(26,34,54,.15);border-radius:6px;font-family:var(--sans);font-size:12px">
+      ${TIPOS.map((t) => `<option value="${t}" ${r.tipo === t ? 'selected' : ''}>${t}</option>`).join('')}
+    </select>
+    <select class="mr-calidad" style="padding:9px 10px;border:1px solid rgba(26,34,54,.15);border-radius:6px;font-family:var(--sans);font-size:12px">
+      <option value="economica" ${r.calidad === 'economica' ? 'selected' : ''}>Económica</option>
+      <option value="media" ${!r.calidad || r.calidad === 'media' ? 'selected' : ''}>Media</option>
+      <option value="alta" ${r.calidad === 'alta' ? 'selected' : ''}>Alta</option>
+    </select>
+    <select class="mr-region" style="padding:9px 10px;border:1px solid rgba(26,34,54,.15);border-radius:6px;font-family:var(--sans);font-size:12px">
+      <option value="" ${!r.region ? 'selected' : ''}>Ambas</option>
+      <option value="tenerife" ${r.region === 'tenerife' ? 'selected' : ''}>Tenerife</option>
+      <option value="madrid" ${r.region === 'madrid' ? 'selected' : ''}>Madrid</option>
+    </select>
+    <input class="mr-min" type="number" min="0" placeholder="min" value="${r.min != null ? r.min : ''}">
+    <input class="mr-max" type="number" min="0" placeholder="max" value="${r.max != null ? r.max : ''}">
+    <button type="button" onclick="this.parentElement.remove()">×</button>
+  `;
+  $('marketWrap').appendChild(row);
+}
+window.addMarketRow = addMarketRow;
+
+function readMarketRows() {
+  return Array.from(document.querySelectorAll('.market-row')).map((row) => ({
+    tipo: row.querySelector('.mr-tipo').value,
+    calidad: row.querySelector('.mr-calidad').value,
+    region: row.querySelector('.mr-region').value,
+    min: Number(row.querySelector('.mr-min').value) || 0,
+    max: Number(row.querySelector('.mr-max').value) || 0,
+  })).filter((r) => r.min > 0 && r.max >= r.min);
+}
+
 async function loadConfig() {
   const r = await fetch('/api/budget-tool/costs-config');
   const cfg = await r.json();
@@ -177,6 +222,9 @@ async function loadConfig() {
 
   $('indirectPct').value = cfg.indirectPct != null ? cfg.indirectPct : 15;
   $('defaultMarginPct').value = cfg.defaultMarginPct != null ? cfg.defaultMarginPct : 25;
+
+  $('marketWrap').innerHTML = '';
+  (cfg.marketRates || []).forEach((r) => addMarketRow(r));
 }
 
 async function saveConfig() {
@@ -185,6 +233,7 @@ async function saveConfig() {
     hoursPerM2: readRows('hours'),
     indirectPct: Number($('indirectPct').value),
     defaultMarginPct: Number($('defaultMarginPct').value),
+    marketRates: readMarketRows(),
   };
   $('saveMsg').textContent = 'Guardando…';
   try {

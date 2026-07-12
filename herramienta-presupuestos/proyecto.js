@@ -624,5 +624,176 @@ async function enviarAPropuesta() {
 }
 window.enviarAPropuesta = enviarAPropuesta;
 
+// ── Comparativa de mercado ───────────────────────────────────────────────
+
+async function compararMercado() {
+  const e = economics || {};
+  const m2 = Number($('fM2').value) || 0;
+  if (!m2 || !e.suggestedPrice) {
+    toast('Necesitas m² y un PVP calculado (materiales + costes) antes de comparar', 'error');
+    return;
+  }
+  const btn = $('benchBtn');
+  btn.disabled = true; btn.textContent = 'Analizando…';
+  $('benchResult').innerHTML = '<div class="state">Consultando referencia propia y estimación de mercado…</div>';
+  try {
+    const data = await api('benchmark', {
+      method: 'POST',
+      body: {
+        tipo: $('fMode').value === 'amueblar' ? 'amueblar' : $('fTipo').value,
+        region: $('fRegion').value,
+        calidad: $('fCalidad').value,
+        m2,
+        pvp: e.suggestedPrice,
+      },
+    });
+    renderBenchmark(data);
+  } catch (err) {
+    $('benchResult').innerHTML = '<div class="state error">Error: ' + escapeHtml(err.message) + '</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Comparar con mercado';
+  }
+}
+window.compararMercado = compararMercado;
+
+function renderBenchmark(data) {
+  const m = data.market || {};
+  const pvp = data.pvpPerM2;
+  const lo = Math.min(m.low || 0, data.ownRange ? data.ownRange.min : Infinity);
+  const hi = Math.max(m.high || 0, data.ownRange ? data.ownRange.max : 0, pvp);
+  const span = Math.max(hi - lo, 1);
+  const pos = Math.min(Math.max(((pvp - lo) / span) * 100, 2), 98);
+  const verdictBadge = m.verdict === 'competitivo' ? 'badge-ok' : m.verdict === 'bajo' ? 'badge-warn' : 'badge-err';
+  const verdictLabel = m.verdict === 'bajo' ? 'Por debajo de mercado' : m.verdict === 'alto' ? 'Por encima de mercado' : 'Competitivo';
+
+  $('benchResult').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <div style="font-family:var(--serif);font-style:italic;font-size:26px">${fmtMoney(pvp)}<span style="font-size:13px;color:var(--slate)">/m²</span></div>
+      <span class="badge ${verdictBadge}">${verdictLabel}</span>
+    </div>
+    <div style="position:relative;height:34px;margin:6px 4px 2px">
+      <div style="position:absolute;left:0;right:0;top:14px;height:8px;border-radius:4px;background:linear-gradient(90deg,rgba(254,213,68,.5),rgba(26,140,74,.35),rgba(198,40,40,.4))"></div>
+      <div style="position:absolute;left:${pos}%;top:4px;transform:translateX(-50%);width:4px;height:26px;background:var(--navy);border-radius:2px" title="Tu PVP"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--slate);margin:0 4px 12px">
+      <span>${fmtMoney(m.low)}/m² · mercado bajo</span>
+      <span>${fmtMoney(m.typical)}/m² · típico</span>
+      <span>${fmtMoney(m.high)}/m² · alto</span>
+    </div>
+    ${data.ownRange ? `<div style="font-size:11.5px;color:var(--slate);margin-bottom:8px">Tu referencia interna: ${fmtMoney(data.ownRange.min)}–${fmtMoney(data.ownRange.max)}/m² (editable en <a href="costes-config.html">Costes</a>)</div>` : '<div style="font-size:11.5px;color:var(--slate);margin-bottom:8px">Sin referencia interna para este tipo/calidad — puedes añadirla en <a href="costes-config.html">Costes</a> con precios reales que veáis en ofertas de la competencia.</div>'}
+    <div class="notice">${escapeHtml(m.analysis || '')}</div>
+  `;
+}
+
+// ── Asistente IA ─────────────────────────────────────────────────────────
+
+let aiHistory = [];
+
+function toggleAssistant() {
+  const panel = $('aiPanel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    if (!aiHistory.length) {
+      aiMsg('bot', '¡Hola! Soy tu asistente de presupuestos. Cuéntame el proyecto con tus palabras — por ejemplo: «reforma integral de un piso de 80 m² en La Laguna, cocina y dos baños, calidad media» — y voy rellenando la ficha y sugiriendo partidas. También puedes preguntarme precios orientativos o qué se te puede estar olvidando.');
+    }
+    $('aiInputField').focus();
+  }
+}
+window.toggleAssistant = toggleAssistant;
+
+function aiMsg(kind, text) {
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + kind;
+  div.textContent = text;
+  $('aiBody').appendChild(div);
+  $('aiBody').scrollTop = $('aiBody').scrollHeight;
+  return div;
+}
+
+function aiTyping() {
+  const d = document.createElement('div');
+  d.className = 'ai-typing';
+  d.innerHTML = '<span></span><span></span><span></span>';
+  $('aiBody').appendChild(d);
+  $('aiBody').scrollTop = $('aiBody').scrollHeight;
+  return d;
+}
+
+async function sendAssistant() {
+  const field = $('aiInputField');
+  const text = field.value.trim();
+  if (!text) return;
+  field.value = '';
+  aiMsg('user', text);
+  aiHistory.push({ role: 'user', content: text });
+
+  const btn = $('aiSend');
+  btn.disabled = true;
+  const typing = aiTyping();
+  try {
+    const data = await api('assistant', {
+      method: 'POST',
+      body: { project: collectForm(), messages: aiHistory },
+    });
+    typing.remove();
+    if (data.reply) {
+      aiMsg('bot', data.reply);
+      aiHistory.push({ role: 'assistant', content: data.reply });
+    }
+    for (const action of data.actions || []) {
+      applyAssistantAction(action);
+    }
+    if ((data.actions || []).length) await saveProject(false);
+  } catch (e) {
+    typing.remove();
+    aiMsg('bot', '⚠️ ' + e.message);
+  } finally {
+    btn.disabled = false;
+    field.focus();
+  }
+}
+window.sendAssistant = sendAssistant;
+
+$('aiInputField').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAssistant(); }
+});
+
+const FIELD_MAP = {
+  m2: 'fM2', tipo: 'fTipo', mode: 'fMode', region: 'fRegion', calidad: 'fCalidad',
+  clientName: 'fClientName', address: 'fAddress',
+  laborHours: 'fLaborHours', laborRate: 'fLaborRate', indirectPct: 'fIndirectPct', marginPct: 'fMarginPct',
+};
+
+function applyAssistantAction(action) {
+  if (action.type === 'update_project' && action.fields) {
+    const applied = [];
+    for (const [key, value] of Object.entries(action.fields)) {
+      if (key === 'estancias' && value && typeof value === 'object') {
+        if (value.cocinas != null) { $('fCocinas').value = value.cocinas; applied.push('cocinas: ' + value.cocinas); }
+        if (value.banos != null) { $('fBanos').value = value.banos; applied.push('baños: ' + value.banos); }
+        if (value.dormitorios != null) { $('fDormitorios').value = value.dormitorios; applied.push('dormitorios: ' + value.dormitorios); }
+      } else if (FIELD_MAP[key] && value != null && value !== '') {
+        $(FIELD_MAP[key]).value = value;
+        applied.push(key + ': ' + value);
+      }
+    }
+    if (applied.length) aiMsg('action', '✓ Aplicado a la ficha — ' + applied.join(' · '));
+  }
+  if (action.type === 'add_items' && Array.isArray(action.items)) {
+    project.items = project.items || [];
+    for (const it of action.items) {
+      const qty = Number(it.quantity) || 1;
+      const price = Number(it.unitPrice) || 0;
+      project.items.push({
+        name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
+        unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
+        totalPrice: +(qty * price).toFixed(2), reasoning: String(it.reasoning || ''),
+      });
+    }
+    renderItems();
+    aiMsg('action', '✓ ' + action.items.length + ' partida(s) añadida(s) a Materiales');
+  }
+}
+
 // ── Bootstrap ────────────────────────────────────────────────────────────
 window.BT.initAuth(load);

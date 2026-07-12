@@ -32,6 +32,13 @@ const DEFAULT_CONFIG = {
   },
   indirectPct: 15,
   defaultMarginPct: 25,
+  // Referencia propia de precios de mercado (€/m², sin impuestos) para el
+  // benchmark. Rellenar/ajustar desde la UI según lo que veáis en ofertas
+  // reales de la competencia.
+  marketRates: [
+    { tipo: 'reforma integral', calidad: 'media', region: '', min: 550, max: 850 },
+    { tipo: 'reforma integral', calidad: 'alta', region: '', min: 850, max: 1400 },
+  ],
 };
 
 export async function onRequestGet({ request, env }) {
@@ -77,7 +84,20 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'defaultMarginPct debe ser un número entre 0 y 95' }, 400);
   }
 
-  const config = { laborRates, hoursPerM2, indirectPct, defaultMarginPct, updatedAt: new Date().toISOString() };
+  const marketRates = Array.isArray(payload.marketRates)
+    ? payload.marketRates
+        .map((r) => ({
+          tipo: String(r.tipo || '').trim().slice(0, 60),
+          calidad: ['economica', 'media', 'alta'].includes(r.calidad) ? r.calidad : 'media',
+          region: ['tenerife', 'madrid'].includes(r.region) ? r.region : '',
+          min: Number(r.min) || 0,
+          max: Number(r.max) || 0,
+        }))
+        .filter((r) => r.tipo && r.min > 0 && r.max >= r.min)
+        .slice(0, 50)
+    : [];
+
+  const config = { laborRates, hoursPerM2, indirectPct, defaultMarginPct, marketRates, updatedAt: new Date().toISOString() };
   await env.BUDGET_TOOL.put(KV_KEY, JSON.stringify(config));
 
   return json(config);
