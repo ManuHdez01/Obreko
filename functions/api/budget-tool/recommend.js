@@ -21,6 +21,7 @@
 //   }
 
 import { verifySession } from './_auth.js';
+import { readLibrary } from './library.js';
 
 const CLAUDE_MODEL = 'claude-sonnet-5';
 const CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
@@ -107,10 +108,27 @@ export async function onRequestPost({ request, env }) {
     } catch { /* catálogo base corrupto: seguimos solo con extraCatalog */ }
   }
 
+  // La biblioteca propia va PRIMERO: son precios calibrados con los costes
+  // reales del equipo, más fiables que el scraping o la estimación.
+  const libraryEntries = (await readLibrary(env))
+    .filter((l) => l.mode === mode)
+    .map((l) => ({
+      supplier: 'Biblioteca obreko' + (l.supplier ? ' · ' + l.supplier : ''),
+      region,
+      category: mode,
+      name: l.name,
+      unit: l.unit || 'ud',
+      price: l.unitPrice,
+    }))
+    .slice(0, 120);
+
   const entries = Array.isArray(allPrices.entries) ? allPrices.entries : [];
-  const catalog = entries
-    .filter((e) => e.category === mode)
-    .filter((e) => e.region === region || e.region === 'nacional')
+  const catalog = libraryEntries
+    .concat(
+      entries
+        .filter((e) => e.category === mode)
+        .filter((e) => e.region === region || e.region === 'nacional')
+    )
     .concat(extraCatalog)
     .slice(0, MAX_CATALOG_ITEMS);
 

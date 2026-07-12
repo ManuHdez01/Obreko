@@ -326,7 +326,10 @@ function renderItems() {
         <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
         <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
         <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
-        <td class="r"><button class="btn btn-sm btn-danger" onclick="delItem(${i})">×</button></td>
+        <td class="r" style="white-space:nowrap">
+          <button class="btn btn-sm btn-sec" title="Guardar en la biblioteca de partidas" onclick="guardarEnBiblioteca(${i}, this)">★</button>
+          <button class="btn btn-sm btn-danger" onclick="delItem(${i})">×</button>
+        </td>
       </tr>`).join('');
   }
   const total = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
@@ -794,6 +797,186 @@ function applyAssistantAction(action) {
     aiMsg('action', '✓ ' + action.items.length + ' partida(s) añadida(s) a Materiales');
   }
 }
+
+// ── Biblioteca de partidas ───────────────────────────────────────────────
+
+let libTimer = null;
+function buscarBiblioteca() {
+  clearTimeout(libTimer);
+  libTimer = setTimeout(async () => {
+    const q = $('libQuery').value.trim();
+    try {
+      const data = await api('library?mode=' + encodeURIComponent($('fMode').value) + (q ? '&q=' + encodeURIComponent(q) : ''));
+      renderLibrary(data.items || []);
+    } catch (e) {
+      $('libResults').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+    }
+  }, 300);
+}
+window.buscarBiblioteca = buscarBiblioteca;
+
+function renderLibrary(items) {
+  if (!items.length) {
+    $('libResults').innerHTML = '<div class="state">Nada en la biblioteca todavía — guarda partidas con el botón ★.</div>';
+    return;
+  }
+  $('libResults').innerHTML = `<table class="tbl">${items.slice(0, 20).map((l) => `
+    <tr>
+      <td>${escapeHtml(l.name)} ${l.timesUsed ? `<span class="badge badge-muted">${l.timesUsed}×</span>` : ''}
+        ${l.supplier ? `<div style="font-size:10.5px;color:var(--slate)">${escapeHtml(l.supplier)}</div>` : ''}</td>
+      <td class="r">${fmtMoney(l.unitPrice)}/${escapeHtml(l.unit || 'ud')}</td>
+      <td class="r" style="white-space:nowrap">
+        <button class="btn btn-sm btn-pri" onclick='usarDeBiblioteca(${JSON.stringify(JSON.stringify(l))})'>+ Añadir</button>
+        <button class="btn btn-sm btn-danger" onclick="borrarDeBiblioteca('${escapeHtml(l.id)}')">×</button>
+      </td>
+    </tr>`).join('')}</table>`;
+}
+
+function usarDeBiblioteca(jsonStr) {
+  const l = JSON.parse(jsonStr);
+  project.items = project.items || [];
+  project.items.push({
+    name: l.name, supplier: 'Biblioteca' + (l.supplier ? ' · ' + l.supplier : ''),
+    unit: l.unit || 'ud', unitPrice: l.unitPrice, quantity: 1,
+    totalPrice: l.unitPrice, reasoning: l.notes || '',
+  });
+  renderItems();
+  saveProject(false);
+  api('library', { method: 'POST', body: { useId: l.id } }).catch(() => {});
+  toast('Añadido: ' + l.name, 'success');
+}
+window.usarDeBiblioteca = usarDeBiblioteca;
+
+async function guardarEnBiblioteca(i, btn) {
+  const it = project.items[i];
+  if (!it || !it.name) { toast('La partida necesita nombre y precio', 'error'); return; }
+  try {
+    await api('library', {
+      method: 'POST',
+      body: { name: it.name, supplier: it.supplier || '', unit: it.unit || 'ud', unitPrice: it.unitPrice, mode: $('fMode').value, notes: it.reasoning || '' },
+    });
+    if (btn) { btn.textContent = '✓'; setTimeout(() => { btn.textContent = '★'; }, 1500); }
+    toast('Guardada en la biblioteca: ' + it.name, 'success');
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+window.guardarEnBiblioteca = guardarEnBiblioteca;
+
+async function borrarDeBiblioteca(id) {
+  if (!confirm('¿Eliminar esta partida de la biblioteca?')) return;
+  try {
+    await api('library?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    buscarBiblioteca();
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+window.borrarDeBiblioteca = borrarDeBiblioteca;
+
+// ── Montar desde texto ───────────────────────────────────────────────────
+
+function abrirMontarTexto() {
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `
+    <div class="modal" style="max-width:640px">
+      <div class="modal-head"><div class="t">Montar presupuesto desde texto</div><div class="s">Pega la obra como venga — notas, WhatsApp, Excel…</div></div>
+      <div class="modal-body">
+        <textarea id="composeText" rows="9" style="width:100%;padding:10px 12px;border:1px solid rgba(26,34,54,.15);border-radius:8px;font-family:var(--sans);font-size:12.5px;outline:none;resize:vertical" placeholder="Ej.: reforma baño principal 5m2, quitar bañera y poner plato ducha 120x80, alicatar hasta techo, cambiar sanitarios roca, espejo con luz, mampara. También pintar el pasillo, unos 20m2 de pared…"></textarea>
+        <div id="composePreview" style="margin-top:10px"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-sec" id="composeCancel">Cerrar</button>
+        <button class="btn btn-pri" id="composeGo">Montar partidas</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
+  wrap.querySelector('#composeCancel').addEventListener('click', () => wrap.remove());
+  wrap.querySelector('#composeText').focus();
+
+  wrap.querySelector('#composeGo').addEventListener('click', async () => {
+    const text = wrap.querySelector('#composeText').value.trim();
+    if (text.length < 10) { toast('Escribe o pega la descripción de la obra', 'error'); return; }
+    const btn = wrap.querySelector('#composeGo');
+    const prev = wrap.querySelector('#composePreview');
+    btn.disabled = true; btn.textContent = 'Montando…';
+    prev.innerHTML = '<div class="state">La IA está montando las partidas…</div>';
+    try {
+      const data = await api('compose', {
+        method: 'POST',
+        body: { text, mode: $('fMode').value, region: $('fRegion').value, calidad: $('fCalidad').value, m2: Number($('fM2').value) || 0 },
+      });
+      const items = data.items || [];
+      if (!items.length) throw new Error('No se pudo extraer ninguna partida del texto.');
+      prev.innerHTML = `
+        ${data.summary ? `<div class="notice">${escapeHtml(data.summary)}</div>` : ''}
+        <table class="tbl">${items.map((it) => `
+          <tr><td>${escapeHtml(it.name)}${it.reasoning ? `<div style="font-size:10px;color:var(--slate)">${escapeHtml(it.reasoning)}</div>` : ''}</td>
+          <td class="r">${it.quantity} ${escapeHtml(it.unit || 'ud')}</td>
+          <td class="r">${fmtMoney(it.unitPrice)}</td></tr>`).join('')}</table>
+        <button class="btn btn-pri" style="margin-top:10px" id="composeApply">Añadir las ${items.length} partidas al proyecto</button>`;
+      prev.querySelector('#composeApply').addEventListener('click', async () => {
+        applyAssistantAction({ type: 'add_items', items });
+        await saveProject(false);
+        wrap.remove();
+        toast(items.length + ' partidas añadidas', 'success');
+      });
+    } catch (e) {
+      prev.innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Montar partidas';
+    }
+  });
+}
+window.abrirMontarTexto = abrirMontarTexto;
+
+// ── Revisor anti-pérdidas ────────────────────────────────────────────────
+
+async function revisarPresupuesto() {
+  const btn = $('reviewBtn');
+  btn.disabled = true; btn.textContent = 'Revisando…';
+  $('reviewResult').innerHTML = '<div class="state">Buscando partidas olvidadas y cantidades raras…</div>';
+  try {
+    const data = await api('review', { method: 'POST', body: { project: collectForm() } });
+    renderReview(data);
+  } catch (e) {
+    $('reviewResult').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = '🔍 Revisar (anti-pérdidas)';
+  }
+}
+window.revisarPresupuesto = revisarPresupuesto;
+
+function renderReview(data) {
+  const missing = data.missing || [];
+  const warnings = data.warnings || [];
+  if (data.verdict === 'completo' && !warnings.length) {
+    $('reviewResult').innerHTML = '<div class="notice" style="border-left-color:var(--green)">✓ El presupuesto parece completo para este tipo de obra.</div>';
+    return;
+  }
+  $('reviewResult').innerHTML = `
+    ${missing.length ? `
+      <div class="notice" style="border-left-color:var(--red)"><strong>Posibles partidas olvidadas (${missing.length}):</strong></div>
+      <table class="tbl" style="margin-bottom:10px">${missing.map((m, i) => `
+        <tr>
+          <td>${escapeHtml(m.name)}<div style="font-size:10.5px;color:var(--slate)">${escapeHtml(m.reason)}</div></td>
+          <td class="r">${m.quantity} ${escapeHtml(m.unit || 'ud')}</td>
+          <td class="r">${fmtMoney(m.unitPrice)}</td>
+          <td class="r"><button class="btn btn-sm btn-pri" onclick='anadirFaltante(${JSON.stringify(JSON.stringify(m))}, this)'>+ Añadir</button></td>
+        </tr>`).join('')}</table>` : ''}
+    ${warnings.length ? `<div class="notice">${warnings.map(escapeHtml).join('<br>')}</div>` : ''}
+  `;
+}
+
+function anadirFaltante(jsonStr, btn) {
+  const m = JSON.parse(jsonStr);
+  applyAssistantAction({ type: 'add_items', items: [{ name: m.name, supplier: 'estimación', unit: m.unit, unitPrice: m.unitPrice, quantity: m.quantity, reasoning: m.reason }] });
+  saveProject(false);
+  if (btn) { btn.disabled = true; btn.textContent = '✓ Añadida'; }
+}
+window.anadirFaltante = anadirFaltante;
 
 // ── Bootstrap ────────────────────────────────────────────────────────────
 window.BT.initAuth(load);

@@ -170,9 +170,28 @@
 
     <div class="card">
       <div class="card-h">
-        <span>Materiales del proyecto</span>
-        <button class="btn btn-sm btn-pri" id="recBtn" onclick="recomendarIA()">✨ Recomendar con IA</button>
+        <span>Biblioteca de partidas (tu banco de precios)</span>
       </div>
+      <div class="card-hint">Partidas guardadas con vuestros precios reales. Se reutilizan aquí y alimentan la recomendación IA. Guarda cualquier partida del proyecto con el botón ★ de su fila.</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <div class="field-group" style="flex:1;min-width:200px">
+          <label>Buscar en la biblioteca</label>
+          <input type="text" id="libQuery" placeholder="alicatado, punto de luz, plato de ducha…" oninput="buscarBiblioteca()">
+        </div>
+      </div>
+      <div id="libResults" style="margin-top:10px"><div class="state">Escribe para buscar, o deja vacío y pulsa la lupa para ver las más usadas.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <span>Materiales del proyecto</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-sec" onclick="abrirMontarTexto()">📋 Montar desde texto</button>
+          <button class="btn btn-sm btn-blue" id="reviewBtn" onclick="revisarPresupuesto()">🔍 Revisar (anti-pérdidas)</button>
+          <button class="btn btn-sm btn-pri" id="recBtn" onclick="recomendarIA()">✨ Recomendar con IA</button>
+        </span>
+      </div>
+      <div id="reviewResult"></div>
       <div style="overflow-x:auto">
         <table class="tbl">
           <thead><tr><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Total</th><th></th></tr></thead>
