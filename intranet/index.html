@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Intranet</title>
+<style>
+@font-face{font-family:'Playfair Display';src:url('../fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'Playfair Display';src:url('../fonts/playfair.woff2') format('woff2');font-style:normal;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('../fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#1A2236;--yellow:#FED544;--sand:#F1EDE0;--sand-lt:#FAF7EE;--blue:#5C7CD9;--slate:#8896B3;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;}
+body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100vh;}
+
+.hero{background:var(--navy);color:#fff;padding:44px 28px 38px;border-bottom:3px solid var(--yellow);}
+.hero-inner{max-width:1080px;margin:0 auto;}
+.hero-brand{font-family:var(--serif);font-style:italic;font-size:34px;}
+.hero-tag{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow);margin-top:6px;font-weight:600;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:12px;max-width:560px;line-height:1.7;}
+
+.main{max-width:1080px;margin:0 auto;padding:30px 28px 70px;}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin:26px 0 12px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.card{
+  background:#fff;border-radius:12px;border:1px solid rgba(26,34,54,.08);
+  padding:20px;text-decoration:none;color:var(--navy);display:flex;flex-direction:column;gap:6px;
+  border-top:3px solid var(--yellow);transition:transform .14s,box-shadow .14s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(26,34,54,.14);}
+.card-ico{font-size:22px;}
+.card-t{font-family:var(--serif);font-style:italic;font-size:18px;}
+.card-d{font-size:11.5px;color:var(--slate);line-height:1.55;flex:1;}
+.card-pin{font-size:9.5px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;font-weight:700;}
+.card.ext{border-top-color:var(--blue);}
+
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:8px;}
+.info-box{background:var(--sand-lt);border-radius:10px;padding:16px 18px;border:1px solid rgba(26,34,54,.06);}
+.info-box .t{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+.info-box .b{font-size:12.5px;line-height:1.8;color:#444;}
+.info-box a{color:var(--blue);}
+
+.foot{max-width:1080px;margin:0 auto;padding:0 28px 40px;font-size:10.5px;color:var(--slate);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-brand">obreko</div>
+    <div class="hero-tag">INTRANET · SOLO EQUIPO</div>
+    <div class="hero-sub">Todas las herramientas internas en un solo sitio. Este espacio está protegido: solo los emails autorizados del equipo pueden entrar.</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sec-title">Herramientas de trabajo</div>
+  <div class="grid">
+    <a class="card" href="/herramienta-presupuestos/">
+      <div class="card-ico">🧮</div>
+      <div class="card-t">Motor de presupuestos</div>
+      <div class="card-d">Proyectos con IA: análisis de planos, precios de proveedores, márgenes, RFQs, facturas y memoria comercial.</div>
+      <div class="card-pin">PIN de equipo</div>
+    </a>
+    <a class="card" href="/propuestas-interno/">
+      <div class="card-ico">📄</div>
+      <div class="card-t">Propuestas cliente</div>
+      <div class="card-d">Los 9 modelos de propuesta editables: rellenar, guardar en CRM, archivar y exportar a PDF.</div>
+      <div class="card-pin">Acceso directo</div>
+    </a>
+    <a class="card" href="/archivo/">
+      <div class="card-ico">🗄️</div>
+      <div class="card-t">Archivo de propuestas</div>
+      <div class="card-d">Snapshot de cada propuesta guardada, con buscador, filtros y edición. Retención de 1 año.</div>
+      <div class="card-pin">PIN de equipo</div>
+    </a>
+    <a class="card" href="/herramienta-presupuestos/panel.html">
+      <div class="card-ico">📊</div>
+      <div class="card-t">Panel económico</div>
+      <div class="card-d">Presupuestado, facturado, cobrado y margen real de todos los proyectos, con análisis IA de la cartera.</div>
+      <div class="card-pin">PIN de equipo</div>
+    </a>
+    <a class="card" href="/herramienta-presupuestos/proveedores.html">
+      <div class="card-ico">🚚</div>
+      <div class="card-t">Proveedores</div>
+      <div class="card-d">Alta de proveedores, emails para solicitudes de presupuesto y URLs de búsqueda automática de precios.</div>
+      <div class="card-pin">PIN de equipo</div>
+    </a>
+    <a class="card" href="/herramienta-presupuestos/costes-config.html">
+      <div class="card-ico">⚙️</div>
+      <div class="card-t">Costes y márgenes</div>
+      <div class="card-d">Tarifas de personal, horas por m², coste indirecto, margen objetivo y precios de mercado de referencia.</div>
+      <div class="card-pin">PIN de equipo</div>
+    </a>
+  </div>
+
+  <div class="sec-title">Marca y recursos</div>
+  <div class="grid">
+    <a class="card" href="/brand-manual/">
+      <div class="card-ico">🎨</div>
+      <div class="card-t">Manual de identidad</div>
+      <div class="card-d">La biblia de la marca: logotipo, colores, tipografía, plantillas y aplicaciones. Consultar antes de crear cualquier pieza.</div>
+      <div class="card-pin">Uso interno</div>
+    </a>
+    <a class="card ext" href="https://obreko.com" target="_blank" rel="noopener">
+      <div class="card-ico">🌍</div>
+      <div class="card-t">obreko.com</div>
+      <div class="card-d">La web pública: servicios, landings por municipio y blog. Lo que ve el cliente.</div>
+      <div class="card-pin">Público ↗</div>
+    </a>
+    <a class="card ext" href="https://app.hubspot.com" target="_blank" rel="noopener">
+      <div class="card-ico">🤝</div>
+      <div class="card-t">HubSpot CRM</div>
+      <div class="card-d">Contactos y deals. Las propuestas guardadas desde la plataforma crean el deal automáticamente.</div>
+      <div class="card-pin">Cuenta propia ↗</div>
+    </a>
+  </div>
+
+  <div class="sec-title">Datos rápidos</div>
+  <div class="info">
+    <div class="info-box">
+      <div class="t">Contacto de empresa</div>
+      <div class="b">📞 +34 698 900 623<br>✉️ <a href="mailto:hola@obreko.com">hola@obreko.com</a><br>Tenerife · Madrid</div>
+    </div>
+    <div class="info-box">
+      <div class="t">Incidencias y mejoras</div>
+      <div class="b">¿Algo roto o una idea? Usa el <strong>obrekobot</strong> (botón amarillo) en Propuestas cliente para abrir un ticket al equipo técnico.</div>
+    </div>
+    <div class="info-box">
+      <div class="t">Accesos</div>
+      <div class="b">Entrada a la intranet: código de un solo uso a tu email autorizado.<br>Herramientas con PIN: pídeselo a Manu si no lo tienes.</div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">obreko · intranet interna · si necesitas acceso para alguien nuevo, hay que añadir su email en Cloudflare Access (ver intranet/SETUP-ACCESS.md).</div>
+
+</body>
+</html>
