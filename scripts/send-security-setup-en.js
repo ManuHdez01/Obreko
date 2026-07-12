@@ -1,5 +1,9 @@
 // One-shot: obrekobot sends onboarding + security instructions to Rafa and Matías (English).
-const API_KEY = 'REDACTED_ROTATE_THIS_KEY';
+const API_KEY = process.env.RESEND_API_KEY;
+if (!API_KEY) {
+  console.error('Missing RESEND_API_KEY. Run: set RESEND_API_KEY=re_... && node scripts/send-security-setup-en.js');
+  process.exit(1);
+}
 const TO = [
   'manu.hdezsantos@gmail.com',
   'rafa.rldt@gmail.com',

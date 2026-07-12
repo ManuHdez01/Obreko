@@ -1,6 +1,10 @@
 // One-shot: envía email de bienvenida de obrekobot al equipo.
 // NO subir a producción. Script local.
-const API_KEY = 'REDACTED_ROTATE_THIS_KEY';
+const API_KEY = process.env.RESEND_API_KEY;
+if (!API_KEY) {
+  console.error('Falta RESEND_API_KEY. Ejecuta: set RESEND_API_KEY=re_... && node scripts/send-welcome.js');
+  process.exit(1);
+}
 const TO = [
   'manu.hdezsantos@gmail.com',
   'rafa.rldt@gmail.com',

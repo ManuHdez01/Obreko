@@ -1,5 +1,9 @@
 // One-shot: obrekobot envía instrucciones de alta y seguridad a Rafa y Matías.
-const API_KEY = 'REDACTED_ROTATE_THIS_KEY';
+const API_KEY = process.env.RESEND_API_KEY;
+if (!API_KEY) {
+  console.error('Falta RESEND_API_KEY. Ejecuta: set RESEND_API_KEY=re_... && node scripts/send-security-setup.js');
+  process.exit(1);
+}
 const TO = [
   'manu.hdezsantos@gmail.com',
   'rafa.rldt@gmail.com',
