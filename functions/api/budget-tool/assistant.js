@@ -84,7 +84,9 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'JSON inválido' }, 400);
   }
 
-  const project = payload.project && typeof payload.project === 'object' ? payload.project : {};
+  const project = payload.project && typeof payload.project === 'object' ? payload.project : null;
+  // Contexto genérico de página (index, panel, proveedores...) cuando no hay proyecto
+  const context = payload.context && typeof payload.context === 'object' ? payload.context : null;
   const history = (Array.isArray(payload.messages) ? payload.messages : [])
     .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
     .slice(-MAX_MESSAGES)
@@ -94,7 +96,10 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'El último mensaje debe ser del usuario' }, 400);
   }
 
-  const system = `Eres el asistente de presupuestos de obreko, empresa de reformas en Tenerife y Madrid. Hablas con un compañero del equipo (no con el cliente final), en español, con tono directo y práctico — como un jefe de obra con experiencia.
+  let system = `Eres el asistente IA del portal interno de presupuestos de obreko, empresa de reformas en Tenerife y Madrid. Hablas con un compañero del equipo (no con el cliente final), en español, con tono directo y práctico — como un jefe de obra con experiencia.`;
+
+  if (project) {
+    system += `
 
 Tu trabajo: ayudarle a completar el presupuesto del proyecto paso a paso. Haz preguntas concretas de una en una cuando falten datos (superficie, estancias, calidad, alcance...), sugiere partidas y precios orientativos realistas para la región, y avisa de cosas que suelen olvidarse (gestión de escombros, licencias, protecciones...).
 
@@ -104,6 +109,14 @@ Estado actual del proyecto (JSON):
 ${JSON.stringify(stripProject(project)).slice(0, 6000)}
 
 Campos vacíos o a 0 = pendientes de rellenar. La región ${project.region === 'madrid' ? 'es Madrid' : 'es Tenerife (Canarias: IGIC, coste insular)'}.`;
+  } else {
+    system += `
+
+El usuario está en la página «${context && context.page ? String(context.page).slice(0, 60) : 'portal'}» del portal. Ayúdale con lo que vea ahí: interpretar cifras, decidir márgenes, priorizar cobros, dudas de proveedores o del uso del portal. No tienes herramientas en esta página — si quiere modificar un proyecto, dile que abra su ficha y use el asistente desde allí.
+
+Datos visibles en la página (JSON):
+${context ? JSON.stringify(context).slice(0, 6000) : 'sin datos'}`;
+  }
 
   let res;
   try {
@@ -118,7 +131,7 @@ Campos vacíos o a 0 = pendientes de rellenar. La región ${project.region === '
         model: CLAUDE_MODEL,
         max_tokens: 2048,
         system,
-        tools: TOOLS,
+        ...(project ? { tools: TOOLS } : {}),
         messages: history,
       }),
     });

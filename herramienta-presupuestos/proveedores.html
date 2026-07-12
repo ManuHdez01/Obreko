@@ -182,7 +182,12 @@ async function delSupplier(id, name) {
 }
 window.delSupplier = delSupplier;
 
-window.BT.initAuth(loadSuppliers);
+window.BT.initAuth(async () => {
+  await loadSuppliers();
+  window.BT.mountAssistant('Proveedores', () => ({
+    proveedores: suppliers.map((s) => ({ nombre: s.name, region: s.region, email: !!s.email, busqueda: !!s.searchUrl, notas: s.notes })),
+  }));
+});
 </script>
 </body>
 </html>

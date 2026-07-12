@@ -42,10 +42,13 @@ async function deleteProject(id, ref) {
 }
 window.deleteProject = deleteProject;
 
+let lastProjects = [];
+
 async function loadProjects() {
   const body = $('projBody');
   try {
     const data = await api('projects');
+    lastProjects = data.items || [];
     if (!data.items.length) {
       body.innerHTML = '<tr><td colspan="9" class="tbl-empty">Aún no hay proyectos. Crea el primero con «+ Nuevo proyecto».</td></tr>';
       return;
@@ -73,4 +76,9 @@ async function loadProjects() {
   }
 }
 
-window.BT.initAuth(loadProjects);
+window.BT.initAuth(async () => {
+  await loadProjects();
+  window.BT.mountAssistant('Lista de proyectos', () => ({
+    proyectos: lastProjects.map((p) => ({ ref: p.ref, cliente: p.clientName, tipo: p.tipo, m2: p.m2, economia: p.economics })),
+  }));
+});

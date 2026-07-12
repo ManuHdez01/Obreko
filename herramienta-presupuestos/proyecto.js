@@ -978,5 +978,40 @@ function anadirFaltante(jsonStr, btn) {
 }
 window.anadirFaltante = anadirFaltante;
 
+// ── Memoria descriptiva IA ───────────────────────────────────────────────
+
+async function generarMemoria() {
+  const btn = $('memoriaBtn');
+  btn.disabled = true; btn.textContent = 'Redactando…';
+  try {
+    const data = await api('memoria', { method: 'POST', body: { project: collectForm() } });
+    const wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.innerHTML = `
+      <div class="modal" style="max-width:640px">
+        <div class="modal-head"><div class="t">Memoria descriptiva para la propuesta</div><div class="s">Redactada por IA a partir de las partidas — revísala antes de usarla</div></div>
+        <div class="modal-body">
+          <div id="memoriaText" style="white-space:pre-wrap;font-size:12.5px;line-height:1.7;background:var(--sand-lt);padding:14px 16px;border-radius:8px">${escapeHtml(data.memoria || '')}</div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sec" id="memClose">Cerrar</button>
+          <button class="btn btn-pri" id="memCopy">Copiar al portapapeles</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
+    wrap.querySelector('#memClose').addEventListener('click', () => wrap.remove());
+    wrap.querySelector('#memCopy').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(data.memoria || '');
+      wrap.querySelector('#memCopy').textContent = '✓ Copiada';
+    });
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '📝 Memoria IA';
+  }
+}
+window.generarMemoria = generarMemoria;
+
 // ── Bootstrap ────────────────────────────────────────────────────────────
 window.BT.initAuth(load);

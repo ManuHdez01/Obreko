@@ -49,6 +49,14 @@
   <div class="summary" id="globalSummary"></div>
 
   <div class="card">
+    <div class="card-h">
+      <span>Análisis IA del negocio</span>
+      <button class="btn btn-sm btn-pri" id="insightsBtn" onclick="analizarNegocio()">✨ Analizar cartera</button>
+    </div>
+    <div id="insightsResult"><div class="state">La IA revisa todos los proyectos: márgenes en riesgo, desviaciones de coste, cobros pendientes y qué atacar primero.</div></div>
+  </div>
+
+  <div class="card">
     <div class="card-h">Proyectos</div>
     <div style="overflow-x:auto">
       <table class="tbl">
@@ -67,12 +75,34 @@
 
 <script src="_common.js"></script>
 <script>
-const { $, escapeHtml, fmtMoney, fmtPct, api } = window.BT;
+const { $, escapeHtml, fmtMoney, fmtPct, toast, api } = window.BT;
+let lastItems = [];
+
+async function analizarNegocio() {
+  const btn = $('insightsBtn');
+  btn.disabled = true; btn.textContent = 'Analizando…';
+  $('insightsResult').innerHTML = '<div class="state">Revisando todos los proyectos…</div>';
+  try {
+    const d = await api('insights', { method: 'POST', body: {} });
+    $('insightsResult').innerHTML = `
+      <div class="notice" style="font-size:13px"><strong>${escapeHtml(d.headline || '')}</strong></div>
+      ${(d.risks || []).length ? '<div style="margin:10px 0 4px;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--red);text-transform:uppercase">Riesgos</div><ul style="margin:0 0 8px 18px;font-size:12.5px;line-height:1.7;color:#444">' + d.risks.map((r) => '<li>' + escapeHtml(r) + '</li>').join('') + '</ul>' : ''}
+      ${(d.highlights || []).length ? '<div style="margin:10px 0 4px;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--green);text-transform:uppercase">Va bien</div><ul style="margin:0 0 8px 18px;font-size:12.5px;line-height:1.7;color:#444">' + d.highlights.map((r) => '<li>' + escapeHtml(r) + '</li>').join('') + '</ul>' : ''}
+      ${(d.actions || []).length ? '<div style="margin:10px 0 4px;font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase">Acciones recomendadas</div><ol style="margin:0 0 4px 18px;font-size:12.5px;line-height:1.7;color:#444">' + d.actions.map((r) => '<li>' + escapeHtml(r) + '</li>').join('') + '</ol>' : ''}
+      <div style="font-size:10px;color:var(--slate);margin-top:8px">${d.analyzedProjects || 0} proyectos analizados · ${d.analyzedAt ? new Date(d.analyzedAt).toLocaleString('es-ES') : ''}</div>`;
+  } catch (e) {
+    $('insightsResult').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = '✨ Analizar cartera';
+  }
+}
+window.analizarNegocio = analizarNegocio;
 
 async function loadPanel() {
   try {
     const data = await api('projects');
     const items = data.items || [];
+    lastItems = items;
 
     const sum = (fn) => items.reduce((s, p) => s + (fn(p.economics || {}) || 0), 0);
     const g = {
@@ -112,7 +142,12 @@ async function loadPanel() {
   }
 }
 
-window.BT.initAuth(loadPanel);
+window.BT.initAuth(async () => {
+  await loadPanel();
+  window.BT.mountAssistant('Panel económico', () => ({
+    proyectos: lastItems.map((p) => ({ ref: p.ref, cliente: p.clientName, economia: p.economics })),
+  }));
+});
 </script>
 </body>
 </html>
