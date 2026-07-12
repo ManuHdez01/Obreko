@@ -1,16 +1,29 @@
 // GET /api/budget-tool/numeros?months=6
 //
-// Datos reales de contabilidad (Holded, Pronexo Hábitat) para el panel de
-// control financiero "Números": ingresos, gastos indirectos y tesorería.
+// Panel de control financiero "Números": trae y agrega toda la contabilidad
+// disponible en Holded (Pronexo Hábitat) — ventas, compras/gastos por grupo
+// contable, tesorería, cobros y pagos pendientes — y calcula los ratios
+// principales del negocio.
 //
-// Los costes de materiales (grupo contable 60) se excluyen a propósito: esos
-// van directamente dentro de cada partida de presupuesto, no como coste
-// estructural. Solo se calculan aquí los gastos indirectos (grupo 62 —
-// servicios exteriores: alquiler, seguros, profesionales, suministros...).
+// Aviso importante (transparencia): las nóminas (grupo contable 64) NO están
+// incluidas. Holded las gestiona por el módulo de RRHH, no por "Compras", y
+// ese módulo no está expuesto en la API pública de la misma forma. Los
+// ratios de margen/runway están marcados como "aproximados" por este motivo.
 
 import { verifySession } from './_auth.js';
 
 const HOLDED_BASE = 'https://api.holded.com/api/v2';
+
+// Grupos del plan general contable español relevantes en "Compras"/gastos.
+const GROUP_LABELS = {
+  60: 'Compras (materiales)',
+  61: 'Variación de existencias',
+  62: 'Servicios exteriores',
+  65: 'Otras pérdidas de gestión',
+  67: 'Gastos excepcionales',
+  68: 'Amortizaciones',
+  69: 'Deterioros y provisiones',
+};
 
 export async function onRequestGet({ request, env }) {
   if (!(await verifySession(request, env))) {
@@ -41,51 +54,85 @@ export async function onRequestGet({ request, env }) {
   const accountMap = new Map(accounts.map((a) => [a.id, a]));
   const monthKeys = buildMonthKeys(from, now);
 
-  // Ingresos por mes (todas las facturas de venta)
+  // ---------- Ingresos ----------
   const revenueByMonth = new Map(monthKeys.map((m) => [m, 0]));
+  const revenueByClient = new Map();
   let revenueTotal = 0;
+  let invoiceCount = 0;
+  let pendingCollection = 0;
+
   for (const doc of invoices) {
     const d = doc.date ? new Date(doc.date) : null;
     if (!d || isNaN(d) || d < from || d > now) continue;
+    invoiceCount++;
     const key = monthKey(d);
     const amount = parseEsNum(doc.subtotal);
+
     revenueByMonth.set(key, (revenueByMonth.get(key) || 0) + amount);
     revenueTotal += amount;
+    pendingCollection += parseEsNum(doc.payments_pending);
+
+    const clientName = doc.contact_name || '(sin nombre)';
+    revenueByClient.set(clientName, (revenueByClient.get(clientName) || 0) + amount);
   }
 
-  // Gastos indirectos (grupo 62) por mes y por cuenta
+  // ---------- Gastos (todos los grupos) ----------
+  const expensesByMonth = new Map(monthKeys.map((m) => [m, 0]));
+  const expensesByGroup = new Map();
+  const expensesBySupplier = new Map();
   const indirectByMonth = new Map(monthKeys.map((m) => [m, 0]));
   const indirectByAccount = new Map();
+
+  let expensesTotal = 0;
   let indirectTotal = 0;
   let documentsScanned = 0;
   let linesUnmatched = 0;
+  let pendingPayment = 0;
 
   for (const doc of purchases) {
     const d = doc.date ? new Date(doc.date) : null;
     if (!d || isNaN(d) || d < from || d > now) continue;
     documentsScanned++;
     const key = monthKey(d);
+    pendingPayment += parseEsNum(doc.payments_pending);
 
+    let docTotal = 0;
     for (const line of doc.lines || []) {
       const acc = accountMap.get(line.account);
-      if (!acc) {
-        linesUnmatched++;
-        continue;
-      }
-      const prefix = String(acc.account_num).slice(0, 2);
-      if (prefix !== '62') continue;
-
       const amount = parseEsNum(line.price) * parseEsNum(line.units != null ? line.units : 1) * (1 - parseEsNum(line.discount) / 100);
 
-      indirectByMonth.set(key, (indirectByMonth.get(key) || 0) + amount);
-      indirectTotal += amount;
+      if (!acc) {
+        linesUnmatched++;
+        expensesTotal += amount;
+        expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
+        docTotal += amount;
+        continue;
+      }
 
-      const cur = indirectByAccount.get(acc.account_num) || { account_num: acc.account_num, name: acc.name, total: 0 };
-      cur.total += amount;
-      indirectByAccount.set(acc.account_num, cur);
+      const group = String(acc.account_num).slice(0, 2);
+
+      expensesTotal += amount;
+      expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
+      docTotal += amount;
+
+      const gCur = expensesByGroup.get(group) || { group, label: GROUP_LABELS[group] || `Grupo ${group}`, total: 0 };
+      gCur.total += amount;
+      expensesByGroup.set(group, gCur);
+
+      if (group === '62') {
+        indirectByMonth.set(key, (indirectByMonth.get(key) || 0) + amount);
+        indirectTotal += amount;
+        const cur = indirectByAccount.get(acc.account_num) || { account_num: acc.account_num, name: acc.name, total: 0 };
+        cur.total += amount;
+        indirectByAccount.set(acc.account_num, cur);
+      }
     }
+
+    const supplierName = doc.contact_name || '(sin nombre)';
+    expensesBySupplier.set(supplierName, (expensesBySupplier.get(supplierName) || 0) + docTotal);
   }
 
+  // ---------- Tesorería ----------
   // El saldo de tesorería viene en formato estándar (punto decimal), a
   // diferencia de los importes de facturas/compras (formato español).
   const cashAccounts = (treasury || []).map((t) => ({
@@ -94,11 +141,44 @@ export async function onRequestGet({ request, env }) {
   }));
   const cashTotal = round2(cashAccounts.reduce((s, a) => s + a.balance, 0));
 
+  // ---------- Ratios principales ----------
+  const avgMonthlyExpenses = months > 0 ? expensesTotal / months : 0;
+  const topClient = topOf(revenueByClient);
+  const topSupplier = topOf(expensesBySupplier);
+
+  const ratios = {
+    grossMarginPct: revenueTotal > 0 ? round2(((revenueTotal - expensesTotal) / revenueTotal) * 100) : null,
+    avgInvoiceTicket: invoiceCount > 0 ? round2(revenueTotal / invoiceCount) : null,
+    topClientConcentrationPct: revenueTotal > 0 && topClient ? round2((topClient.total / revenueTotal) * 100) : null,
+    cashRunwayMonths: avgMonthlyExpenses > 0 ? round2(cashTotal / avgMonthlyExpenses) : null,
+    avgMonthlyRevenue: round2(revenueTotal / months),
+    avgMonthlyExpenses: round2(avgMonthlyExpenses),
+  };
+
+  const toRanked = (map, limit) =>
+    Array.from(map.entries())
+      .map(([name, total]) => ({ name, total: round2(total) }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, limit || 8);
+
   return json({
     period: { from: from.toISOString().slice(0, 10), to: now.toISOString().slice(0, 10), months },
     revenue: {
       total: round2(revenueTotal),
+      invoiceCount,
+      pendingCollection: round2(pendingCollection),
       byMonth: monthKeys.map((m) => ({ month: m, total: round2(revenueByMonth.get(m) || 0) })),
+      byClient: toRanked(revenueByClient),
+    },
+    expenses: {
+      total: round2(expensesTotal),
+      documentCount: documentsScanned,
+      pendingPayment: round2(pendingPayment),
+      byMonth: monthKeys.map((m) => ({ month: m, total: round2(expensesByMonth.get(m) || 0) })),
+      byGroup: Array.from(expensesByGroup.values())
+        .sort((a, b) => b.total - a.total)
+        .map((g) => ({ ...g, total: round2(g.total) })),
+      bySupplier: toRanked(expensesBySupplier),
     },
     indirectExpenses: {
       total: round2(indirectTotal),
@@ -108,11 +188,20 @@ export async function onRequestGet({ request, env }) {
         .map((x) => ({ ...x, total: round2(x.total) })),
     },
     cash: { total: cashTotal, byAccount: cashAccounts },
-    note: 'Excluye grupo contable 60 (compras de materiales): ese coste se imputa directamente en cada partida de presupuesto, no aquí.',
+    ratios,
+    note: 'Los ratios de margen y runway son aproximados: excluyen nóminas (grupo contable 64), que Holded gestiona por RRHH y no está disponible vía la API de Compras. "Gastos indirectos" (grupo 62) excluye a propósito el grupo 60 (materiales), que se imputa dentro de cada partida de presupuesto.',
     documentsScanned,
     linesUnmatched,
     generatedAt: new Date().toISOString(),
   });
+}
+
+function topOf(map) {
+  let best = null;
+  for (const [name, total] of map.entries()) {
+    if (!best || total > best.total) best = { name, total };
+  }
+  return best;
 }
 
 async function holdedFetchAll(env, path) {
