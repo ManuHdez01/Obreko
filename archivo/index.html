@@ -157,10 +157,42 @@ body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100
 <script>
 const $ = (id) => document.getElementById(id);
 
+// La API interna (/api/archive/*) está detrás de una aplicación de
+// Cloudflare Access distinta a la de esta página estática. La primera vez
+// que el navegador la visita, Access necesita completar una autenticación
+// silenciosa (una redirección) que un fetch() normal no puede seguir, y la
+// petición falla con "Failed to fetch". Cargar la ruta una vez en un iframe
+// oculto deja que esa redirección se complete y la cookie de esa sub-app
+// quede fijada, sin sacar al usuario de la página.
+function warmUpApiAccess(){
+  return new Promise((resolve) => {
+    const done = () => { clearTimeout(t); resolve(); };
+    const t = setTimeout(done, 3000);
+    const f = document.createElement('iframe');
+    f.style.display = 'none';
+    f.src = '/api/archive/auth';
+    f.onload = done;
+    f.onerror = done;
+    document.body.appendChild(f);
+  });
+}
+
 async function checkAuth(){
-  const r = await fetch('/api/archive/auth');
-  const j = await r.json().catch(() => ({authenticated: false}));
-  return j.authenticated;
+  try {
+    const r = await fetch('/api/archive/auth');
+    const j = await r.json().catch(() => ({authenticated: false}));
+    if (j.authenticated) return true;
+  } catch {
+    await warmUpApiAccess();
+    try {
+      const r2 = await fetch('/api/archive/auth');
+      const j2 = await r2.json().catch(() => ({authenticated: false}));
+      return !!j2.authenticated;
+    } catch {
+      return false;
+    }
+  }
+  return false;
 }
 
 async function login(pin){
@@ -184,7 +216,12 @@ $('loginForm').addEventListener('submit', async (e) => {
   $('loginBtn').disabled = true;
   $('loginBtn').textContent = 'Comprobando…';
   $('loginErr').classList.remove('show');
-  const ok = await login(pin);
+  let ok = false;
+  try {
+    ok = await login(pin);
+  } catch {
+    ok = false;
+  }
   $('loginBtn').disabled = false;
   $('loginBtn').textContent = 'Acceder';
   if (!ok){
