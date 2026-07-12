@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Configurar costes</title>
+<style>
+@font-face{font-family:'Playfair Display';src:url('../fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('../fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#1A2236;--yellow:#FED544;--sand-lt:#FAF7EE;--blue:#5C7CD9;--slate:#8896B3;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;}
+body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100vh;}
+
+.topbar{background:var(--navy);color:#fff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.topbar-brand{font-family:var(--serif);font-style:italic;font-size:22px;}
+.topbar-meta{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--yellow);margin-top:2px;}
+.topbar-actions a{color:rgba(255,255,255,.7);text-decoration:none;font-size:12px;}
+.topbar-actions a:hover{color:#fff;}
+
+.main{display:none;padding:28px 32px 60px;max-width:720px;margin:0 auto;}
+.main.show{display:block;}
+.main-h1{font-family:var(--serif);font-style:italic;font-size:28px;color:var(--navy);}
+.main-rule{width:48px;height:3px;background:var(--yellow);margin:12px 0 20px;}
+
+.login-wrap{min-height:calc(100vh - 70px);display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.login-card{background:#fff;border-radius:14px;padding:40px 36px;max-width:400px;width:100%;box-shadow:0 10px 40px rgba(26,34,54,.12);}
+.login-form{display:flex;flex-direction:column;gap:14px;margin-top:16px;}
+.login-form input{padding:12px 14px;border:1px solid rgba(26,34,54,.15);border-radius:8px;font-family:var(--sans);font-size:14px;outline:none;}
+.login-form button{background:var(--navy);color:var(--yellow);border:none;padding:12px 16px;border-radius:8px;font-family:var(--sans);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;cursor:pointer;}
+.login-err{color:#C62828;font-size:12px;display:none;}
+.login-err.show{display:block;}
+
+.card{background:#fff;border-radius:10px;border:1px solid rgba(26,34,54,.08);padding:22px 24px;margin-bottom:18px;}
+.card-h{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(26,34,54,.06);}
+.card-hint{font-size:11.5px;color:var(--slate);margin-bottom:14px;line-height:1.6;}
+
+.rate-row{display:grid;grid-template-columns:1fr 120px 28px;gap:8px;align-items:center;margin-bottom:8px;}
+.rate-row input[type=text]{padding:9px 10px;border:1px solid rgba(26,34,54,.15);border-radius:6px;font-family:var(--sans);font-size:12.5px;outline:none;}
+.rate-row input[type=number]{padding:9px 10px;border:1px solid rgba(26,34,54,.15);border-radius:6px;font-family:var(--sans);font-size:12.5px;outline:none;text-align:right;}
+.rate-row button{background:transparent;border:none;color:#C62828;cursor:pointer;font-size:16px;}
+
+.add-row-btn{background:transparent;border:1px dashed var(--blue);color:var(--blue);padding:8px 14px;border-radius:6px;font-family:var(--sans);font-size:11px;cursor:pointer;margin-top:6px;}
+
+.indirect-field{display:flex;align-items:center;gap:10px;}
+.indirect-field input{width:80px;padding:9px 10px;border:1px solid rgba(26,34,54,.15);border-radius:6px;font-family:var(--sans);font-size:14px;text-align:right;outline:none;}
+
+.save-btn{background:var(--yellow);color:var(--navy);border:none;padding:12px 22px;border-radius:8px;font-family:var(--sans);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;}
+.save-btn:hover{background:#ffde5e;}
+.save-msg{margin-left:12px;font-size:11.5px;color:var(--slate);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta">CONFIGURAR COSTES</div>
+  </div>
+  <div class="topbar-actions"><a href="index.html">← Volver a la herramienta</a></div>
+</div>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:26px">Acceso interno</div>
+    <form class="login-form" id="loginForm">
+      <label style="font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--blue);font-weight:700">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <h1 class="main-h1">Configurar <em>costes</em></h1>
+  <div class="main-rule"></div>
+
+  <div class="card">
+    <div class="card-h">Tarifas de personal (€/hora)</div>
+    <div class="card-hint">Se usa la media de estas tarifas para estimar la mano de obra de cada presupuesto.</div>
+    <div id="ratesWrap"></div>
+    <button type="button" class="add-row-btn" onclick="addRateRow('rates')">+ Añadir oficio</button>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Horas estimadas por m²</div>
+    <div class="card-hint">Multiplica la superficie del proyecto para estimar las horas de trabajo, según el tipo de intervención (o "amueblar").</div>
+    <div id="hoursWrap"></div>
+    <button type="button" class="add-row-btn" onclick="addRateRow('hours')">+ Añadir tipo</button>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Coste indirecto</div>
+    <div class="card-hint">Porcentaje aplicado sobre materiales + mano de obra (gastos generales, estructura, etc.)</div>
+    <div class="indirect-field">
+      <input type="number" id="indirectPct" min="0" max="100" step="0.5">
+      <span>%</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Margen objetivo por defecto</div>
+    <div class="card-hint">Margen comercial sobre el precio de venta que se aplica a los proyectos nuevos (ajustable en cada proyecto). PVP = coste interno ÷ (1 − margen).</div>
+    <div class="indirect-field">
+      <input type="number" id="defaultMarginPct" min="0" max="95" step="0.5">
+      <span>%</span>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveConfig()">Guardar configuración</button>
+  <span class="save-msg" id="saveMsg"></span>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+async function checkAuth() {
+  const r = await fetch('/api/budget-tool/auth');
+  const j = await r.json().catch(() => ({ authenticated: false }));
+  return j.authenticated;
+}
+async function login(pin) {
+  const r = await fetch('/api/budget-tool/auth', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin }),
+  });
+  return r.ok;
+}
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pin = $('pinInput').value.trim();
+  $('loginBtn').disabled = true;
+  const ok = await login(pin);
+  $('loginBtn').disabled = false;
+  if (!ok) { $('loginErr').classList.add('show'); $('pinInput').select(); return; }
+  enterApp();
+});
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function addRateRow(section, key, value) {
+  const wrap = $(section === 'rates' ? 'ratesWrap' : 'hoursWrap');
+  const row = document.createElement('div');
+  row.className = 'rate-row';
+  row.innerHTML = `
+    <input type="text" class="rk" placeholder="${section === 'rates' ? 'Oficio (ej. albañil)' : 'Tipo (ej. reforma integral)'}" value="${escapeHtml(key || '')}">
+    <input type="number" class="rv" min="0" step="0.1" value="${value != null ? value : ''}">
+    <button type="button" onclick="this.parentElement.remove()">×</button>
+  `;
+  wrap.appendChild(row);
+}
+window.addRateRow = addRateRow;
+
+function readRows(section) {
+  const wrap = $(section === 'rates' ? 'ratesWrap' : 'hoursWrap');
+  const out = {};
+  wrap.querySelectorAll('.rate-row').forEach((row) => {
+    const k = row.querySelector('.rk').value.trim();
+    const v = Number(row.querySelector('.rv').value);
+    if (k && isFinite(v)) out[k] = v;
+  });
+  return out;
+}
+
+async function loadConfig() {
+  const r = await fetch('/api/budget-tool/costs-config');
+  const cfg = await r.json();
+  if (!r.ok) { $('saveMsg').textContent = 'Error cargando: ' + (cfg.error || r.status); return; }
+
+  $('ratesWrap').innerHTML = '';
+  Object.entries(cfg.laborRates || {}).forEach(([k, v]) => addRateRow('rates', k, v));
+
+  $('hoursWrap').innerHTML = '';
+  Object.entries(cfg.hoursPerM2 || {}).forEach(([k, v]) => addRateRow('hours', k, v));
+
+  $('indirectPct').value = cfg.indirectPct != null ? cfg.indirectPct : 15;
+  $('defaultMarginPct').value = cfg.defaultMarginPct != null ? cfg.defaultMarginPct : 25;
+}
+
+async function saveConfig() {
+  const payload = {
+    laborRates: readRows('rates'),
+    hoursPerM2: readRows('hours'),
+    indirectPct: Number($('indirectPct').value),
+    defaultMarginPct: Number($('defaultMarginPct').value),
+  };
+  $('saveMsg').textContent = 'Guardando…';
+  try {
+    const r = await fetch('/api/budget-tool/costs-config', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+    $('saveMsg').textContent = 'Guardado ✓ (' + new Date().toLocaleTimeString('es-ES') + ')';
+  } catch (e) {
+    $('saveMsg').textContent = 'Error: ' + e.message;
+  }
+}
+window.saveConfig = saveConfig;
+
+async function enterApp() {
+  $('loginWrap').style.display = 'none';
+  $('main').classList.add('show');
+  await loadConfig();
+}
+
+(async () => {
+  const authed = await checkAuth();
+  if (authed) { enterApp(); } else { $('loginWrap').style.display = 'flex'; $('pinInput').focus(); }
+})();
+</script>
+</body>
+</html>

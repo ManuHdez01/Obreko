@@ -5,3 +5,11 @@ compatibility_date = "2026-04-01"
 [[r2_buckets]]
 binding = "ARCHIVE"
 bucket_name = "obreko-archivo"
+
+# Precios de proveedores + configuración de costes de la herramienta interna
+# de presupuestos (herramienta-presupuestos/). Crear con:
+#   npx wrangler kv namespace create BUDGET_TOOL
+# y sustituir el id de abajo por el que devuelva ese comando.
+[[kv_namespaces]]
+binding = "BUDGET_TOOL"
+id = "REEMPLAZA_CON_EL_ID_REAL_DEL_NAMESPACE"

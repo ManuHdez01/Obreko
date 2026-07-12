@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Proveedores</title>
+<link rel="stylesheet" href="_styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta">PROVEEDORES</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="index.html">Proyectos</a>
+    <a href="panel.html">Panel económico</a>
+    <a href="proveedores.html" class="on">Proveedores</a>
+    <a href="costes-config.html">Costes</a>
+    <button class="topbar-logout" id="btnLogout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="login-wrap" id="loginWrap" style="display:none">
+  <div class="login-card">
+    <div class="login-title">Acceso interno</div>
+    <div class="login-sub">Introduce el PIN del equipo para acceder.</div>
+    <form class="login-form" id="loginForm">
+      <label for="pinInput">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <div class="main-head">
+    <div>
+      <h1 class="main-h1">Proveedores de <em>materiales</em></h1>
+      <div class="main-rule"></div>
+      <div class="main-sub">La búsqueda automática usa la «URL de búsqueda» de cada proveedor (con {q} como término) y extrae los precios con IA. El email se usa para las solicitudes de presupuesto (RFQ).</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Añadir / editar proveedor</div>
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Nombre</label>
+        <input type="text" id="sName" placeholder="Almacenes Pérez">
+      </div>
+      <div class="field-group">
+        <label>Región</label>
+        <select id="sRegion">
+          <option value="tenerife">Tenerife</option>
+          <option value="madrid">Madrid</option>
+          <option value="nacional">Nacional (ambas)</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Email (para RFQs)</label>
+        <input type="email" id="sEmail" placeholder="ventas@proveedor.com">
+      </div>
+      <div class="field-group span2">
+        <label>URL de búsqueda — usa {q} como término</label>
+        <input type="url" id="sSearchUrl" placeholder="https://proveedor.com/buscar?q={q}">
+      </div>
+      <div class="field-group span2">
+        <label>Notas</label>
+        <input type="text" id="sNotes" placeholder="No envía a Canarias / descuento profesional 10% / ...">
+      </div>
+    </div>
+    <input type="hidden" id="sId">
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn btn-pri" id="sSaveBtn" onclick="saveSupplier()">Guardar proveedor</button>
+      <button class="btn btn-sec" onclick="clearForm()" id="sClearBtn" style="display:none">Cancelar edición</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Proveedores registrados</div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Nombre</th><th>Región</th><th>Email RFQ</th><th>Búsqueda</th><th>Notas</th><th></th></tr></thead>
+        <tbody id="supBody"><tr><td colspan="6" class="tbl-empty">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="_common.js"></script>
+<script>
+const { $, escapeHtml, toast, api } = window.BT;
+let suppliers = [];
+
+async function loadSuppliers() {
+  try {
+    const data = await api('suppliers');
+    suppliers = data.suppliers || [];
+    render();
+  } catch (e) {
+    $('supBody').innerHTML = '<tr><td colspan="6" class="tbl-empty" style="color:var(--red)">Error: ' + escapeHtml(e.message) + '</td></tr>';
+  }
+}
+
+function render() {
+  $('supBody').innerHTML = suppliers.length ? suppliers.map((s) => `
+    <tr style="${s.active ? '' : 'opacity:.5'}">
+      <td><strong>${escapeHtml(s.name)}</strong></td>
+      <td><span class="badge badge-muted">${escapeHtml(s.region)}</span></td>
+      <td style="font-size:11.5px">${s.email ? escapeHtml(s.email) : '<span style="color:var(--red)">sin email</span>'}</td>
+      <td>${s.searchUrl ? '<span class="badge badge-ok">automática</span>' : '<span class="badge badge-warn">sin URL</span>'}</td>
+      <td style="font-size:11px;color:var(--slate);max-width:220px">${escapeHtml(s.notes || '')}</td>
+      <td class="r" style="white-space:nowrap">
+        <button class="btn btn-sm btn-sec" onclick="editSupplier('${escapeHtml(s.id)}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="delSupplier('${escapeHtml(s.id)}','${escapeHtml(s.name)}')">×</button>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="6" class="tbl-empty">Sin proveedores.</td></tr>';
+}
+
+function editSupplier(id) {
+  const s = suppliers.find((x) => x.id === id);
+  if (!s) return;
+  $('sId').value = s.id;
+  $('sName').value = s.name;
+  $('sRegion').value = s.region;
+  $('sEmail').value = s.email || '';
+  $('sSearchUrl').value = s.searchUrl || '';
+  $('sNotes').value = s.notes || '';
+  $('sSaveBtn').textContent = 'Actualizar proveedor';
+  $('sClearBtn').style.display = 'inline-block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.editSupplier = editSupplier;
+
+function clearForm() {
+  ['sId', 'sName', 'sEmail', 'sSearchUrl', 'sNotes'].forEach((id) => { $(id).value = ''; });
+  $('sSaveBtn').textContent = 'Guardar proveedor';
+  $('sClearBtn').style.display = 'none';
+}
+window.clearForm = clearForm;
+
+async function saveSupplier() {
+  const name = $('sName').value.trim();
+  if (!name) { toast('Falta el nombre', 'error'); return; }
+  const searchUrl = $('sSearchUrl').value.trim();
+  if (searchUrl && !searchUrl.includes('{q}')) { toast('La URL de búsqueda debe contener {q}', 'error'); return; }
+  try {
+    await api('suppliers', {
+      method: 'POST',
+      body: {
+        id: $('sId').value || undefined,
+        name,
+        region: $('sRegion').value,
+        email: $('sEmail').value.trim(),
+        searchUrl,
+        notes: $('sNotes').value.trim(),
+        active: true,
+      },
+    });
+    toast('Proveedor guardado ✓', 'success');
+    clearForm();
+    loadSuppliers();
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+window.saveSupplier = saveSupplier;
+
+async function delSupplier(id, name) {
+  if (!confirm('¿Eliminar el proveedor ' + name + '?')) return;
+  try {
+    await api('suppliers?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    toast('Proveedor eliminado', 'success');
+    loadSuppliers();
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+window.delSupplier = delSupplier;
+
+window.BT.initAuth(loadSuppliers);
+</script>
+</body>
+</html>

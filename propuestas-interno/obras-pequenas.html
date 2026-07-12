@@ -1,0 +1,1475 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>obreko — Obras Pequeñas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair.woff2') format('woff2');font-style:normal;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1A2236;--yellow:#FED544;--sand:#F1EDE0;--sand2:#E8E2D3;--blue:#5C7CD9;--slate:#8896B3;
+  --serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;
+}
+body{background:#dddad4;font-family:var(--sans);color:var(--navy);}
+
+/* TOOLBAR */
+.toolbar{
+  position:sticky;top:0;z-index:100;background:var(--navy);
+  display:flex;align-items:center;gap:16px;padding:10px 24px;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.toolbar-logo{font-family:var(--serif);font-style:italic;color:#fff;font-size:20px;letter-spacing:.03em;text-decoration:none;}
+.toolbar-service{color:var(--slate);font-size:11px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.08em;}
+.toolbar-hint{color:var(--slate);font-size:10px;font-family:var(--sans);margin-left:auto;opacity:.7;}
+.toolbar-btn{
+  background:transparent;border:1px solid var(--slate);color:#fff;
+  padding:6px 14px;font-size:11px;font-family:var(--sans);cursor:pointer;
+  letter-spacing:.05em;text-transform:uppercase;transition:all .2s;
+}
+.toolbar-btn:hover{background:var(--yellow);color:var(--navy);border-color:var(--yellow);}
+.toolbar-btn.primary{background:var(--yellow);color:var(--navy);border-color:var(--yellow);}
+.toolbar-btn.primary:hover{background:#e6bf3c;}
+.toolbar-back{color:var(--slate);font-size:11px;font-family:var(--sans);text-decoration:none;letter-spacing:.05em;text-transform:uppercase;}
+.toolbar-back:hover{color:#fff;}
+
+/* PAGES */
+.pages{padding:32px 24px;display:flex;flex-direction:column;gap:24px;align-items:center;}
+.page{
+  width:794px;min-height:1123px;background:#fff;
+  box-shadow:0 4px 24px rgba(0,0,0,.15);
+  position:relative;overflow:hidden;
+  page-break-after:always;
+}
+
+/* CONTENTEDITABLE STYLES */
+[contenteditable="true"]:hover{outline:1px solid rgba(254,213,68,.4);background:rgba(254,213,68,.05);}
+[contenteditable="true"]:focus{outline:2px solid var(--yellow);background:rgba(254,213,68,.08);}
+
+/* ─────────────────────────────────────────────
+   PAGE 1 — COVER (sand background)
+───────────────────────────────────────────── */
+.cover{background:var(--sand);}
+.cover-stripe{height:3px;background:var(--yellow);width:100%;}
+.cover-accent{
+  position:absolute;top:0;right:0;
+  width:56px;height:56px;background:var(--navy);opacity:.08;
+}
+.cover-header{
+  padding:32px 48px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.cover-logo{
+  font-family:var(--serif);font-style:italic;
+  color:var(--navy);font-size:26px;letter-spacing:.03em;
+}
+.cover-ref{
+  text-align:right;
+}
+.cover-ref-line{
+  font-family:var(--sans);color:var(--slate);font-size:7pt;
+  display:block;margin-bottom:3px;
+}
+.cover-ref input{
+  background:transparent;border:none;border-bottom:1px solid rgba(136,150,179,.4);
+  font-family:var(--sans);font-size:7pt;color:var(--slate);
+  outline:none;text-align:right;width:160px;padding:1px 0;
+}
+.cover-ref input:focus{border-bottom-color:var(--blue);}
+
+.cover-center{
+  position:absolute;
+  bottom:210px;left:48px;right:48px;
+}
+.cover-tag{
+  font-family:var(--sans);color:var(--blue);
+  font-size:6.5pt;text-transform:uppercase;letter-spacing:.3em;
+  margin-bottom:12px;
+}
+.cover-rule{width:30mm;height:2px;background:var(--navy);margin:0 0 14px;}
+.cover-heading{
+  font-family:var(--serif);font-style:italic;
+  color:var(--navy);font-size:42pt;line-height:.9;
+  letter-spacing:.01em;margin-bottom:32px;
+}
+.cover-heading em{font-style:italic;color:var(--blue);}
+
+.cover-client{
+  background:#fff;padding:18px 24px;
+  border:1px solid var(--sand2);
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:24px;
+}
+.cover-client-left{}
+.cover-client-label{
+  font-family:var(--sans);color:var(--slate);
+  font-size:7.5pt;text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:6px;
+}
+.cover-client-name{
+  font-family:var(--sans);font-weight:700;
+  color:var(--navy);font-size:13pt;
+  border:none;outline:none;background:transparent;
+  display:block;width:100%;
+}
+.cover-client-name:focus{color:var(--blue);}
+.cover-client-addr{
+  font-family:var(--sans);color:var(--slate);font-size:8pt;
+  border:none;outline:none;background:transparent;
+  display:block;width:100%;margin-top:3px;
+}
+.cover-client-addr:focus{color:var(--blue);}
+.cover-client-right{
+  font-family:var(--sans);color:var(--slate);font-size:7pt;
+  text-align:right;white-space:nowrap;line-height:1.8;
+}
+.cover-bottom{
+  position:absolute;bottom:0;left:0;right:0;
+  border-top:1px solid var(--sand2);
+  padding:10px 48px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.cover-bottom-item{
+  font-family:var(--sans);color:var(--slate);font-size:7pt;
+}
+
+/* PAGE INTERNALS */
+.page-inner{padding:52px 58px;}
+.section-label{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.18em;
+  color:var(--blue);margin-bottom:14px;
+}
+.page-h1{
+  font-family:var(--serif);font-style:italic;font-size:34px;
+  color:var(--navy);letter-spacing:.02em;line-height:1.2;margin-bottom:10px;
+}
+.page-h1 em{font-style:italic;color:var(--blue);}
+.yellow-rule{width:48px;height:3px;background:var(--yellow);margin-bottom:26px;}
+
+/* ─────────────────────────────────────────────
+   PAGE 2 — QUIÉNES SOMOS
+───────────────────────────────────────────── */
+.qs-wrap{display:grid;grid-template-columns:40% 60%;min-height:900px;}
+.qs-left{
+  background:var(--navy);padding:48px 36px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.qs-quote{
+  font-family:var(--serif);font-style:italic;
+  color:#fff;font-size:15px;line-height:1.65;letter-spacing:.02em;
+}
+.qs-stats{display:flex;flex-direction:column;gap:24px;margin-top:40px;}
+.qs-stat-num{
+  font-family:var(--serif);font-style:italic;
+  color:var(--yellow);font-size:26px;letter-spacing:.02em;
+}
+.qs-stat-label{
+  font-family:var(--sans);color:var(--slate);
+  font-size:8px;text-transform:uppercase;letter-spacing:.1em;margin-top:4px;
+}
+.qs-right{padding:48px 44px;}
+.qs-body{
+  font-family:var(--sans);font-size:10.5px;
+  color:var(--navy);line-height:1.75;margin-bottom:22px;
+}
+.qs-boxes{display:flex;flex-direction:column;gap:16px;margin-top:28px;}
+.qs-box{background:var(--sand);padding:20px 22px;border-left:3px solid var(--yellow);}
+.qs-box-title{
+  font-family:var(--sans);font-size:8.5px;text-transform:uppercase;
+  letter-spacing:.13em;color:var(--navy);font-weight:700;margin-bottom:8px;
+}
+.qs-box-text{
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.65;
+}
+
+/* ─────────────────────────────────────────────
+   PAGE 3 — GRACIAS POR CONFIAR
+───────────────────────────────────────────── */
+.value-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px;}
+.value-card{background:var(--sand);padding:22px 20px;border-top:3px solid var(--yellow);}
+.value-card-num{font-family:var(--serif);font-style:italic;color:var(--blue);font-size:11px;margin-bottom:4px;}
+.value-card-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--navy);font-weight:700;margin-bottom:8px;}
+.value-card-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.6;}
+.includes-box{background:var(--navy);padding:26px 30px;margin-bottom:28px;}
+.includes-title{font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.15em;color:var(--yellow);margin-bottom:14px;}
+.includes-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;}
+.includes-item{font-family:var(--sans);font-size:9.5px;color:#fff;line-height:1.55;display:flex;align-items:flex-start;gap:8px;}
+.includes-item::before{content:'✓';color:var(--yellow);font-size:10px;flex-shrink:0;margin-top:1px;}
+.proceso-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:14px;}
+.steps{display:flex;flex-direction:column;gap:10px;}
+.step{display:flex;gap:16px;align-items:flex-start;}
+.step-num{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;min-width:26px;flex-shrink:0;}
+.step-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);font-weight:700;margin-bottom:2px;}
+.step-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.5;}
+
+/* ─────────────────────────────────────────────
+   PAGE 4 — FICHA DEL INMUEBLE
+───────────────────────────────────────────── */
+.form-section{margin-bottom:24px;}
+.form-section-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.15em;
+  color:var(--blue);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0e0e0;
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;}
+.form-full{grid-column:1/-1;}
+.form-field{display:flex;flex-direction:column;}
+.form-field label{
+  font-family:var(--sans);font-size:7.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--blue);margin-bottom:5px;
+}
+.form-field input,.form-field textarea{
+  background:transparent;border:none;border-bottom:1px solid #d0d0d0;
+  font-family:var(--sans);font-size:10px;color:var(--navy);
+  padding:4px 0;outline:none;width:100%;
+}
+.form-field input:focus,.form-field textarea:focus{border-bottom-color:var(--blue);}
+.form-field input::placeholder,.form-field textarea::placeholder{color:#bbb;}
+.form-field textarea{resize:vertical;min-height:72px;line-height:1.55;}
+
+/* ─────────────────────────────────────────────
+   PAGE 5 — OBJETIVO / ALCANCE
+───────────────────────────────────────────── */
+.scope-bar{
+  position:absolute;left:0;top:0;bottom:0;
+  width:5px;background:var(--yellow);
+}
+.scope-intro-text{
+  font-family:var(--sans);font-size:10.5px;color:var(--navy);
+  line-height:1.75;margin-bottom:26px;
+  border:1px solid #e8e8e8;padding:14px 16px;background:#fafafa;
+}
+.scope-list-title{
+  font-family:var(--sans);font-size:8.5px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:14px;
+}
+.scope-items{display:flex;flex-direction:column;gap:0;}
+.scope-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:11px 14px;border-bottom:1px solid #ebebeb;
+}
+.scope-item:first-child{border-top:1px solid #ebebeb;}
+.scope-item-num{
+  font-family:var(--serif);font-style:italic;color:var(--blue);
+  font-size:12px;min-width:20px;flex-shrink:0;line-height:1.4;
+}
+.scope-item-text{
+  font-family:var(--sans);font-size:10px;color:var(--navy);line-height:1.55;
+}
+
+/* ─────────────────────────────────────────────
+   PAGE 6 — PRESUPUESTO
+───────────────────────────────────────────── */
+.budget-table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:9.5px;}
+.budget-table th{
+  background:var(--navy);color:#fff;font-family:var(--sans);font-size:7.5px;
+  text-transform:uppercase;letter-spacing:.1em;padding:9px 11px;text-align:left;
+}
+.budget-table th:nth-child(3),
+.budget-table th:nth-child(4),
+.budget-table th:nth-child(5){text-align:right;}
+.budget-table td{
+  padding:7px 11px;border-bottom:1px solid #ebebeb;vertical-align:middle;
+  font-family:var(--sans);color:var(--navy);
+}
+.budget-table td:first-child{
+  width:32px;font-size:8.5px;color:var(--slate);text-align:center;
+}
+.budget-table td:nth-child(3),
+.budget-table td:nth-child(4),
+.budget-table td:nth-child(5){text-align:right;}
+.budget-table input[type=text]{
+  width:100%;background:transparent;border:none;border-bottom:1px solid #e0e0e0;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);padding:2px 0;outline:none;
+}
+.budget-table input[type=text]:focus{border-bottom-color:var(--blue);}
+.price-input{
+  width:72px;background:transparent;border:none;border-bottom:1px solid #e0e0e0;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);
+  padding:2px 0;outline:none;text-align:right;
+}
+.price-input:focus{border-bottom-color:var(--blue);}
+.line-total{font-family:var(--sans);font-size:9.5px;color:var(--navy);font-weight:700;}
+.totals-wrap{display:flex;justify-content:flex-end;margin-bottom:20px;}
+.totals-box{width:272px;background:#f9f9f9;border:1px solid #e0e0e0;padding:14px 18px;}
+.totals-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 0;border-bottom:1px solid #eee;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);gap:6px;
+}
+.totals-row:last-child{border-bottom:none;}
+.totals-row.row-hidden{display:none;}
+.toggle-row-btn{background:none;border:none;cursor:pointer;font-size:10px;opacity:.35;padding:0;flex-shrink:0;line-height:1;transition:opacity .15s;}
+.toggle-row-btn:hover{opacity:.9;}
+@media print{.toggle-row-btn{display:none!important;}}
+.totals-grand{
+  background:var(--navy);padding:10px 18px;
+  display:flex;justify-content:space-between;align-items:center;width:272px;
+}
+.totals-grand span{font-family:var(--sans);font-size:9px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:.1em;}
+.grand-val{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--yellow);}
+.iva-input{
+  width:32px;background:transparent;border:none;
+  border-bottom:1px solid #ccc;text-align:right;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);outline:none;
+}
+.iva-input:focus{border-bottom-color:var(--blue);}
+.conditions-note{
+  border-left:3px solid var(--yellow);padding:12px 16px;
+  background:rgba(254,213,68,.07);
+}
+.conditions-note p{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.6;}
+
+/* ─────────────────────────────────────────────
+   PAGE 7 — CALENDARIO / GANTT
+───────────────────────────────────────────── */
+.cal-dates{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin-bottom:28px;}
+.gantt-wrap{overflow-x:auto;}
+.gantt-table{width:100%;border-collapse:collapse;}
+.gantt-table th{
+  background:var(--navy);color:#fff;font-family:var(--sans);font-size:7.5px;
+  text-transform:uppercase;letter-spacing:.1em;padding:8px 5px;text-align:center;
+}
+.gantt-table th:first-child{text-align:left;padding-left:12px;width:188px;}
+.gantt-table td{padding:0;border:1px solid #e8e8e8;height:38px;}
+.gantt-table td:first-child{
+  padding:0 12px;font-family:var(--sans);font-size:9px;
+  color:var(--navy);background:#f9f9f9;
+}
+.gcell{width:100%;height:100%;cursor:pointer;display:block;transition:background .15s;}
+.gcell.active{background:var(--navy);}
+.gcell.yellow{background:var(--yellow);}
+.gantt-legend{display:flex;gap:24px;margin-top:14px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:9px;color:var(--navy);}
+.legend-dot{width:14px;height:14px;flex-shrink:0;}
+.legend-navy{background:var(--navy);}
+.legend-yellow{background:var(--yellow);}
+.cal-note{
+  margin-top:22px;border-left:3px solid var(--sand2);padding:10px 14px;
+  font-family:var(--sans);font-size:9.5px;color:var(--slate);line-height:1.55;
+}
+
+/* ─────────────────────────────────────────────
+   PAGE 8 — GARANTÍAS
+───────────────────────────────────────────── */
+.garantias-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;}
+.garantia-card{background:var(--sand);padding:26px 22px;border-top:3px solid var(--yellow);}
+.garantia-badge{
+  font-family:var(--serif);font-style:italic;
+  color:var(--blue);font-size:28px;letter-spacing:.01em;
+  margin-bottom:10px;
+}
+.garantia-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:10px;
+}
+.garantia-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.65;}
+.payment-section{margin-bottom:28px;}
+.payment-title{
+  font-family:var(--sans);font-size:8.5px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:14px;
+}
+.payment-items{display:flex;flex-direction:column;gap:10px;}
+.payment-item{display:flex;align-items:center;gap:12px;}
+.payment-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;flex-shrink:0;}
+.payment-item input{
+  background:transparent;border:none;border-bottom:1px solid #d0d0d0;
+  font-family:var(--sans);font-size:10px;color:var(--navy);
+  padding:2px 0;outline:none;width:280px;
+}
+.payment-item input:focus{border-bottom-color:var(--blue);}
+
+/* ─────────────────────────────────────────────
+   PAGE 9 — MEDIOAMBIENTAL
+───────────────────────────────────────────── */
+.env-wrap{display:grid;grid-template-columns:42% 58%;min-height:920px;}
+.env-left{
+  background:var(--navy);padding:48px 36px;
+  display:flex;flex-direction:column;justify-content:flex-start;gap:28px;
+}
+.env-left-heading{
+  font-family:var(--serif);font-style:italic;
+  color:#fff;font-size:20px;line-height:1.45;letter-spacing:.02em;
+}
+.env-left-heading em{color:var(--yellow);}
+.env-left-intro{
+  font-family:var(--sans);font-size:9.5px;color:var(--slate);line-height:1.7;
+}
+.env-stats{display:flex;flex-direction:column;gap:18px;margin-top:auto;}
+.env-stat{border-top:1px solid rgba(255,255,255,.1);padding-top:16px;}
+.env-stat-label{font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--slate);margin-bottom:5px;}
+.env-stat-val{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:14px;}
+.env-right{padding:48px 44px;}
+.env-points{display:flex;flex-direction:column;gap:16px;}
+.env-point{
+  background:var(--sand);padding:18px 20px;
+  border-left:4px solid var(--yellow);
+}
+.env-point-title{
+  font-family:var(--sans);font-size:8.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--navy);font-weight:700;margin-bottom:6px;
+}
+.env-point-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.6;}
+
+/* ─────────────────────────────────────────────
+   PAGE 10 — VALIDEZ + CIERRE (navy)
+───────────────────────────────────────────── */
+.closing-page{background:var(--navy);}
+.closing-stripe{height:3px;background:var(--yellow);}
+.closing-inner{padding:52px 58px;}
+.closing-label{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.18em;color:var(--yellow);margin-bottom:14px;
+}
+.closing-h1{
+  font-family:var(--serif);font-style:italic;
+  color:#fff;font-size:34px;line-height:1.2;margin-bottom:10px;
+}
+.closing-h1 em{color:var(--yellow);}
+.closing-rule{width:48px;height:3px;background:var(--yellow);margin-bottom:28px;}
+.validity-box{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  padding:20px 28px;margin-bottom:32px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.validity-box span{font-family:var(--sans);color:#fff;font-size:10px;}
+.validity-days{
+  background:transparent;border:none;
+  border-bottom:2px solid var(--yellow);
+  color:var(--yellow);font-family:var(--serif);font-style:italic;
+  font-size:20px;width:44px;text-align:center;outline:none;
+}
+.validity-date{
+  background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.3);
+  color:var(--yellow);font-family:var(--serif);font-style:italic;
+  font-size:13px;outline:none;width:176px;padding:2px 4px;
+}
+.next-steps{margin-bottom:32px;}
+.next-steps-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.15em;color:rgba(255,255,255,.5);font-weight:700;margin-bottom:16px;
+}
+.next-step-list{display:flex;flex-direction:column;gap:10px;}
+.next-step{display:flex;align-items:flex-start;gap:14px;}
+.next-step-n{
+  width:26px;height:26px;background:var(--yellow);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);
+}
+.next-step-text{
+  font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);
+  line-height:1.5;padding-top:4px;
+}
+.sig-area{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:26px;}
+.sig-box{}
+.sig-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--slate);margin-bottom:14px;
+}
+.sig-logo{
+  font-family:var(--serif);font-style:italic;
+  color:#fff;font-size:18px;letter-spacing:.03em;margin-bottom:18px;
+}
+.sig-field{margin-bottom:12px;}
+.sig-field label{
+  font-family:var(--sans);font-size:8px;color:var(--slate);
+  text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px;
+}
+.sig-field input{
+  width:100%;background:transparent;border:none;
+  border-bottom:1px solid rgba(255,255,255,.2);
+  font-family:var(--sans);font-size:10px;color:#fff;
+  padding:4px 0 2px;outline:none;
+}
+.sig-field input:focus{border-bottom-color:var(--yellow);}
+.sig-line-blank{height:44px;border-bottom:1px solid rgba(255,255,255,.25);margin-top:14px;}
+.sig-line-label{
+  font-family:var(--sans);font-size:8px;color:var(--slate);
+  text-transform:uppercase;letter-spacing:.1em;margin-top:6px;
+}
+.acceptance-box{background:rgba(255,255,255,.05);padding:18px 22px;border-left:3px solid var(--yellow);}
+.acceptance-box p{font-family:var(--sans);font-size:9.5px;color:rgba(255,255,255,.75);line-height:1.65;}
+.closing-footer-strip{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:14px 58px;border-top:1px solid rgba(255,255,255,.08);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.closing-footer-item{font-family:var(--sans);color:var(--slate);font-size:7.5pt;}
+
+/* Print */
+@media print{
+  @page{size:A4;margin:0;}
+  html,body{background:#fff;}
+  .toolbar,.print-btn{display:none!important;}
+  button{display:none!important;}
+  .page{box-shadow:none;margin:0;page-break-after:always;break-after:page;}
+  .page:last-child{page-break-after:auto;}
+  .pages{padding:0;gap:0;}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
+}
+
+/* Fixed print button */
+.print-btn{
+  position:fixed;bottom:28px;right:28px;z-index:200;
+  background:var(--yellow);color:var(--navy);
+  border:none;padding:10px 22px;font-family:var(--sans);
+  font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);
+  font-weight:700;
+}
+.print-btn:hover{background:#e6bf3c;}
+
+/* ─── ANTES / DESPUÉS — situación actual + mejora propuesta ─── */
+.bd-grid{display:flex;flex-direction:column;gap:14px;margin-bottom:14px;}
+.bd-card{position:relative;border:1px solid #e0e0e0;background:#fff;padding:14px 14px 16px;}
+.bd-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.bd-cell{display:flex;flex-direction:column;}
+.bd-label{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.16em;color:var(--blue);font-weight:700;margin-bottom:8px;}
+.bd-label.bd-label-yellow{color:#1A2236;background:var(--yellow);display:inline-block;padding:3px 9px;align-self:flex-start;}
+.bd-photo{display:block;position:relative;height:170px;background-color:rgba(92,124,217,.04);background-size:cover;background-position:center;background-repeat:no-repeat;border:1.5px dashed var(--blue);cursor:pointer;}
+.bd-photo.has-photo{border:1px solid #e0e0e0;}
+.bd-text{font-family:var(--sans);font-size:9.5px;color:#1A2236;line-height:1.55;margin-top:9px;min-height:26px;}
+.bd-text:empty::before{content:attr(data-placeholder);color:#b8b8b8;font-style:italic;}
+
+/* Reutilizamos placeholder/hint y estado-photo del estilo común */
+.estado-photo-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--sans);font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:.14em;font-weight:600;text-align:center;padding:0 16px;pointer-events:none;}
+.estado-photo-placeholder::before{content:'+';font-size:22px;font-weight:300;line-height:1;letter-spacing:0;}
+.estado-photo.has-photo .estado-photo-placeholder{display:none;}
+.estado-photo-hint{position:absolute;top:8px;right:8px;background:rgba(26,34,54,.78);color:#fff;font-size:7px;padding:4px 7px;text-transform:uppercase;letter-spacing:.12em;font-family:var(--sans);font-weight:600;opacity:0;transition:opacity .18s;pointer-events:none;}
+.estado-photo:hover .estado-photo-hint{opacity:1;}
+.estado-remove-btn{position:absolute;top:7px;right:7px;z-index:2;width:22px;height:22px;border-radius:50%;background:rgba(26,34,54,.8);color:#fff;border:none;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;opacity:0;transition:opacity .18s,background .18s;font-family:var(--sans);}
+.bd-card:hover .estado-remove-btn{opacity:1;}
+.estado-remove-btn:hover{background:#C62828;}
+.estado-add-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:12px 22px;border:1.5px dashed var(--blue);background:rgba(92,124,217,.03);color:var(--blue);font-family:var(--sans);font-size:9px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;cursor:pointer;transition:background .18s;}
+.estado-add-btn::before{content:'+';font-size:16px;font-weight:400;letter-spacing:0;line-height:1;}
+.estado-add-btn:hover{background:rgba(92,124,217,.09);}
+@media print{
+  .estado-photo-hint,.estado-remove-btn,.estado-add-btn{display:none!important;}
+  .estado-photo{cursor:default;}
+}
+</style>
+<link rel="stylesheet" href="_text-bump.css">
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<nav class="toolbar">
+  <a href="index.html" class="toolbar-back">&#8592; Volver</a>
+  <a href="#" class="toolbar-logo">obreko</a>
+  <span class="toolbar-service">Obras Peque&#241;as</span>
+  <span class="toolbar-hint">Haz clic en cualquier texto para editarlo</span>
+  <button class="toolbar-btn" onclick="clearDoc()">Nuevo documento</button>
+  <button class="toolbar-btn primary" onclick="window.print()">Imprimir / Guardar PDF</button>
+</nav>
+
+<div class="pages">
+
+<!-- ════════════════════════════════════════════
+     PAGE 1 — PORTADA (fondo sand)
+════════════════════════════════════════════ -->
+<div class="page cover">
+  <div class="cover-stripe"></div>
+  <div class="cover-accent"></div>
+  <div class="cover-header">
+    <div class="cover-logo" contenteditable="true">obreko</div>
+    <div class="cover-ref">
+      <span class="cover-ref-line">Ref.</span>
+      <input type="text" placeholder="OP-2026-001" style="display:block;">
+      <span class="cover-ref-line" style="margin-top:8px;">Fecha</span>
+      <input type="text" placeholder="17 de abril de 2026" style="display:block;">
+    </div>
+  </div>
+
+  <div class="cover-center">
+    <div class="cover-tag" contenteditable="true">OBRAS PEQUE&#209;AS</div>
+    <div class="cover-rule"></div>
+    <div class="cover-heading" contenteditable="true">Propuesta de<br><em>Obras Peque&#241;as</em></div>
+
+    <div class="cover-client">
+      <div class="cover-client-left">
+        <div class="cover-client-label">Preparado para:</div>
+        <input class="cover-client-name" type="text" placeholder="Nombre del cliente" contenteditable="true">
+        <input class="cover-client-addr" type="text" placeholder="Direcci&#243;n del inmueble" contenteditable="true">
+      </div>
+      <div class="cover-client-right" contenteditable="true">
+        Preparado por: obreko<br>hola@obreko.com
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <span class="cover-bottom-item">obreko.com</span>
+    <span class="cover-bottom-item">698 900 623</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 2 — QUIÉNES SOMOS
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="qs-wrap">
+    <div class="qs-left">
+      <div>
+        <div class="section-label" style="color:var(--slate);" contenteditable="true">QUIÉNES SOMOS</div>
+        <div class="qs-quote" contenteditable="true">"Si decimos que llegamos el lunes, llegamos el lunes."</div>
+      </div>
+      <div class="qs-stats">
+        <div>
+          <div class="qs-stat-num" contenteditable="true">+10</div>
+          <div class="qs-stat-label" contenteditable="true">años en obra</div>
+        </div>
+        <div>
+          <div class="qs-stat-num" contenteditable="true">+250</div>
+          <div class="qs-stat-label" contenteditable="true">proyectos entregados</div>
+        </div>
+        <div>
+          <div class="qs-stat-num" contenteditable="true">2</div>
+          <div class="qs-stat-label" contenteditable="true">Tenerife y Madrid</div>
+        </div>
+        <div>
+          <div class="qs-stat-num" contenteditable="true">100%</div>
+          <div class="qs-stat-label" contenteditable="true">equipo propio</div>
+        </div>
+      </div>
+    </div>
+    <div class="qs-right">
+      <div class="section-label" contenteditable="true">NUESTRA FORMA DE TRABAJAR</div>
+      <h1 class="page-h1" contenteditable="true">Peque&#241;a obra,<br><em>mismo rigor</em></h1>
+      <div class="yellow-rule"></div>
+      <p class="qs-body" contenteditable="true">Hay una queja que escuchamos mucho: "venían a arreglar algo pequeño y nunca supimos cuándo iban a aparecer." En obreko las obras pequeñas se planifican igual que las grandes — con fecha de inicio, plazo estimado y un teléfono al que se responde.</p>
+      <p class="qs-body" contenteditable="true">Preferimos hacer menos cosas y hacerlas bien. No somos la empresa que acepta todo para luego improvisar. Cada trabajo, por pequeño que sea, recibe materiales adecuados, ejecución limpia y un acabado del que no tengas que avergonzarte.</p>
+      <div class="qs-boxes">
+        <div class="qs-box">
+          <div class="qs-box-title" contenteditable="true">APARECEMOS CUANDO DECIMOS</div>
+          <div class="qs-box-text" contenteditable="true">No hay obra pequeña que merezca esperar semanas sin noticias. Confirmamos fecha, llegamos en el horario acordado y avisamos si algo cambia. Así de básico — y así de poco frecuente en el sector.</div>
+        </div>
+        <div class="qs-box">
+          <div class="qs-box-title" contenteditable="true">EL MISMO CUIDADO, INDEPENDIENTEMENTE DEL TAMAÑO</div>
+          <div class="qs-box-text" contenteditable="true">Un alicatado, una instalación eléctrica puntual, una reforma de aseo. No rebajamos los materiales ni la atención porque el encargo sea menor. El trabajo refleja quiénes somos — en cualquier escala.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 3 — GRACIAS POR CONFIAR
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">NUESTROS VALORES</div>
+    <h1 class="page-h1" contenteditable="true">Gracias por <em>confiar</em> en nosotros</h1>
+    <div class="yellow-rule"></div>
+    <p style="font-family:var(--sans);font-size:10px;color:var(--navy);line-height:1.72;margin-bottom:22px;" contenteditable="true">Aqu&#237; tienes un resumen de nuestra forma de trabajar y lo que puedes esperar de nosotros durante toda la intervenci&#243;n. Estos cuatro compromisos no son aspiraciones — son el criterio con el que ejecutamos cada trabajo, independientemente de su tama&#241;o.</p>
+    <div class="value-cards">
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">I</div>
+        <div class="value-card-title" contenteditable="true">TRANSPARENCIA</div>
+        <div class="value-card-text" contenteditable="true">El presupuesto detalla materiales, mano de obra y limpieza final. Sin partidas que aparecen al terminar, sin costes no previstos. Lo que firmamos es lo que pagas.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">II</div>
+        <div class="value-card-title" contenteditable="true">COMPROMISO</div>
+        <div class="value-card-text" contenteditable="true">Las fechas acordadas se cumplen. Si surge un imprevisto durante la ejecuci&#243;n, te avisamos antes de actuar — nunca despu&#233;s. La obra es tuya, no nuestra.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">III</div>
+        <div class="value-card-title" contenteditable="true">ARTESAN&#205;A</div>
+        <div class="value-card-text" contenteditable="true">Cada trabajo lo ejecuta el especialista adecuado para esa partida. No buscamos atajos. El resultado final refleja el cuidado con el que lo hacemos.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">IV</div>
+        <div class="value-card-title" contenteditable="true">PROXIMIDAD</div>
+        <div class="value-card-text" contenteditable="true">Un interlocutor directo durante toda la intervenci&#243;n. Alguien presente, accesible y con capacidad de decisi&#243;n. Sin intermediarios, sin demoras.</div>
+      </div>
+    </div>
+    <div class="includes-box">
+      <div class="includes-title">LO QUE INCLUYE TODA PROPUESTA OBREKO</div>
+      <div class="includes-grid">
+        <div class="includes-item" contenteditable="true">Presupuesto cerrado con materiales y mano de obra desglosados</div>
+        <div class="includes-item" contenteditable="true">Fecha de inicio y entrega comprometidas por escrito</div>
+        <div class="includes-item" contenteditable="true">Especialista asignado para cada tipo de trabajo</div>
+        <div class="includes-item" contenteditable="true">Protecci&#243;n de zonas no afectadas durante toda la obra</div>
+        <div class="includes-item" contenteditable="true">Retirada de escombros y limpieza final incluidas</div>
+        <div class="includes-item" contenteditable="true">Garant&#237;a por escrito entregada con la obra</div>
+      </div>
+    </div>
+    <div class="proceso-title">C&#211;MO TRABAJAMOS</div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><div><div class="step-title" contenteditable="true">VISITA GRATUITA</div><div class="step-text" contenteditable="true">Vemos el espacio y escuchamos lo que necesitas. Sin coste, sin compromiso. La valoraci&#243;n es presencial.</div></div></div>
+      <div class="step"><span class="step-num">02</span><div><div class="step-title" contenteditable="true">PRESUPUESTO EN 48h</div><div class="step-text" contenteditable="true">Materiales, mano de obra y limpieza desglosados. El precio que firmas es el que pagas.</div></div></div>
+      <div class="step"><span class="step-num">03</span><div><div class="step-title" contenteditable="true">FECHAS EN CONTRATO</div><div class="step-text" contenteditable="true">Inicio y entrega fijados por escrito. Calculamos con margen real para cumplirlos.</div></div></div>
+      <div class="step"><span class="step-num">04</span><div><div class="step-title" contenteditable="true">EJECUCI&#211;N CON SEGUIMIENTO</div><div class="step-text" contenteditable="true">Un responsable presente. Sabrás qu&#233; ocurre sin tener que preguntar.</div></div></div>
+      <div class="step"><span class="step-num">05</span><div><div class="step-title" contenteditable="true">ENTREGA CON GARANT&#205;A</div><div class="step-text" contenteditable="true">Revisi&#243;n final contigo. Limpieza incluida. Garant&#237;a por escrito.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 4 — FICHA DEL INMUEBLE
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">DATOS DE LA INTERVENCI&#211;N</div>
+    <h1 class="page-h1" contenteditable="true">Ficha del <em>inmueble</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="form-section">
+      <div class="form-section-title">Identificaci&#243;n del inmueble</div>
+      <div class="form-grid" data-editable-fields="true">
+        <div class="form-field">
+          <label>Tipo de inmueble</label>
+          <input type="text" placeholder="Piso / Casa / Vivienda unifamiliar / Ático">
+        </div>
+        <div class="form-field">
+          <label>Direcci&#243;n completa</label>
+          <input type="text" placeholder="Calle, n&#250;mero, piso, puerta, c&#243;digo postal">
+        </div>
+        <div class="form-field">
+          <label>Tipo de intervenci&#243;n</label>
+          <input type="text" placeholder="Reforma parcial / Reparaci&#243;n / Instalaci&#243;n">
+        </div>
+        <div class="form-field">
+          <label>Estancias afectadas</label>
+          <input type="text" placeholder="Ba&#241;o, cocina, habitaci&#243;n...">
+        </div>
+        <div class="form-field">
+          <label>Superficie afectada (m&#178;)</label>
+          <input type="text" placeholder="Ej.: 12 m&#178;">
+        </div>
+        <div class="form-field">
+          <label>Estado actual de la zona</label>
+          <input type="text" placeholder="Bueno / Regular / Deteriorado">
+        </div>
+        <div class="form-field">
+          <label>Acceso al inmueble</label>
+          <input type="text" placeholder="Con llave / Con aviso / Portero&#8230;">
+        </div>
+        <div class="form-field">
+          <label>Vecinos / Comunidad (notificado)</label>
+          <input type="text" placeholder="S&#237; / No / Pendiente">
+        </div>
+        <div class="form-field">
+          <label>Fecha deseada de inicio</label>
+          <input type="text" placeholder="dd/mm/aaaa">
+        </div>
+        <div class="form-field">
+          <label>Fecha l&#237;mite de entrega</label>
+          <input type="text" placeholder="dd/mm/aaaa">
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Descripci&#243;n de los trabajos / Observaciones</div>
+      <div class="form-field">
+        <textarea placeholder="Describe con detalle los trabajos solicitados, el estado actual de la zona, elementos a conservar o sustituir, materiales preferidos, condiciones de acceso o cualquier observaci&#243;n relevante para la correcta valoraci&#243;n y ejecuci&#243;n&#8230;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 5 — OBJETIVO / ALCANCE
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="scope-bar"></div>
+  <div class="page-inner" style="padding-left:62px;">
+    <div class="section-label" contenteditable="true">ALCANCE</div>
+    <h1 class="page-h1" contenteditable="true">Alcance de <em>los trabajos</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="scope-intro-text" contenteditable="true">Intervenci&#243;n puntual sobre la zona indicada del inmueble, con el objetivo de resolver las necesidades espec&#237;ficas del cliente con la m&#225;xima calidad de ejecuci&#243;n y en el plazo acordado. Los trabajos se limitan a las estancias y elementos descritos en esta propuesta, sin ampliaci&#243;n de alcance sin aprobaci&#243;n expresa por escrito.</div>
+    <div class="scope-list-title">TRABAJOS PREVISTOS</div>
+    <div class="scope-items">
+      <div class="scope-item">
+        <div class="scope-item-num">1</div>
+        <div class="scope-item-text" contenteditable="true">Inspecci&#243;n previa y preparaci&#243;n de zona de trabajo</div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-item-num">2</div>
+        <div class="scope-item-text" contenteditable="true">Protecci&#243;n de zonas no afectadas: pavimentos, carpinter&#237;as y elementos a conservar</div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-item-num">3</div>
+        <div class="scope-item-text" contenteditable="true">Ejecuci&#243;n de los trabajos seg&#250;n especificaciones acordadas en presupuesto</div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-item-num">4</div>
+        <div class="scope-item-text" contenteditable="true">Acabados con materiales acordados y fichas t&#233;cnicas disponibles</div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-item-num">5</div>
+        <div class="scope-item-text" contenteditable="true">Retirada de escombros y residuos generados durante la intervenci&#243;n</div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-item-num">6</div>
+        <div class="scope-item-text" contenteditable="true">Revisi&#243;n final y limpieza de la zona intervenida antes de la entrega</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 5B — SITUACIÓN ACTUAL / MEJORA PROPUESTA
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">ANTES Y DESPUÉS</div>
+    <h1 class="page-h1" contenteditable="true">Situación <em>actual</em> y mejora propuesta</h1>
+    <div class="yellow-rule"></div>
+    <p style="font-family:var(--sans);font-size:10px;color:#1A2236;line-height:1.65;margin:14px 0 18px;" contenteditable="true">Diagnóstico de la zona a intervenir y descripción visual de la mejora prevista. Cada bloque incluye foto del estado actual y foto / descripción de la mejora propuesta.</p>
+
+    <div id="bdGrid" class="bd-grid">
+      <div class="bd-card">
+        <button type="button" class="estado-remove-btn" onclick="removeBdCard(this)" title="Eliminar bloque">×</button>
+        <div class="bd-row">
+          <div class="bd-cell">
+            <div class="bd-label" contenteditable="true">SITUACIÓN ACTUAL</div>
+            <label class="estado-photo bd-photo">
+              <input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>
+              <div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>
+              <div class="estado-photo-hint">Clic para cambiar</div>
+            </label>
+            <div class="bd-text" contenteditable="true" data-placeholder="Describe brevemente la situación actual…"></div>
+          </div>
+          <div class="bd-cell">
+            <div class="bd-label bd-label-yellow" contenteditable="true">MEJORA PROPUESTA</div>
+            <label class="estado-photo bd-photo">
+              <input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>
+              <div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>
+              <div class="estado-photo-hint">Clic para cambiar</div>
+            </label>
+            <div class="bd-text" contenteditable="true" data-placeholder="Ej. instalación de cabeceros de cama y Smart TV con brazo…"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="estado-add-btn" onclick="addBdCard()">Añadir bloque antes / después</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 6 — PRESUPUESTO
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">DESGLOSE ECON&#211;MICO</div>
+    <h1 class="page-h1" contenteditable="true">Presupuesto <em>detallado</em></h1>
+    <div class="yellow-rule"></div>
+    <table class="budget-table" id="budgetTable">
+      <thead>
+        <tr>
+          <th>N&#186;</th>
+          <th>PARTIDA</th>
+          <th>DESCRIPCI&#211;N</th>
+          <th data-type="mat">MAT. &#8364;</th>
+          <th data-type="labor">M.O. &#8364;</th>
+          <th data-type="rowtotal">TOTAL &#8364;</th>
+          <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
+        </tr>
+      </thead>
+      <tbody id="budgetBody">
+        <tr>
+          <td>1</td>
+          <td><input type="text" value="Preparaci&#243;n y protecci&#243;n"></td>
+          <td><input type="text" value="Protecci&#243;n de zonas adyacentes"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="text" value="Demolici&#243;n selectiva"></td>
+          <td><input type="text" value="Picado, desmontaje y vaciado"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><input type="text" value="Alba&#241;iler&#237;a"></td>
+          <td><input type="text" value="Rozas, tapiado, tabiqueria"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><input type="text" value="Instalaciones"></td>
+          <td><input type="text" value="Fontaner&#237;a y/o electricidad"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><input type="text" value="Revestimientos"></td>
+          <td><input type="text" value="Pavimento y alicatado"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><input type="text" value="Acabados"></td>
+          <td><input type="text" value="Pintura, sellados y repasos"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><input type="text" value="Retirada de escombros"></td>
+          <td><input type="text" value="Gesti&#243;n y transporte de residuos"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><input type="text" value="Limpieza final"></td>
+          <td><input type="text" value="Limpieza de zona y entrega"></td>
+          <td><input type="text" class="price-input mat" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td><input type="text" class="price-input lab" value="" placeholder="&#8212;" oninput="calcBudget()"></td>
+          <td class="line-total" data-type="rowtotal">&#8212;</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display:flex;gap:6mm;margin:4mm 0 2mm"><button onclick="addBudgetRow()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir partida</button><button onclick="addBudgetCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Columna</button><button onclick="removeBudgetLastCustomCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">− Columna</button></div>
+    <div class="totals-wrap">
+      <div>
+        <div class="totals-box">
+          <div class="totals-row" id="rowSubMat"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button>
+            <span>Subtotal materiales</span>
+            <span id="subtotalMat" data-type="mat">0,00 &#8364;</span>
+          </div>
+          <div class="totals-row" id="rowSubLabor"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubLabor')" title="Mostrar / ocultar">👁</button>
+            <span>Subtotal mano de obra</span>
+            <span id="subtotalLab" data-type="labor">0,00 &#8364;</span>
+          </div>
+          <div class="totals-row" id="rowBase"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowBase')" title="Mostrar / ocultar">👁</button>
+            <span>Base imponible</span>
+            <span id="baseImp">0,00 &#8364;</span>
+          </div>
+          <div class="totals-row" id="rowIva"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button>
+            <span><input class="iva-input" id="ivaRate" type="text" value="21" oninput="calcBudget()" style="display:none"></span>
+            <span id="ivaAmt">0,00 &#8364;</span>
+          </div>
+        </div>
+        <div class="totals-grand">
+          <span>TOTAL</span>
+          <span class="grand-val" id="grandTotal" data-type="rowtotal">0,00 &#8364;</span>
+        </div>
+      </div>
+    </div>
+    <div class="conditions-note">
+      <p contenteditable="true">Presupuesto cerrado. El precio firmado no var&#237;a salvo modificaci&#243;n expresa del alcance acordada por escrito. Validez: 30 d&#237;as desde la fecha de emisi&#243;n.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 7 — CALENDARIO
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">PLANIFICACI&#211;N</div>
+    <h1 class="page-h1" contenteditable="true">Calendario <em>de trabajo</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="cal-dates">
+      <div class="form-field"><label>Fecha de inicio</label><input type="text" placeholder="dd/mm/aaaa"></div>
+      <div class="form-field"><label>Fecha de entrega</label><input type="text" placeholder="dd/mm/aaaa"></div>
+      <div class="form-field"><label>Duraci&#243;n estimada</label><input type="text" placeholder="Ej.: 2 semanas"></div>
+    </div>
+    <div class="gantt-wrap">
+      <table class="gantt-table" id="ganttTable">
+        <thead>
+          <tr>
+            <th>Fase</th>
+            <th>S1</th><th>S2</th><th>S3</th><th>S4</th>
+            <th>S5</th><th>S6</th><th>S7</th><th>S8</th>
+            <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true">Preparaci&#243;n y protecci&#243;n</td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Demolici&#243;n y vaciado</td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Obra y ejecuci&#243;n</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Instalaciones</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Acabados y repasos</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Limpieza y entrega</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell yellow" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display:flex;gap:6mm;margin:4mm 0 2mm;flex-wrap:wrap"><button onclick="addGanttRow()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir tarea</button><button onclick="addGanttCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Semana</button><button onclick="removeGanttLastCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">− Semana</button></div>
+    </div>
+    <div class="gantt-legend">
+      <div class="legend-item"><div class="legend-dot legend-navy"></div><span>Ejecuci&#243;n</span></div>
+      <div class="legend-item"><div class="legend-dot legend-yellow"></div><span>Entrega / Hito</span></div>
+    </div>
+    <div class="cal-note" contenteditable="true">Las semanas mostradas son orientativas. Las fechas definitivas quedan fijadas en el contrato firmado. Haz clic en cualquier celda para activar, cambiar a hito (amarillo) o vaciar.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 8 — GARANTÍAS
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">GARANT&#205;AS Y CONDICIONES</div>
+    <h1 class="page-h1" contenteditable="true">Nuestras <em>garant&#237;as</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="garantias-cards">
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">6 meses</div>
+        <div class="garantia-title" contenteditable="true">GARANT&#205;A DE MANO DE OBRA</div>
+        <div class="garantia-text" contenteditable="true">Todos los trabajos garantizados 6 meses desde la entrega firmada, siempre que no se deba a mal uso. Si algo no funciona como debe, lo corregimos sin coste adicional.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">Mat.</div>
+        <div class="garantia-title" contenteditable="true">GARANT&#205;A DE MATERIALES</div>
+        <div class="garantia-text" contenteditable="true">Materiales con garant&#237;a de fabricante. Fichas t&#233;cnicas disponibles para todos los productos empleados en la intervenci&#243;n.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">24h</div>
+        <div class="garantia-title" contenteditable="true">ATENCI&#211;N POST-OBRA</div>
+        <div class="garantia-text" contenteditable="true">Cualquier incidencia relacionada con los trabajos se atiende en menos de 24 horas laborables. Respuesta directa, sin formularios.</div>
+      </div>
+    </div>
+    <div class="payment-section">
+      <div class="payment-title">CONDICIONES DE PAGO</div>
+      <div class="payment-items" id="paymentItems">
+        <div class="payment-item"><div class="payment-dot"></div><input type="text" value="40% a la firma del contrato"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button></div>
+        <div class="payment-item"><div class="payment-dot"></div><input type="text" value="60% a la entrega de la obra"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button></div>
+      </div>
+      <div style="margin-top:8px"><button onclick="addPaymentItem()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir hito</button></div>
+    </div>
+    <div class="conditions-note" style="margin-top:0;">
+      <p contenteditable="true">Las condiciones de pago son negociables en funci&#243;n del alcance y duraci&#243;n de la intervenci&#243;n. Cualquier modificaci&#243;n acordada quedar&#225; reflejada en el contrato.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 9 — COMPROMISO MEDIOAMBIENTAL
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="env-wrap">
+    <div class="env-left">
+      <div>
+        <div class="section-label" style="color:var(--slate);" contenteditable="true">MEDIO AMBIENTE</div>
+        <div class="env-left-heading" contenteditable="true">Peque&#241;a obra,<br><em>gran responsabilidad.</em></div>
+      </div>
+      <div class="env-left-intro" contenteditable="true">En obreko integramos criterios medioambientales en todas nuestras intervenciones. No es un ap&#233;ndice — es parte de c&#243;mo entendemos el oficio y el respeto al entorno donde trabajamos.</div>
+      <div class="env-stats">
+        <div class="env-stat">
+          <div class="env-stat-label">Residuos</div>
+          <div class="env-stat-val" contenteditable="true">Contenedor homologado</div>
+        </div>
+        <div class="env-stat">
+          <div class="env-stat-label">Materiales</div>
+          <div class="env-stat-val" contenteditable="true">Con fichas t&#233;cnicas</div>
+        </div>
+        <div class="env-stat">
+          <div class="env-stat-label">Proveedores</div>
+          <div class="env-stat-val" contenteditable="true">De proximidad cuando es posible</div>
+        </div>
+      </div>
+    </div>
+    <div class="env-right">
+      <div class="section-label" contenteditable="true">NUESTRO ENFOQUE</div>
+      <h2 style="font-family:var(--serif);font-style:italic;color:var(--navy);font-size:22px;line-height:1.3;margin-bottom:10px;" contenteditable="true">Compromiso <em>medioambiental</em></h2>
+      <div class="yellow-rule"></div>
+      <div class="env-points">
+        <div class="env-point">
+          <div class="env-point-title" contenteditable="true">GESTI&#211;N DE RESIDUOS HOMOLOGADA</div>
+          <div class="env-point-text" contenteditable="true">Retirada de escombros en contenedor homologado. Sin vertidos irregulares. Toda la gesti&#243;n conforme a la normativa de residuos de construcci&#243;n y demolici&#243;n vigente.</div>
+        </div>
+        <div class="env-point">
+          <div class="env-point-title" contenteditable="true">PROTECCI&#211;N DEL ENTORNO INMEDIATO</div>
+          <div class="env-point-text" contenteditable="true">Protecci&#243;n de zonas compartidas y elementos no intervenidos durante toda la obra. Minimizamos el impacto sobre la vivienda y los vecinos.</div>
+        </div>
+        <div class="env-point">
+          <div class="env-point-title" contenteditable="true">MATERIALES CON CERTIFICACI&#211;N</div>
+          <div class="env-point-text" contenteditable="true">Materiales con certificaciones de calidad y fichas de seguridad disponibles. Priorizamos productos de baja emisi&#243;n de VOCs cuando el proyecto lo permite.</div>
+        </div>
+        <div class="env-point">
+          <div class="env-point-title" contenteditable="true">COMPRA DE PROXIMIDAD</div>
+          <div class="env-point-text" contenteditable="true">Compra de materiales en proveedores de proximidad cuando el proyecto lo permite. Reducimos la huella log&#237;stica y apoyamos la econom&#237;a del entorno.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONDICIONES PARTICULARES ══ -->
+<div class="page" style="flex-direction:column">
+  <div style="padding:8mm 15mm 5mm;border-bottom:2px solid #FED544"><div style="font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:#5C7CD9;font-weight:600;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">Condiciones de la propuesta</div><div style="font-family:'Playfair Display',Georgia,serif;font-size:22pt;font-weight:400;color:#1A2236;font-style:italic">Condiciones <em>particulares</em></div><div style="font-size:8pt;color:#8896B3;margin-top:2mm;font-family:'DM Sans',Arial,sans-serif">Limitación de responsabilidad · Condiciones económicas · Ley aplicable</div></div>
+  <div style="padding:6mm 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;align-content:start">
+    <div style="display:flex;flex-direction:column;gap:0;padding-right:3.5mm;border-right:1px solid #E8E2D3">
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">1. Alcance y limitación de responsabilidad</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">La responsabilidad de obreko queda limitada a los trabajos expresamente descritos en esta propuesta y en el contrato firmado. obreko no responde de defectos preexistentes no declarados, de elementos ocultos no detectables sin obra, ni de daños derivados del uso inadecuado o mantenimiento incorrecto de las instalaciones tras la entrega.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">2. Condiciones económicas y forma de pago</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El inicio de los trabajos está condicionado a la firma del contrato y al abono de la cantidad acordada como provisión. Los importes parciales se abonarán según el calendario de pagos estipulado. El retraso en el pago faculta a obreko a suspender los trabajos, sin que ello suponga incumplimiento, hasta la regularización de la deuda.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">3. Modificaciones del alcance</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Cualquier cambio sobre el alcance acordado deberá solicitarse por escrito. Las ampliaciones o variaciones se presupuestarán de forma independiente y no formarán parte de esta propuesta salvo acuerdo firmado por ambas partes.</div></div>
+      <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">4. Fuerza mayor y circunstancias sobrevenidas</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">No constituirá incumplimiento el retraso motivado por causas ajenas a obreko: condiciones meteorológicas adversas, desabastecimiento de materiales, conflictos laborales del sector o causas de fuerza mayor legalmente reconocidas. El plazo se ampliará automáticamente, previa comunicación al cliente.</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;padding-left:3.5mm">
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">5. Garantías y procedimiento de reclamación</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Las garantías descritas, con una duración de 6 meses desde la entrega firmada y siempre que no se deba a mal uso, aplican exclusivamente sobre los trabajos ejecutados por obreko. Quedan excluidas las incidencias provocadas por intervenciones de terceros, uso inadecuado o modificaciones no autorizadas. Las reclamaciones deben comunicarse por escrito en el plazo legalmente establecido.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">6. Materiales y especificaciones técnicas</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Los materiales indicados corresponden a las especificaciones acordadas. En caso de discontinuidad o desabastecimiento, obreko propondrá alternativa de calidad equivalente o superior, requiriendo aprobación escrita del cliente antes de su instalación.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">7. Obligaciones del cliente y acceso al inmueble</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El cliente garantizará el acceso al inmueble en los horarios acordados y que el espacio esté libre de obstáculos. Los retrasos imputables al cliente podrán generar costes adicionales por movilización y no serán imputables a obreko.</div></div>
+      <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">8. Ley aplicable y resolución de controversias</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Esta propuesta y el contrato derivado se rigen por la legislación española vigente. Para cualquier controversia no resuelta amistosamente, las partes se someten a los juzgados y tribunales del partido judicial del inmueble, con renuncia a cualquier otro fuero que pudiera corresponderles.</div></div>
+    </div>
+  </div>
+  <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span><span style="font-size:7pt;color:#BBB;letter-spacing:.1em">Condiciones particulares</span></div>
+</div>
+
+<!-- ══ PROTECCIÓN DE DATOS ══ -->
+<div class="page" style="flex-direction:column">
+  <div style="padding:8mm 15mm 5mm;border-bottom:1px solid #E8E2D3"><div style="font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:#5C7CD9;font-weight:600;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">RGPD · LOPDGDD</div><div style="font-family:'Playfair Display',Georgia,serif;font-size:22pt;font-weight:400;color:#1A2236;font-style:italic">Protección de <em>datos</em></div><div style="font-size:8pt;color:#8896B3;margin-top:2mm;font-family:'DM Sans',Arial,sans-serif">Información básica sobre el tratamiento de sus datos personales</div></div>
+  <div style="padding:6mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm">
+    <div style="background:#1A2236;padding:6mm 8mm"><div style="font-size:6.5pt;color:#FED544;font-weight:600;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">Cláusula informativa — Reglamento (UE) 2016/679</div><div contenteditable="true" style="font-size:8pt;color:rgba(255,255,255,.65);line-height:1.8;font-family:'DM Sans',Arial,sans-serif">En cumplimiento del Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), le informamos que sus datos personales serán tratados por obreko en el marco de la presente relación de servicios de reforma y obras en vivienda.</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:8pt;font-family:'DM Sans',Arial,sans-serif"><tbody>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;width:42mm;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Responsable</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">obreko · hola@obreko.com · obreko.com · 698 900 623</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Finalidad</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Gestión de la relación con el propietario, elaboración y seguimiento de propuestas y presupuestos de obras en vivienda, ejecución del contrato de servicio, y cumplimiento de obligaciones legales y fiscales derivadas de la actividad.</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Base jurídica</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Ejecución de un contrato o aplicación de medidas precontractuales (Art. 6.1.b RGPD). Cumplimiento de obligaciones legales (Art. 6.1.c RGPD).</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Destinatarios</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">No se cederán datos a terceros salvo obligación legal o cuando sea necesario para la ejecución del contrato.</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Conservación</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Los datos se conservarán durante la vigencia de la relación contractual y durante los plazos legalmente exigidos (mínimo 5 años).</td></tr>
+      <tr style="background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Derechos</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Puede ejercer sus derechos de acceso, rectificación, supresión, portabilidad, oposición y limitación dirigiéndose a <strong>hola@obreko.com</strong>. Autoridad de control: <strong>AEPD</strong> (www.aepd.es).</td></tr>
+    </tbody></table>
+    <div style="background:#F1EDE0;padding:4mm 6mm;border-left:3px solid #FED544;font-size:7.5pt;color:#666;line-height:1.65;font-family:'DM Sans',Arial,sans-serif" contenteditable="true">La cumplimentación y firma de esta propuesta implica el consentimiento informado al tratamiento de sus datos personales para los fines descritos. obreko se compromete a tratar sus datos con confidencialidad y a adoptar las medidas necesarias para garantizar su seguridad.</div>
+  </div>
+  <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span><span style="font-size:7pt;color:#BBB;letter-spacing:.1em">Protección de datos</span></div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 10 — VALIDEZ + CIERRE (navy)
+════════════════════════════════════════════ -->
+<div class="page closing-page">
+  <div class="closing-stripe"></div>
+  <div class="closing-inner">
+    <div class="closing-label" contenteditable="true">VALIDEZ Y ACEPTACI&#211;N</div>
+    <h1 class="closing-h1" contenteditable="true">Validez de <em>la propuesta</em></h1>
+    <div class="closing-rule"></div>
+
+    <div class="validity-box">
+      <span>Este presupuesto tiene una validez de</span>
+      <input class="validity-days" type="text" value="30">
+      <span>d&#237;as naturales desde la fecha de emisi&#243;n:</span>
+      <input class="validity-date" type="text" placeholder="17 de abril de 2026">
+    </div>
+
+    <div class="next-steps">
+      <div class="next-steps-title">PR&#211;XIMOS PASOS</div>
+      <div class="next-step-list">
+        <div class="next-step">
+          <div class="next-step-n">1</div>
+          <div class="next-step-text" contenteditable="true">Revisa esta propuesta con calma y anota cualquier duda o ajuste que necesites</div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-n">2</div>
+          <div class="next-step-text" contenteditable="true">Contacta con nosotros para aclarar cualquier punto antes de firmar</div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-n">3</div>
+          <div class="next-step-text" contenteditable="true">Una vez aceptada, formalizamos el contrato y fijamos la fecha de inicio de los trabajos</div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-n">4</div>
+          <div class="next-step-text" contenteditable="true">Recibes confirmaci&#243;n escrita de todos los acuerdos antes del comienzo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sig-area">
+      <div class="sig-box">
+        <div class="sig-title">POR OBREKO</div>
+        <div class="sig-logo">obreko</div>
+        <div class="sig-field"><label>Fecha</label><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="sig-line-blank"></div>
+        <div class="sig-line-label">Firma y sello</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-title">POR EL CLIENTE</div>
+        <div class="sig-field"><label>Nombre completo</label><input type="text" placeholder="Nombre y apellidos"></div>
+        <div class="sig-field"><label>DNI / NIE</label><input type="text" placeholder="00000000X"></div>
+        <div class="sig-field"><label>Fecha</label><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="sig-line-blank"></div>
+        <div class="sig-line-label">Firma</div>
+      </div>
+    </div>
+
+    <div class="acceptance-box">
+      <p contenteditable="true">Al firmar esta propuesta, el cliente acepta las condiciones econ&#243;micas, el alcance de los trabajos y las fechas descritas en este documento, y autoriza el inicio de la intervenci&#243;n en los t&#233;rminos acordados.</p>
+    </div>
+  </div>
+  <div class="closing-footer-strip">
+    <span class="closing-footer-item">obreko.com</span>
+    <span class="closing-footer-item">hola@obreko.com</span>
+    <span class="closing-footer-item">698 900 623</span>
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<!-- Fixed print button -->
+<button class="print-btn" onclick="window.print()">Imprimir / PDF</button>
+
+<script>
+// ── ZOOM ──
+function scalePages(){var s=Math.min(1,(window.innerWidth-48)/794);document.querySelectorAll('.page').forEach(function(p){p.style.zoom=s<1?s:'';})}
+scalePages();window.addEventListener('resize',scalePages);
+// ── BUDGET ──
+function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
+function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €':'—';}
+function calcBudget(){var sub=0;document.querySelectorAll('#budgetBody tr').forEach(function(tr){var mEl=tr.querySelector('[data-type="mat"]'),lEl=tr.querySelector('[data-type="labor"]'),tEl=tr.querySelector('[data-type="rowtotal"]');if(!mEl||!lEl||!tEl)return;var t=parseNum(mEl)+parseNum(lEl);tEl.textContent=fmtMoney(t);sub+=t;});var iva=sub*(window.getTaxRate?window.getTaxRate():0.21),grand=sub+iva;var s=document.getElementById('subtotal'),v=document.getElementById('iva'),g=document.getElementById('grand');if(s)s.textContent=fmtMoney(sub);if(v)v.textContent=fmtMoney(iva);if(g)g.textContent=fmtMoney(grand);}
+document.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});
+function addBudgetRow(){var tbody=document.getElementById('budgetBody');if(!tbody)return;var n=tbody.querySelectorAll('tr').length+1;var tr=document.createElement('tr');tr.style.background=n%2===0?'#FAFAFA':'#fff';tr.innerHTML='<td style="padding:3mm;border:1px solid #E8E2D3;text-align:center;color:#BBB;font-size:7.5pt">'+n+'</td><td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;font-weight:600;color:#1A2236;font-size:8pt"></td><td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;color:#555;font-size:8pt"></td><td contenteditable="true" data-type="mat" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td><td contenteditable="true" data-type="labor" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td><td data-type="rowtotal" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt;font-weight:600;color:#1A2236">—</td><td style="padding:2mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';tr.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});tbody.appendChild(tr);}
+function removeBudgetRow(btn){var tr=btn.closest('tr');if(tr){tr.parentNode.removeChild(tr);calcBudget();}}
+function addBudgetCol(){
+  var tbl=document.getElementById('budgetTable');if(!tbl)return;
+  var n=tbl.querySelectorAll('thead tr th[data-custom]').length+1;
+  tbl.querySelectorAll('tr').forEach(function(tr,i){
+    var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];
+    if(i===0){var th=document.createElement('th');th.contentEditable='true';th.dataset.custom='true';th.textContent='Columna '+n;tr.insertBefore(th,last);}
+    else{var td=document.createElement('td');td.contentEditable='true';td.style.cssText='padding:3mm;border:1px solid #E8E2D3;font-size:8pt;color:#555;';tr.insertBefore(td,last);}
+  });
+}
+function removeBudgetLastCustomCol(){
+  var tbl=document.getElementById('budgetTable');if(!tbl)return;
+  var headers=Array.from(tbl.querySelectorAll('thead tr th'));
+  var removable=headers.slice(1,headers.length-1);
+  if(removable.length<=1)return;
+  var lastIdx=headers.indexOf(removable[removable.length-1]);
+  tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells[lastIdx])cells[lastIdx].remove();});
+  calcBudget();
+}
+function toggleTotalsRow(id){var row=document.getElementById(id);if(!row)return;row.classList.toggle('row-hidden');}
+// ── GANTT ──
+var _gPal=[{c:'',l:'Vacío'},{c:'#1A2236',l:'Navy'},{c:'#FED544',l:'Amarillo'},{c:'#5C7CD9',l:'Azul'},{c:'#2d9e4f',l:'Verde'},{c:'#e55039',l:'Rojo'},{c:'#F1EDE0',l:'Arena'},{c:'#8896B3',l:'Gris'}];
+function showGanttPicker(cell,e){var old=document.getElementById('_gPick');if(old){old.remove();return;}var p=document.createElement('div');p.id='_gPick';p.style.cssText='position:fixed;background:#1A2236;border:1.5px solid #FED544;padding:6px;display:flex;gap:5px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.45)';var rect=cell.getBoundingClientRect();p.style.top=(rect.bottom+4)+'px';p.style.left=Math.min(rect.left,window.innerWidth-230)+'px';_gPal.forEach(function(opt){var sw=document.createElement('div');sw.title=opt.l;sw.style.cssText='width:24px;height:24px;cursor:pointer;flex-shrink:0;box-sizing:border-box';sw.style.background=opt.c||'transparent';sw.style.border=opt.c?'2px solid rgba(255,255,255,.2)':'2px dashed rgba(255,255,255,.35)';sw.addEventListener('click',function(ev){ev.stopPropagation();cell.style.background=opt.c;cell.dataset.color=opt.c;p.remove();});p.appendChild(sw);});document.body.appendChild(p);setTimeout(function(){function cls(ev){if(!p.contains(ev.target)){p.remove();document.removeEventListener('click',cls);}}document.addEventListener('click',cls);},60);e.stopPropagation();}
+document.querySelectorAll('.gcell').forEach(function(c){c.style.cursor='pointer';c.addEventListener('click',function(e){showGanttPicker(this,e);});});
+function addGanttRow(){var tbl=document.getElementById('ganttTable');if(!tbl)return;var hdr=tbl.querySelector('tr');var cols=hdr?hdr.querySelectorAll('th,td').length:9;var tbody=tbl.querySelector('tbody');if(!tbody)return;var tr=document.createElement('tr');var tTask=document.createElement('td');tTask.contentEditable='true';tTask.style.cssText='padding:3mm 4mm;border:1px solid #E8E2D3;font-size:8pt;font-weight:500;color:#1A2236';tTask.textContent='Nueva tarea';tr.appendChild(tTask);for(var i=0;i<cols-2;i++){var td=document.createElement('td');td.className='gcell';td.style.cssText='border:1px solid #E8E2D3;cursor:pointer;height:9mm;transition:background .15s';td.addEventListener('click',function(e){showGanttPicker(this,e);});tr.appendChild(td);}var tDel=document.createElement('td');tDel.style.cssText='padding:1mm;border:1px solid #E8E2D3;text-align:center';tDel.innerHTML='<button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button>';tr.appendChild(tDel);tbody.appendChild(tr);}
+function removeGanttRow(btn){var tr=btn.closest('tr');if(tr)tr.parentNode.removeChild(tr);}
+function addGanttCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr,i){var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];if(i===0){var th=document.createElement('th');th.contentEditable='true';th.style.cssText='padding:3mm 2mm;background:#1A2236;color:rgba(255,255,255,.7);font-size:6.5pt;text-align:center;border:1px solid #283650;letter-spacing:.08em';th.textContent='Sem';tr.insertBefore(th,last);}else{var td=document.createElement('td');td.className='gcell';td.style.cssText='border:1px solid #E8E2D3;cursor:pointer;height:9mm;transition:background .15s';td.addEventListener('click',function(e){showGanttPicker(this,e);});tr.insertBefore(td,last);}});}
+function removeGanttLastCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells.length<=3)return;var last=cells[cells.length-1];var prev=cells[cells.length-2];if(last.querySelector&&last.querySelector('button')){if(prev&&!prev.querySelector('button'))tr.removeChild(prev);}else if(!last.querySelector||!last.querySelector('button'))tr.removeChild(last);});}
+function addPaymentItem(){var list=document.getElementById('paymentItems');if(!list)return;var div=document.createElement('div');div.className='payment-item';div.innerHTML='<div class="payment-dot"></div><input type="text" placeholder="Descripción del hito de pago..." style="background:transparent;border:none;border-bottom:1px solid #d0d0d0;font-family:\'DM Sans\',Arial,sans-serif;font-size:10px;color:#1A2236;padding:2px 0;outline:none;flex:1"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button>';list.appendChild(div);}
+function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)item.parentNode.removeChild(item);}
+// ── IMPRESIÓN: pág 2 en blanco + última en blanco ──
+(function(){
+  function mkBlank(){var b=document.createElement('div');b.className='page blank-page';b.style.cssText='background:#fff;box-shadow:none;border:none;height:297mm;';return b;}
+  function cleanBlanks(){document.querySelectorAll('.blank-page').forEach(function(el){el.remove();});}
+  window.addEventListener('beforeprint',function(){
+    document.querySelectorAll('.page:not(.blank-page)').forEach(function(p){p.style.zoom='';});
+    cleanBlanks();
+    var w=document.querySelector('.pages');if(!w)return;
+    var pages=Array.from(w.querySelectorAll('.page:not(.blank-page)'));
+    if(pages.length>1)w.insertBefore(mkBlank(),pages[1]);
+    w.appendChild(mkBlank());
+  });
+  window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
+})();
+
+// ── Antes/Después (situación actual + mejora propuesta) ──
+function setEstadoPhoto(input){
+  if(!input.files||!input.files[0])return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var label=input.closest('.estado-photo');
+    if(!label)return;
+    label.style.backgroundImage='url("'+e.target.result+'")';
+    label.classList.add('has-photo');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function makeBdCard(){
+  var card=document.createElement('div');
+  card.className='bd-card';
+  card.innerHTML='<button type="button" class="estado-remove-btn" onclick="removeBdCard(this)" title="Eliminar bloque">×</button>'+
+    '<div class="bd-row">'+
+      '<div class="bd-cell">'+
+        '<div class="bd-label" contenteditable="true">SITUACIÓN ACTUAL</div>'+
+        '<label class="estado-photo bd-photo"><input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>'+
+        '<div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>'+
+        '<div class="estado-photo-hint">Clic para cambiar</div></label>'+
+        '<div class="bd-text" contenteditable="true" data-placeholder="Describe brevemente la situación actual…"></div>'+
+      '</div>'+
+      '<div class="bd-cell">'+
+        '<div class="bd-label bd-label-yellow" contenteditable="true">MEJORA PROPUESTA</div>'+
+        '<label class="estado-photo bd-photo"><input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>'+
+        '<div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>'+
+        '<div class="estado-photo-hint">Clic para cambiar</div></label>'+
+        '<div class="bd-text" contenteditable="true" data-placeholder="Ej. instalación de cabeceros de cama y Smart TV con brazo…"></div>'+
+      '</div>'+
+    '</div>';
+  return card;
+}
+function addBdCard(){
+  var grid=document.getElementById('bdGrid');
+  if(!grid)return;
+  grid.appendChild(makeBdCard());
+  if(typeof scalePages==='function')scalePages();
+}
+function removeBdCard(btn){
+  var card=btn.closest('.bd-card');
+  if(card)card.remove();
+}
+</script>
+<script src="_crm-button.js"></script>
+<script src="_tax-selector.js"></script>
+<script src="_page-numbers.js"></script>
+<script src="_page-delete.js"></script>
+<script src="_form-field-manager.js"></script>
+<script src="_budget-wrap.js"></script>
+<script src="_photo-zoom.js"></script>
+<script src="_budget-calc.js"></script>
+<script src="_budget-format.js"></script>
+
+<!-- Add/remove líneas en TRABAJOS PREVISTOS (estructura scope-items) -->
+<style>
+  .scope-items{position:relative;}
+  .scope-items .scope-item{position:relative;}
+  .scope-item-remove-btn{
+    position:absolute;top:50%;right:-8px;transform:translateY(-50%);
+    width:20px;height:20px;border-radius:50%;
+    background:rgba(26,34,54,.82);color:#fff;border:none;font-size:13pt;line-height:1;
+    cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .15s,background .15s;
+    font-family:'DM Sans',Arial,sans-serif;z-index:2;
+  }
+  .scope-items .scope-item:hover .scope-item-remove-btn{opacity:1;}
+  .scope-item-remove-btn:hover{background:#C62828;}
+  .scope-item-add-btn{
+    display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+    padding:7px 14px;border:1.5px dashed var(--blue, #5C7CD9);
+    background:rgba(92,124,217,.03);color:var(--blue, #5C7CD9);
+    font-family:'DM Sans',Arial,sans-serif;font-size:8.5pt;text-transform:uppercase;
+    letter-spacing:.14em;font-weight:700;cursor:pointer;transition:background .15s;
+  }
+  .scope-item-add-btn::before{content:'+';font-size:14px;font-weight:400;letter-spacing:0;line-height:1;}
+  .scope-item-add-btn:hover{background:rgba(92,124,217,.08);}
+  @media print{ .scope-item-remove-btn,.scope-item-add-btn{display:none !important;} }
+</style>
+<script>
+(function(){
+  'use strict';
+  function renumber(container){
+    container.querySelectorAll(':scope > .scope-item').forEach(function(it,i){
+      var n=it.querySelector('.scope-item-num');
+      if(n) n.textContent=(i+1);
+    });
+  }
+  function addRemoveBtn(item,container){
+    if(item.querySelector('.scope-item-remove-btn')) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='scope-item-remove-btn'; b.textContent='×'; b.title='Eliminar línea';
+    b.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      item.remove(); renumber(container);
+    });
+    item.appendChild(b);
+  }
+  function addAddBtn(container){
+    if(container.nextElementSibling && container.nextElementSibling.classList.contains('scope-item-add-btn')) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='scope-item-add-btn'; b.textContent='Añadir línea';
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      var it=document.createElement('div'); it.className='scope-item';
+      var num=document.createElement('div'); num.className='scope-item-num'; num.textContent='';
+      var txt=document.createElement('div'); txt.className='scope-item-text'; txt.setAttribute('contenteditable','true'); txt.textContent='Nueva línea';
+      it.appendChild(num); it.appendChild(txt);
+      container.appendChild(it);
+      addRemoveBtn(it,container); renumber(container);
+      var r=document.createRange(); r.selectNodeContents(txt);
+      var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); txt.focus();
+    });
+    container.parentNode.insertBefore(b,container.nextSibling);
+  }
+  function init(){
+    document.querySelectorAll('.scope-items').forEach(function(c){
+      c.querySelectorAll(':scope > .scope-item').forEach(function(it){ addRemoveBtn(it,c); });
+      addAddBtn(c);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+<script src="_import-budget.js"></script>
+</body>
+</html>

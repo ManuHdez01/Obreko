@@ -1,0 +1,67 @@
+/* _text-bump.css
+   Aumenta el cuerpo de texto de las propuestas (~+10/15%) sin tocar los
+   titulares ni las etiquetas pequeñas en mayúsculas (section-label, badges).
+   Aplica en pantalla y en impresión. */
+
+/* Cuerpo principal de cada bloque editable */
+.qs-body,
+.info-block-text,
+.value-card-text,
+.step-text,
+.includes-item,
+.scope-intro-text,
+.scope-item-text,
+.plans-note,
+.estado-text,
+.bd-text,
+.pronexo-list li,
+.pronexo-col-foot,
+.pronexo-handoff,
+.plan-list li span,
+.plan-list li,
+.garantia-text,
+.garantia-card-text,
+.env-intro,
+.env-point,
+.next-step-text,
+.closing-validity span,
+.closing-card-value,
+.acceptance-box p,
+.qs-layout p,
+.conditions-note p,
+.conditions-note li {
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+}
+
+/* Tablas de presupuesto: aumentar contenido sin romper alturas */
+.budget-table tbody td,
+.budget-table tbody td input[type="text"]:not(.price-input):not(.iva-input) {
+  font-size: 10px !important;
+}
+.budget-table .price-input {
+  font-size: 10px !important;
+}
+
+/* Inputs y textarea de fichas */
+.form-field input,
+.form-field textarea {
+  font-size: 11px !important;
+}
+
+/* Subtítulos de bloques (no son section-label en mayúsculas) */
+.plan-block-title,
+.form-section-title,
+.includes-title,
+.proceso-title,
+.payment-title,
+.next-steps-title,
+.pronexo-col-title {
+  font-size: 9.5px !important;
+}
+
+/* Para que no rompa los titulares ni las etiquetas en mayúsculas:
+   NO se tocan: .section-label, .cover-tag, .cover-tag-text, .page-h1,
+   .cover-title, .closing-heading, .closing-top-label, .stat-num,
+   .stat-label, .estado-label, .bd-label, garantia-card-badge, garantia-badge,
+   field-label-mini, sig-label, sig-sub. */

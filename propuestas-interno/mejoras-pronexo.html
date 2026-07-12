@@ -1,0 +1,1227 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>obreko — Mejoras con Pronexo Hábitat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair.woff2') format('woff2');font-style:normal;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1A2236;--yellow:#FED544;--sand:#F1EDE0;--sand2:#E8E2D3;--blue:#5C7CD9;--slate:#8896B3;
+  --serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;
+}
+body{background:#ddd;font-family:var(--sans);color:var(--navy);}
+
+/* ─── TOOLBAR ─────────────────────────────────────── */
+.toolbar{
+  position:sticky;top:0;z-index:200;background:var(--navy);
+  display:flex;align-items:center;gap:14px;padding:9px 22px;
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.toolbar-logo{font-family:var(--serif);font-style:italic;color:#fff;font-size:19px;letter-spacing:.03em;text-decoration:none;}
+.toolbar-service{color:var(--slate);font-size:10.5px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.08em;}
+.toolbar-hint{color:var(--slate);font-size:9.5px;margin-left:auto;opacity:.7;}
+.toolbar-sep{width:1px;height:18px;background:rgba(255,255,255,.12);}
+.toolbar-btn{
+  background:transparent;border:1px solid var(--slate);color:#fff;
+  padding:5px 13px;font-size:10px;cursor:pointer;letter-spacing:.05em;
+  text-transform:uppercase;transition:all .18s;font-family:var(--sans);
+}
+.toolbar-btn:hover{background:var(--yellow);color:var(--navy);border-color:var(--yellow);}
+.toolbar-btn.primary{background:var(--yellow);color:var(--navy);border-color:var(--yellow);}
+.toolbar-btn.primary:hover{background:#e6bf3c;}
+.toolbar-back{color:var(--slate);font-size:10px;text-decoration:none;letter-spacing:.05em;text-transform:uppercase;transition:color .15s;}
+.toolbar-back:hover{color:#fff;}
+
+/* ─── PAGE WRAPPER ────────────────────────────────── */
+.pages{padding:28px 20px;display:flex;flex-direction:column;gap:22px;align-items:center;}
+.page{
+  width:794px;min-height:1123px;background:#fff;
+  box-shadow:0 4px 28px rgba(0,0,0,.16);
+  position:relative;overflow:hidden;
+  page-break-after:always;break-after:page;
+}
+
+/* ─── CONTENTEDITABLE INTERACTIONS ───────────────── */
+[contenteditable]:focus{
+  outline:2px solid var(--yellow);
+  background:rgba(254,213,68,.07);
+}
+[contenteditable]:hover:not(:focus){
+  outline:1px dashed rgba(254,213,68,.5);
+}
+
+/* ─── PAGE 1 — COVER ──────────────────────────────── */
+.cover{background:var(--sand);}
+.cover-top-stripe{height:3px;background:var(--yellow);width:100%;}
+.cover-nav{padding:28px 40px 0;display:flex;justify-content:space-between;align-items:flex-start;position:relative;}
+.cover-logo{font-family:var(--serif);font-style:italic;color:var(--navy);font-size:26px;letter-spacing:.03em;line-height:1;}
+.cover-meta{text-align:right;}
+.cover-meta-ref{font-family:var(--sans);font-size:7pt;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;display:block;}
+.cover-meta-date{font-family:var(--sans);font-size:7pt;color:var(--slate);letter-spacing:.05em;display:block;margin-top:3px;}
+.cover-nav-accent{
+  position:absolute;top:0;right:0;width:22px;height:22px;background:var(--navy);
+}
+.cover-body{
+  position:absolute;bottom:218px;left:40px;right:40px;
+}
+.cover-tag{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.cover-tag-text{
+  font-family:var(--sans);font-size:6.5pt;color:var(--blue);
+  text-transform:uppercase;letter-spacing:.18em;
+}
+.cover-tag-rule{width:30mm;height:2px;background:var(--navy);}
+.cover-title{
+  font-family:var(--serif);font-style:italic;color:var(--navy);
+  font-size:42pt;line-height:1.05;letter-spacing:.02em;margin-bottom:28px;
+}
+.cover-title em{font-style:italic;color:var(--blue);}
+.cover-client-block{
+  border:1px solid var(--sand2);background:#fff;
+  padding:6mm 8mm;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
+}
+.cover-client-left{flex:1;}
+.cover-client-label{font-family:var(--sans);font-size:7px;text-transform:uppercase;letter-spacing:.12em;color:var(--slate);margin-bottom:5px;}
+.cover-client-name{
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--navy);
+  letter-spacing:.02em;min-width:200px;min-height:1em;display:block;
+  border-bottom:1px solid rgba(26,34,54,.15);padding-bottom:3px;
+}
+.cover-client-addr{
+  font-family:var(--sans);font-size:9px;color:var(--navy);
+  min-width:220px;min-height:1em;display:block;margin-top:6px;line-height:1.5;
+}
+.cover-client-right{
+  text-align:right;font-family:var(--sans);font-size:8px;
+  color:var(--slate);line-height:1.6;white-space:nowrap;
+}
+.cover-footer{
+  position:absolute;bottom:0;left:0;right:0;height:36px;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+}
+.cover-footer span{font-family:var(--sans);font-size:7pt;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;}
+
+/* ─── INNER PAGES ─────────────────────────────────── */
+.page-inner{padding:52px 56px;}
+.section-label{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.18em;color:var(--blue);margin-bottom:14px;}
+.page-h1{font-family:var(--serif);font-style:italic;font-size:34px;color:var(--navy);letter-spacing:.02em;line-height:1.15;margin-bottom:10px;}
+.page-h1 em{font-style:italic;color:var(--blue);}
+.yellow-rule{width:44px;height:3px;background:var(--yellow);margin-bottom:26px;}
+
+/* ─── PAGE 2 — QUIÉNES SOMOS ─────────────────────── */
+.qs-layout{display:grid;grid-template-columns:2fr 3fr;gap:28px;margin-bottom:30px;}
+.qs-left{background:var(--navy);padding:28px 24px;display:flex;flex-direction:column;justify-content:center;gap:20px;}
+.qs-quote{font-family:var(--serif);font-style:italic;color:#fff;font-size:13.5px;line-height:1.65;letter-spacing:.025em;}
+.qs-quote-attr{font-family:var(--sans);font-size:8px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:6px;}
+.qs-stats{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.qs-stat{display:flex;align-items:baseline;gap:8px;}
+.qs-stat-num{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:20px;}
+.qs-stat-lbl{font-family:var(--sans);font-size:8px;color:var(--slate);text-transform:uppercase;letter-spacing:.08em;}
+.qs-right{display:flex;flex-direction:column;gap:14px;}
+.qs-body{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.75;}
+.qs-boxes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+.qs-box{background:var(--sand);padding:18px 16px;}
+.qs-box-title{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--navy);font-weight:700;margin-bottom:7px;}
+.qs-box-text{font-family:var(--sans);font-size:9px;color:var(--navy);line-height:1.6;}
+
+/* ─── PAGE 3 — VALORES ────────────────────────────── */
+.value-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px;}
+.value-card{background:var(--sand);padding:20px 18px;border-top:3px solid var(--yellow);}
+.value-card-num{font-family:var(--serif);font-style:italic;color:var(--blue);font-size:11px;margin-bottom:3px;}
+.value-card-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--navy);font-weight:700;margin-bottom:7px;}
+.value-card-text{font-family:var(--sans);font-size:9px;color:var(--navy);line-height:1.6;}
+.includes-box{background:var(--navy);padding:24px 28px;margin-bottom:26px;}
+.includes-title{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.15em;color:var(--yellow);margin-bottom:14px;}
+.includes-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px;}
+.includes-item{font-family:var(--sans);font-size:9px;color:#fff;line-height:1.5;display:flex;align-items:flex-start;gap:7px;}
+.includes-item::before{content:'✓';color:var(--yellow);font-size:9px;flex-shrink:0;margin-top:1px;}
+.proceso-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--navy);font-weight:700;margin-bottom:14px;}
+.steps{display:flex;flex-direction:column;gap:10px;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:12px;min-width:26px;flex-shrink:0;padding-top:1px;}
+.step-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--navy);font-weight:700;margin-bottom:2px;}
+.step-text{font-family:var(--sans);font-size:9px;color:var(--navy);line-height:1.5;}
+
+/* ─── PAGE 4 — FICHA DEL INMUEBLE ─────────────────── */
+.form-section{margin-bottom:24px;}
+.form-section-title{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.15em;color:var(--blue);margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid #e0e0e0;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 22px;}
+.form-field{display:flex;flex-direction:column;}
+.form-field label{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--blue);margin-bottom:4px;}
+.form-field input,.form-field textarea{
+  background:transparent;border:none;border-bottom:1px solid #d0d0d0;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);padding:3px 0;outline:none;width:100%;
+  transition:border-color .15s;
+}
+.form-field input:focus,.form-field textarea:focus{border-bottom-color:var(--blue);}
+.form-field input::placeholder,.form-field textarea::placeholder{color:#b0b0b0;}
+.form-field textarea{resize:vertical;min-height:64px;line-height:1.55;}
+.form-full{grid-column:1/-1;}
+
+/* ─── PAGE 5 — PLAN DE MANTENIMIENTO ──────────────── */
+.plan-section{border-left:4px solid var(--yellow);padding-left:18px;margin-bottom:26px;}
+.plan-block{margin-bottom:24px;}
+.plan-block-title{font-family:var(--sans);font-size:9pt;text-transform:uppercase;letter-spacing:.12em;color:var(--navy);font-weight:700;margin-bottom:12px;}
+.plan-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.plan-list li{
+  display:flex;align-items:flex-start;gap:8px;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;
+}
+.plan-list li::before{content:'';width:6px;height:6px;background:var(--yellow);border-radius:50%;flex-shrink:0;margin-top:4px;}
+.plan-list li > span{flex:1;}
+.plan-line-remove{background:none;border:none;cursor:pointer;color:#C62828;font-size:12pt;line-height:1;padding:0 0 0 6px;flex-shrink:0;opacity:0;transition:opacity .15s;font-family:var(--sans);}
+.plan-list li:hover .plan-line-remove{opacity:1;}
+.plan-line-add{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:6px 14px;border:1.5px dashed var(--blue);background:rgba(92,124,217,.03);color:var(--blue);font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;font-weight:700;cursor:pointer;transition:background .15s;}
+.plan-line-add::before{content:'+';font-size:14px;font-weight:400;line-height:1;letter-spacing:0;}
+.plan-line-add:hover{background:rgba(92,124,217,.08);}
+@media print{.plan-line-remove,.plan-line-add{display:none!important;}}
+.plan-divider{height:1px;background:var(--sand2);margin:20px 0;}
+
+/* ─── PAGE 6 — PRESUPUESTO ────────────────────────── */
+.budget-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.budget-table th{
+  background:var(--navy);color:#fff;font-family:var(--sans);font-size:7.5px;
+  text-transform:uppercase;letter-spacing:.1em;padding:9px 11px;text-align:left;
+}
+.budget-table th:nth-child(3),.budget-table th:nth-child(4),.budget-table th:nth-child(5){text-align:right;}
+.budget-table td{padding:7px 11px;border-bottom:1px solid #ebebeb;vertical-align:middle;}
+.budget-table td:first-child{width:32px;font-family:var(--sans);font-size:8.5px;color:var(--slate);text-align:center;}
+.budget-table td:nth-child(3),.budget-table td:nth-child(4),.budget-table td:nth-child(5){text-align:right;}
+.budget-table .cat-row td{background:var(--navy);color:#fff;font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.1em;padding:6px 11px;}
+.budget-table input[type=text]{
+  width:100%;background:transparent;border:none;border-bottom:1px solid #e0e0e0;
+  font-family:var(--sans);font-size:9px;color:var(--navy);padding:2px 0;outline:none;
+}
+.budget-table input[type=text]:focus{border-bottom-color:var(--blue);}
+.price-input{
+  width:72px;background:transparent;border:none;border-bottom:1px solid #e0e0e0;
+  font-family:var(--sans);font-size:9px;color:var(--navy);padding:2px 0;outline:none;text-align:right;
+}
+.price-input:focus{border-bottom-color:var(--blue);}
+.line-total{font-family:var(--sans);font-size:9px;color:var(--navy);font-weight:600;}
+.totals-wrap{display:flex;justify-content:flex-end;margin-bottom:18px;}
+.totals-box{width:270px;background:#f9f9f9;border:1px solid #e0e0e0;padding:14px 18px;}
+.totals-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #eee;font-family:var(--sans);font-size:9px;color:var(--navy);gap:6px;}
+.totals-row:last-child{border-bottom:none;}
+.totals-row.row-hidden{display:none;}
+.toggle-row-btn{background:none;border:none;cursor:pointer;font-size:10px;opacity:.35;padding:0;flex-shrink:0;line-height:1;transition:opacity .15s;}
+.toggle-row-btn:hover{opacity:.9;}
+@media print{.toggle-row-btn{display:none!important;}}
+.totals-total{background:var(--navy);padding:9px 18px;display:flex;justify-content:space-between;align-items:center;}
+.totals-total span{font-family:var(--sans);font-size:9.5px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:.07em;}
+.total-val{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--yellow);}
+.iva-input{width:32px;background:transparent;border:none;border-bottom:1px solid #ccc;text-align:right;font-family:var(--sans);font-size:9px;color:var(--navy);outline:none;}
+.conditions-note{border-left:3px solid var(--yellow);padding:10px 14px;background:rgba(254,213,68,.07);margin-top:16px;}
+.conditions-note p{font-family:var(--sans);font-size:9px;color:var(--navy);line-height:1.6;}
+
+/* ─── PAGE 7 — CALENDARIO GANTT ───────────────────── */
+.gantt-table{width:100%;border-collapse:collapse;}
+.gantt-table th{
+  background:var(--navy);color:#fff;font-family:var(--sans);font-size:7.5px;
+  text-transform:uppercase;letter-spacing:.08em;padding:8px 5px;text-align:center;
+}
+.gantt-table th:first-child{text-align:left;width:200px;padding-left:12px;}
+.gantt-table td{padding:0;border:1px solid #e8e8e8;height:38px;}
+.gantt-table td:first-child{padding:0 12px;font-family:var(--sans);font-size:8.5px;color:var(--navy);background:#f8f8f8;}
+.gantt-cell{width:100%;height:100%;cursor:pointer;display:block;transition:background .12s;}
+.gantt-cell:hover{opacity:.85;}
+.gantt-cell.active{background:var(--navy);}
+.gantt-cell.delivery{background:var(--yellow);}
+.gantt-legend{display:flex;gap:22px;margin-top:14px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-family:var(--sans);font-size:8.5px;color:var(--navy);}
+.legend-dot{width:14px;height:14px;flex-shrink:0;}
+.legend-navy{background:var(--navy);}
+.legend-yellow{background:var(--yellow);}
+
+/* ─── PAGE 8 — GARANTÍAS ──────────────────────────── */
+.garantia-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:30px;}
+.garantia-card{background:var(--sand);padding:22px 20px;border-top:3px solid var(--yellow);display:flex;flex-direction:column;gap:8px;}
+.garantia-card-badge{
+  font-family:var(--serif);font-style:italic;color:var(--blue);
+  font-size:26px;letter-spacing:.01em;line-height:1;
+}
+.garantia-card-title{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--navy);font-weight:700;}
+.garantia-card-text{font-family:var(--sans);font-size:9px;color:var(--navy);line-height:1.6;}
+.payment-section{margin-bottom:28px;}
+.payment-title{font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:var(--navy);font-weight:700;margin-bottom:12px;}
+.payment-items{display:flex;flex-direction:column;gap:9px;}
+.payment-item{display:flex;align-items:center;gap:11px;}
+.payment-dot{width:7px;height:7px;background:var(--yellow);border-radius:50%;flex-shrink:0;}
+.payment-item input{
+  background:transparent;border:none;border-bottom:1px solid #d0d0d0;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);padding:2px 0;outline:none;flex:1;
+}
+.payment-item input:focus{border-bottom-color:var(--blue);}
+.sig-area{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:24px;}
+.sig-title{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--blue);margin-bottom:14px;}
+.sig-logo{font-family:var(--serif);font-style:italic;color:var(--navy);font-size:17px;letter-spacing:.03em;margin-bottom:18px;}
+.sig-field{border-bottom:1px solid var(--navy);padding-bottom:3px;margin-bottom:9px;}
+.sig-field label{font-family:var(--sans);font-size:7.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;}
+.sig-field input{width:100%;background:transparent;border:none;font-family:var(--sans);font-size:9.5px;color:var(--navy);padding:4px 0 2px;outline:none;}
+.sig-line-space{height:44px;border-bottom:1px solid var(--navy);margin-top:14px;}
+.sig-line-label{font-family:var(--sans);font-size:7.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+.acceptance-box{background:var(--navy);padding:18px 22px;}
+.acceptance-box p{font-family:var(--sans);font-size:9px;color:#fff;line-height:1.65;}
+
+/* ─── PAGE 9 — MEDIOAMBIENTAL ─────────────────────── */
+.env-heading{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--navy);letter-spacing:.02em;margin-bottom:20px;line-height:1.2;}
+.env-intro{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.75;margin-bottom:26px;}
+.env-points{display:flex;flex-direction:column;gap:12px;}
+.env-point{background:var(--sand);padding:13px 15px;border-left:3px solid var(--yellow);font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;}
+
+/* ─── PAGE 10 — VALIDEZ Y CIERRE ──────────────────── */
+.closing-light{background:#fff;min-height:1123px;position:relative;}
+.closing-stripe{height:3px;background:var(--yellow);}
+.closing-inner{padding:64px 60px;display:flex;flex-direction:column;height:100%;}
+.closing-top-label{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.16em;color:var(--blue);margin-bottom:32px;}
+.closing-validity{
+  background:rgba(92,124,217,.05);border:1px solid rgba(26,34,54,.1);
+  padding:22px 28px;margin-bottom:40px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.closing-validity span{font-family:var(--sans);color:var(--navy);font-size:9.5px;}
+.validity-days{
+  background:transparent;border:none;border-bottom:2px solid var(--yellow);
+  color:var(--navy);font-family:var(--serif);font-style:italic;font-size:19px;
+  width:44px;text-align:center;outline:none;
+}
+.closing-heading{font-family:var(--serif);font-style:italic;color:var(--navy);font-size:38px;line-height:1.1;letter-spacing:.02em;margin-bottom:36px;}
+.closing-heading em{color:var(--blue);}
+.closing-sig-area{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:28px;align-items:start;}
+.closing-sig-box{display:flex;flex-direction:column;gap:10px;}
+.closing-sig-label{font-family:var(--sans);font-size:7.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--blue);font-weight:700;}
+.closing-sig-logo{font-family:var(--serif);font-style:italic;color:var(--navy);font-size:16px;letter-spacing:.03em;}
+.closing-sig-name{font-family:var(--sans);font-size:7.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;}
+.closing-sig-line{height:40px;border-bottom:1px solid rgba(26,34,54,.2);margin-top:6px;}
+.closing-sig-field{display:block;margin-bottom:6px;}
+.closing-sig-field-label{font-family:var(--sans);font-size:7.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px;}
+.closing-sig-field input{background:transparent;border:none;border-bottom:1px solid rgba(26,34,54,.15);color:var(--navy);font-family:var(--sans);font-size:10px;padding:3px 0;outline:none;width:100%;}
+.closing-sig-field input:focus{border-bottom-color:var(--blue);}
+.closing-contacts{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.closing-card{border:1px solid rgba(26,34,54,.12);padding:10px 14px;background:#FAFAF7;}
+.closing-card-label{font-family:var(--sans);color:var(--slate);font-size:7.5px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:3px;font-weight:600;}
+.closing-card-value{font-family:var(--sans);color:var(--navy);font-size:10.5px;}
+.closing-footer{
+  position:absolute;bottom:0;left:0;right:0;height:32px;
+  border-top:1px solid rgba(26,34,54,.08);
+  display:flex;align-items:center;justify-content:center;background:#fff;
+}
+.closing-footer span{font-family:var(--sans);font-size:7px;color:var(--slate);text-transform:uppercase;letter-spacing:.14em;}
+
+.next-steps{margin-bottom:32px;}
+.next-steps-title{font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.15em;color:var(--blue);font-weight:700;margin-bottom:16px;}
+.next-step-list{display:flex;flex-direction:column;gap:10px;}
+.next-step{display:flex;align-items:flex-start;gap:14px;}
+.next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
+.next-step-text{font-family:var(--sans);font-size:10px;color:var(--navy);line-height:1.5;padding-top:4px;}
+
+/* ─── PRINT ───────────────────────────────────────── */
+@media print{
+  @page{size:A4;margin:0;}
+  html,body{background:#fff;}
+  .toolbar{display:none!important;}
+  button{display:none!important;}
+  .page{box-shadow:none;margin:0;page-break-after:always;break-after:page;}
+  .page:last-child{page-break-after:auto;}
+  .pages{padding:0;gap:0;}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
+}
+
+/* ─── PRONEXO vs OBREKO ──────────────────────────── */
+.pronexo-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;}
+.pronexo-col{padding:22px 22px 20px;border:1px solid #e0e0e0;}
+.pronexo-col--pronexo{background:rgba(140,150,170,.04);border-right:none;}
+.pronexo-col--obreko{background:rgba(254,213,68,.06);border-left:2px solid var(--yellow);}
+.pronexo-col-label{font-family:var(--sans);font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--slate);margin-bottom:6px;}
+.pronexo-col--obreko .pronexo-col-label{color:var(--navy);}
+.pronexo-col-title{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--navy);line-height:1.2;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #e0e0e0;}
+.pronexo-list{list-style:none;padding:0;margin:0;}
+.pronexo-list li{font-family:var(--sans);font-size:9.5px;color:var(--slate);line-height:1.55;padding:6px 0 6px 14px;position:relative;border-bottom:1px dashed #ececec;}
+.pronexo-list li:last-child{border-bottom:none;}
+.pronexo-list li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--blue);}
+.pronexo-col--pronexo .pronexo-list li::before{background:var(--slate);}
+.pronexo-col-foot{margin-top:12px;font-family:var(--sans);font-size:8.5px;color:var(--slate);font-style:italic;line-height:1.5;}
+.pronexo-handoff{margin-top:18px;padding:12px 14px;background:rgba(26,34,54,.04);border-left:3px solid var(--navy);font-family:var(--sans);font-size:9.5px;color:var(--slate);line-height:1.7;}
+.pronexo-handoff strong{color:var(--navy);font-weight:700;}
+
+/* ─── ESTADO DE SITUACIÓN ─────────────────────────── */
+.estado-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;}
+.estado-card{display:flex;flex-direction:column;border:1px solid #e0e0e0;background:#fff;overflow:hidden;position:relative;}
+.estado-remove-btn{position:absolute;top:7px;left:7px;z-index:2;width:22px;height:22px;border-radius:50%;background:rgba(26,34,54,.8);color:#fff;border:none;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;opacity:0;transition:opacity .18s,background .18s;font-family:var(--sans);}
+.estado-card:hover .estado-remove-btn{opacity:1;}
+.estado-remove-btn:hover{background:#C62828;}
+.estado-add-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:12px 22px;border:1.5px dashed var(--blue);background:rgba(92,124,217,.03);color:var(--blue);font-family:var(--sans);font-size:9px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;cursor:pointer;transition:background .18s;}
+.estado-add-btn::before{content:'+';font-size:16px;font-weight:400;letter-spacing:0;line-height:1;}
+.estado-add-btn:hover{background:rgba(92,124,217,.09);}
+.estado-photo{display:block;position:relative;height:160px;background-color:rgba(92,124,217,.04);background-size:contain;background-position:center;background-repeat:no-repeat;border-bottom:1.5px dashed var(--blue);cursor:pointer;}
+.estado-photo.has-photo{border-bottom:1px solid #e0e0e0;background-color:#f5f5f5;}
+.estado-photo-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--sans);font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:.14em;font-weight:600;text-align:center;padding:0 16px;pointer-events:none;}
+.estado-photo-placeholder::before{content:'+';font-size:22px;font-weight:300;line-height:1;letter-spacing:0;}
+.estado-photo.has-photo .estado-photo-placeholder{display:none;}
+.estado-photo-hint{position:absolute;top:8px;right:8px;background:rgba(26,34,54,.78);color:#fff;font-size:7px;padding:4px 7px;text-transform:uppercase;letter-spacing:.12em;font-family:var(--sans);font-weight:600;opacity:0;transition:opacity .18s;pointer-events:none;}
+.estado-photo:hover .estado-photo-hint{opacity:1;}
+.estado-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;}
+.estado-label{font-family:var(--sans);font-size:7px;text-transform:uppercase;letter-spacing:.15em;color:var(--blue);font-weight:700;margin-top:9px;margin-bottom:2px;}
+.estado-label:first-child{margin-top:0;}
+.estado-text{font-family:var(--sans);font-size:9.5px;color:var(--slate);line-height:1.6;min-height:34px;}
+.estado-text:empty::before{content:attr(data-placeholder);color:#b8b8b8;font-style:italic;}
+@media print{
+  .estado-photo-hint,.estado-remove-btn,.estado-add-btn{display:none!important;}
+  .estado-photo{cursor:default;}
+}
+</style>
+<link rel="stylesheet" href="_text-bump.css">
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<nav class="toolbar">
+  <a href="index.html" class="toolbar-back">← Volver</a>
+  <div class="toolbar-sep"></div>
+  <a href="#" class="toolbar-logo">obreko</a>
+  <span class="toolbar-service">Mejoras · Pronexo Hábitat</span>
+  <span class="toolbar-hint">Haz clic en cualquier texto para editarlo</span>
+  <button class="toolbar-btn" onclick="clearDoc()">Nuevo documento</button>
+  <button class="toolbar-btn primary" onclick="window.print()">Imprimir / PDF</button>
+</nav>
+
+<div class="pages">
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 1 — PORTADA
+════════════════════════════════════════════════════ -->
+<div class="page cover">
+  <div class="cover-top-stripe"></div>
+  <div class="cover-nav">
+    <div class="cover-logo" contenteditable="true">obreko</div>
+    <div class="cover-meta">
+      <span class="cover-meta-ref" contenteditable="true">REF-2026-MEJ-PNX-001</span>
+      <span class="cover-meta-date" contenteditable="true">17 de abril de 2026</span>
+    </div>
+    <div class="cover-nav-accent"></div>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-tag">
+      <span class="cover-tag-text">Mantenimiento · Vivienda en alquiler</span>
+      <div class="cover-tag-rule"></div>
+    </div>
+    <div class="cover-title" contenteditable="true">Mejoras que aportan<br><em>valor añadido</em> a la vivienda</div>
+    <div class="cover-client-block">
+      <div class="cover-client-left">
+        <div class="cover-client-label">Inversor propietario</div>
+        <span class="cover-client-name" contenteditable="true">Nombre del inversor</span>
+        <span class="cover-client-addr" contenteditable="true">Dirección del inmueble, municipio · Gestión de alquiler: Pronexo Hábitat</span>
+      </div>
+      <div class="cover-client-right" contenteditable="true">obreko · hola@obreko.com</div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <span contenteditable="true">obreko.com</span>
+    <span contenteditable="true">698 900 623</span>
+    <span contenteditable="true">Tenerife · Madrid</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 2 — QUIÉNES SOMOS
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">QUIÉNES SOMOS</div>
+    <h1 class="page-h1" contenteditable="true">Quiénes <em>somos</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="qs-layout">
+      <div class="qs-left">
+        <div class="qs-quote" contenteditable="true">"Conocer tu casa antes de que te dé problemas."</div>
+        <div class="qs-stats">
+          <div class="qs-stat">
+            <span class="qs-stat-num" contenteditable="true">+10</span>
+            <span class="qs-stat-lbl" contenteditable="true">años en activo</span>
+          </div>
+          <div class="qs-stat">
+            <span class="qs-stat-num" contenteditable="true">+250</span>
+            <span class="qs-stat-lbl" contenteditable="true">inmuebles atendidos</span>
+          </div>
+          <div class="qs-stat">
+            <span class="qs-stat-num" contenteditable="true">2</span>
+            <span class="qs-stat-lbl" contenteditable="true">sedes: Tenerife y Madrid</span>
+          </div>
+          <div class="qs-stat">
+            <span class="qs-stat-num" contenteditable="true">4h</span>
+            <span class="qs-stat-lbl" contenteditable="true">tiempo de respuesta urgencias</span>
+          </div>
+        </div>
+      </div>
+      <div class="qs-right">
+        <p class="qs-body" contenteditable="true">En obreko trabajamos solo con viviendas, y eso se nota. Conocemos los puntos débiles habituales — fontanería, calefacción, cubierta, instalación eléctrica — y actuamos antes de que den problemas. No esperamos a que llames con una urgencia; te llamamos nosotros con la revisión programada.</p>
+        <p class="qs-body" contenteditable="true">Cada inmueble tiene su historial propio. El técnico que visita tu vivienda sabe lo que se revisó el año anterior, qué se reparó y qué hay que vigilar. No empezamos de cero en cada visita.</p>
+        <p class="qs-body" contenteditable="true">Estamos en Tenerife y Madrid. Somos una empresa pequeña, y eso significa que siempre hay alguien real al otro lado del teléfono.</p>
+        <div class="qs-boxes">
+          <div class="qs-box">
+            <div class="qs-box-title" contenteditable="true">Plan a tu medida, no un paquete genérico</div>
+            <div class="qs-box-text" contenteditable="true">Revisamos el estado real de tu vivienda y diseñamos un plan ajustado a lo que necesita, con frecuencias y prioridades concretas. Sin servicios estándar que no encajan con nada.</div>
+          </div>
+          <div class="qs-box">
+            <div class="qs-box-title" contenteditable="true">Presupuesto cerrado, sin sorpresas</div>
+            <div class="qs-box-text" contenteditable="true">El coste anual se acuerda antes de empezar. Si durante una visita aparece algo que no estaba previsto, te lo comunicamos antes de actuar. Nunca al revés.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 3 — GRACIAS POR CONFIAR
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">NUESTROS VALORES</div>
+    <h1 class="page-h1" contenteditable="true">Gracias por <em>confiar</em> en nosotros</h1>
+    <div class="yellow-rule"></div>
+    <p style="font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.75;margin-bottom:22px;" contenteditable="true">Te presentamos nuestra metodología de mantenimiento y el compromiso que adquirimos para mantener tu propiedad en las mejores condiciones.</p>
+    <div class="value-cards">
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">I</div>
+        <div class="value-card-title" contenteditable="true">TRANSPARENCIA</div>
+        <div class="value-card-text" contenteditable="true">El plan detalla qué se revisa, con qué periodicidad y a qué coste. Cada visita genera un informe. Nada ocurre sin que lo sepas.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">II</div>
+        <div class="value-card-title" contenteditable="true">COMPROMISO</div>
+        <div class="value-card-text" contenteditable="true">Las fechas de visita son fechas en el calendario, no estimaciones. Si surge una urgencia, estamos en tu inmueble en menos de 4 horas laborables.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">III</div>
+        <div class="value-card-title" contenteditable="true">ARTESANÍA</div>
+        <div class="value-card-text" contenteditable="true">Cada trabajo lo ejecuta el especialista adecuado para esa instalación o elemento. No enviamos al disponible, enviamos al correcto.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">IV</div>
+        <div class="value-card-title" contenteditable="true">PROXIMIDAD</div>
+        <div class="value-card-text" contenteditable="true">Un responsable de tu inmueble con nombre y número. Alguien que conoce el edificio, su historial y sus particularidades desde el primer día.</div>
+      </div>
+    </div>
+    <div class="includes-box">
+      <div class="includes-title">LO QUE INCLUYE ESTE PLAN DE MANTENIMIENTO</div>
+      <div class="includes-grid">
+        <div class="includes-item" contenteditable="true">Visitas programadas según periodicidad acordada</div>
+        <div class="includes-item" contenteditable="true">Informe fotográfico tras cada actuación</div>
+        <div class="includes-item" contenteditable="true">Registro histórico de intervenciones</div>
+        <div class="includes-item" contenteditable="true">Atención de urgencias en 4h laborables</div>
+        <div class="includes-item" contenteditable="true">Un interlocutor directo asignado al inmueble</div>
+        <div class="includes-item" contenteditable="true">Garantía en materiales y mano de obra empleados</div>
+      </div>
+    </div>
+    <div class="proceso-title">CÓMO FUNCIONA EL SERVICIO</div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><div><div class="step-title" contenteditable="true">Visita de diagnóstico inicial</div><div class="step-text" contenteditable="true">Inspeccionamos el inmueble, documentamos su estado y definimos el plan ajustado a sus necesidades reales.</div></div></div>
+      <div class="step"><span class="step-num">02</span><div><div class="step-title" contenteditable="true">Plan firmado con alcance y periodicidad</div><div class="step-text" contenteditable="true">Cada partida queda recogida por escrito. El coste del período es fijo y sin sorpresas.</div></div></div>
+      <div class="step"><span class="step-num">03</span><div><div class="step-title" contenteditable="true">Ejecución con informe en cada visita</div><div class="step-text" contenteditable="true">Cada actuación genera documentación: qué se revisó, qué se corrigió, qué hay que seguir.</div></div></div>
+      <div class="step"><span class="step-num">04</span><div><div class="step-title" contenteditable="true">Respuesta a incidencias sin gestiones intermedias</div><div class="step-text" contenteditable="true">Una llamada al responsable asignado. Sin formularios, sin esperas, sin llamadas en cadena.</div></div></div>
+      <div class="step"><span class="step-num">05</span><div><div class="step-title" contenteditable="true">Revisión anual y renovación del plan</div><div class="step-text" contenteditable="true">Revisamos el historial, ajustamos el plan si procede y renovamos con condiciones fijas.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 4 — FICHA DEL INMUEBLE
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">DATOS DEL INMUEBLE</div>
+    <h1 class="page-h1" contenteditable="true">Ficha del <em>inmueble</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="form-section">
+      <div class="form-section-title">Identificación del inmueble</div>
+      <div class="form-grid" data-editable-fields="true">
+        <div class="form-field"><label contenteditable="true">Tipo de inmueble</label><input type="text" placeholder="Vivienda / Piso / Casa unifamiliar / Comunidad"></div>
+        <div class="form-field"><label contenteditable="true">Dirección completa</label><input type="text" placeholder="Calle, número, municipio"></div>
+        <div class="form-field"><label contenteditable="true">Superficie total (m²)</label><input type="text" placeholder="850 m²"></div>
+        <div class="form-field"><label contenteditable="true">Nº de plantas</label><input type="text" placeholder="4 plantas + sótano"></div>
+        <div class="form-field"><label contenteditable="true">Año de construcción</label><input type="text" placeholder="1994"></div>
+        <div class="form-field"><label contenteditable="true">Nº de unidades / viviendas</label><input type="text" placeholder="18 viviendas"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Intervenciones previas documentadas</div>
+      <div class="form-grid">
+        <div class="form-field form-full">
+          <label>Detalla todas las intervenciones previas conocidas (fechas, alcance, proveedor)</label>
+          <textarea placeholder="Reforma fontanería 2019, revisión eléctrica 2022, cambio caldera 2023… Detalla aquí todas las intervenciones previas que conoces, fechas, alcance y proveedor de cada una." style="min-height:200px"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Observaciones / Estado general conocido</div>
+      <div class="form-grid">
+        <div class="form-field form-full">
+          <label>Descripción del estado general y observaciones relevantes</label>
+          <textarea placeholder="Describe el estado general del inmueble, elementos con mayor desgaste, incidencias recurrentes, zonas de especial atención o cualquier información relevante para diseñar el plan de mantenimiento..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 4A — ALCANCE · PRONEXO HÁBITAT vs OBREKO
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">DELIMITACIÓN DEL SERVICIO</div>
+    <h1 class="page-h1" contenteditable="true">Lo que cubre <em>Pronexo</em>. Lo que añade <em>obreko</em>.</h1>
+    <div class="yellow-rule"></div>
+
+    <div class="plans-note" contenteditable="true" style="margin-top:0;margin-bottom:18px;">Esta propuesta es <strong>complementaria</strong> al contrato de gestión de Pronexo Hábitat. Nuestro alcance no duplica lo que Pronexo ya presta al inversor: cubre la capa de conservación del inmueble como activo y las mejoras no incluidas en la gestión del alquiler.</div>
+
+    <div class="pronexo-grid">
+      <div class="pronexo-col pronexo-col--pronexo">
+        <div class="pronexo-col-label">PRONEXO HÁBITAT</div>
+        <div class="pronexo-col-title" contenteditable="true">Gestión del alquiler</div>
+        <ul class="pronexo-list" contenteditable="true">
+          <li>Comercialización del inmueble y búsqueda de inquilino</li>
+          <li>Contrato de arrendamiento y fianza</li>
+          <li>Cobro de la renta y liquidaciones al propietario</li>
+          <li>Atención de incidencias cotidianas del inquilino</li>
+          <li>Coordinación de entradas y salidas entre contratos</li>
+          <li>Fiscalidad y documentación del alquiler</li>
+        </ul>
+        <div class="pronexo-col-foot" contenteditable="true">Incluido en el contrato con Pronexo — no se factura aparte.</div>
+      </div>
+
+      <div class="pronexo-col pronexo-col--obreko">
+        <div class="pronexo-col-label">OBREKO</div>
+        <div class="pronexo-col-title" contenteditable="true">Conservación y mejoras del inmueble</div>
+        <ul class="pronexo-list" contenteditable="true">
+          <li>Revisiones periódicas técnicas (electricidad, fontanería, climatización)</li>
+          <li>Mantenimiento preventivo de elementos de desgaste</li>
+          <li>Reparaciones mayores que exceden la gestión cotidiana del inquilino</li>
+          <li>Acondicionamiento entre inquilinos (pintura, repasos, remates)</li>
+          <li>Mejoras de valor: upgrades que aumentan renta o durabilidad</li>
+          <li>Coordinación con Pronexo cuando una incidencia requiere intervención mayor</li>
+        </ul>
+        <div class="pronexo-col-foot" contenteditable="true">Facturación según presupuesto acordado.</div>
+      </div>
+    </div>
+
+    <div class="pronexo-handoff" contenteditable="true">
+      <strong>Protocolo de coordinación:</strong> Pronexo nos deriva cualquier incidencia que exceda su alcance. Informe técnico, presupuesto y validación del inversor antes de intervenir. El inquilino solo trata con Pronexo.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 4B — ESTADO DE SITUACIÓN DE LA VIVIENDA
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">ESTADO ACTUAL</div>
+    <h1 class="page-h1" contenteditable="true">Estado de <em>situación</em> de la vivienda</h1>
+    <div class="yellow-rule"></div>
+
+    <div class="plans-note" contenteditable="true" style="margin-top:0;margin-bottom:18px;">Diagnóstico por zonas del inmueble. Para cada punto: problema detectado en la visita técnica y solución propuesta dentro del plan de mantenimiento.</div>
+
+    <div class="estado-grid">
+      <div class="estado-card">
+        <button type="button" class="estado-remove-btn" onclick="removeEstadoCard(this)" title="Eliminar zona">×</button>
+        <label class="estado-photo">
+          <input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>
+          <div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>
+          <div class="estado-photo-hint">Clic para cambiar</div>
+        </label>
+        <div class="estado-body">
+          <div class="estado-label">Problema detectado</div>
+          <div class="estado-text" contenteditable="true" data-placeholder="Describe aquí el problema observado…"></div>
+          <div class="estado-label">Solución propuesta</div>
+          <div class="estado-text" contenteditable="true" data-placeholder="Describe la intervención prevista…"></div>
+        </div>
+      </div>
+
+      <div class="estado-card">
+        <button type="button" class="estado-remove-btn" onclick="removeEstadoCard(this)" title="Eliminar zona">×</button>
+        <label class="estado-photo">
+          <input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>
+          <div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>
+          <div class="estado-photo-hint">Clic para cambiar</div>
+        </label>
+        <div class="estado-body">
+          <div class="estado-label">Problema detectado</div>
+          <div class="estado-text" contenteditable="true" data-placeholder="Describe aquí el problema observado…"></div>
+          <div class="estado-label">Solución propuesta</div>
+          <div class="estado-text" contenteditable="true" data-placeholder="Describe la intervención prevista…"></div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="estado-add-btn" onclick="addEstadoCard(this)">Añadir zona</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 5 — PLAN DE MANTENIMIENTO
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">PLANIFICACIÓN</div>
+    <h1 class="page-h1" contenteditable="true">Plan de <em>mejoras</em> propuesto</h1>
+    <div class="yellow-rule"></div>
+    <div class="plan-section">
+      <div class="plan-block">
+        <div class="plan-block-title" contenteditable="true">Trabajos a acometer:</div>
+        <ul class="plan-list">
+          <li><span contenteditable="true">Actualización de acabados desgastados entre inquilinos (pintura, repasos)</span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button></li>
+          <li><span contenteditable="true">Sustitución de elementos fuera de vida útil detectados en visita técnica</span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button></li>
+          <li><span contenteditable="true">Upgrades que aumentan renta o reducen incidencias recurrentes</span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button></li>
+          <li><span contenteditable="true">Mejoras de eficiencia (iluminación, griferías, aislamiento) con retorno medible</span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button></li>
+          <li><span contenteditable="true">Adecuaciones estéticas para reposicionar el inmueble en mercado</span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button></li>
+        </ul>
+        <button type="button" class="plan-line-add" onclick="addPlanLine(this)">Añadir línea</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div data-mats-page-here></div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 6 — PRESUPUESTO
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">DESGLOSE ECONÓMICO</div>
+    <h1 class="page-h1" contenteditable="true">Desglose <em>del plan y presupuesto</em></h1>
+    <div class="yellow-rule"></div>
+    <table class="budget-table" id="budgetTable">
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>PARTIDA</th>
+          <th>DESCRIPCIÓN</th>
+          <th style="text-align:center;width:14mm;">CANT.</th>
+          <th style="text-align:right;">€ MAT + M.OBRA</th>
+          <th style="text-align:right;">TOTAL €</th>
+          <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
+        </tr>
+      </thead>
+      <tbody id="budgetBody">
+        <tr><td>1</td>
+          <td><input type="text" value="Revisión general periódica"></td>
+          <td><input type="text" value="Inspección completa documentada"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>2</td>
+          <td><input type="text" value="Mantenimiento eléctrico"></td>
+          <td><input type="text" value="Revisión cuadros, circuitos y tomas"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>3</td>
+          <td><input type="text" value="Mantenimiento fontanería"></td>
+          <td><input type="text" value="Revisión red y elementos sanitarios"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>4</td>
+          <td><input type="text" value="Cubierta y fachada"></td>
+          <td><input type="text" value="Revisión impermeabilización y juntas"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>5</td>
+          <td><input type="text" value="Carpintería y cerrajería"></td>
+          <td><input type="text" value="Ajuste puertas, ventanas y cierres"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>6</td>
+          <td><input type="text" value="Zonas comunes de la vivienda"></td>
+          <td><input type="text" value="Iluminación, accesos y zonas compartidas"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>7</td>
+          <td><input type="text" value="Actuaciones correctivas"></td>
+          <td><input type="text" value="Reparaciones según informe mensual"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr><td>8</td>
+          <td><input type="text" value="Informe y documentación"></td>
+          <td><input type="text" value="Report fotográfico y registro de intervenciones"></td>
+          <td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>
+          <td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display:flex;gap:6mm;margin:4mm 0 2mm"><button onclick="addBudgetRow()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir partida</button><button onclick="addBudgetCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Columna</button><button onclick="removeBudgetLastCustomCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">− Columna</button></div>
+    <div class="totals-wrap">
+      <div>
+        <div class="totals-box">
+          <div class="totals-row" id="rowSubMat"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button><span>Subtotal MAT + M.OBRA</span><span id="subtotalMat">—</span></div>
+          <div class="totals-row" id="rowBase"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowBase')" title="Mostrar / ocultar">👁</button><span>Base imponible</span><span id="baseImp">—</span></div>
+          <div class="totals-row" id="rowIva"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button><span>IVA <input class="iva-input" id="ivaRate" type="text" value="21" oninput="calcTotals()"> %</span><span id="ivaAmt">—</span></div>
+        </div>
+        <div class="totals-total">
+          <span>Total</span>
+          <span class="total-val" id="grandTotal">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="conditions-note">
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;">
+        <li style="font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;padding-left:14px;position:relative;" contenteditable="true"><span style="position:absolute;left:0;top:0;color:var(--navy);">−</span>Facturación mensual</li>
+        <li style="font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;padding-left:14px;position:relative;" contenteditable="true"><span style="position:absolute;left:0;top:0;color:var(--navy);">−</span>Pago mediante transferencia bancaria: 50% adelantado y 50% al finalizar los trabajos incluidos en este presupuesto</li>
+        <li style="font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;padding-left:14px;position:relative;" contenteditable="true"><span style="position:absolute;left:0;top:0;color:var(--navy);">−</span>Actuaciones correctivas extraordinarias no recogidas en este presupuesto: factura a 30 días tras conformidad.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 7 eliminada (Calendario Gantt) -->
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 8 — GARANTÍAS
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">GARANTÍAS DEL SERVICIO</div>
+    <h1 class="page-h1" contenteditable="true">Nuestras <em>garantías</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="garantia-cards">
+      <div class="garantia-card">
+        <div class="garantia-card-badge" contenteditable="true">4h</div>
+        <div class="garantia-card-title" contenteditable="true">TIEMPO DE RESPUESTA GARANTIZADO</div>
+        <div class="garantia-card-text" contenteditable="true">Las averías urgentes se atienden en un máximo de 4 horas laborables desde la notificación.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-card-badge" contenteditable="true">Doc.</div>
+        <div class="garantia-card-title" contenteditable="true">INFORME DE CADA VISITA</div>
+        <div class="garantia-card-text" contenteditable="true">Cada actuación queda documentada con informe fotográfico, descripción del trabajo y firma de conformidad.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-card-badge" contenteditable="true">6 meses</div>
+        <div class="garantia-card-title" contenteditable="true">GARANTÍA DE REPARACIONES</div>
+        <div class="garantia-card-text" contenteditable="true">Las reparaciones ejecutadas quedan garantizadas 6 meses desde la fecha de cada intervención, siempre que no se deba a mal uso.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-card-badge" contenteditable="true">Renov.</div>
+        <div class="garantia-card-title" contenteditable="true">CONTRATO RENOVABLE</div>
+        <div class="garantia-card-text" contenteditable="true">El plan se establece por períodos definidos con condiciones fijas. Sin sorpresas en la facturación.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 9 — COMPROMISO MEDIOAMBIENTAL
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">MEDIO AMBIENTE</div>
+    <h1 class="page-h1" contenteditable="true">Compromiso <em>medioambiental</em></h1>
+    <div class="yellow-rule"></div>
+    <div class="env-heading" contenteditable="true">Mantener bien es contaminar menos.</div>
+    <p class="env-intro" contenteditable="true">El mantenimiento preventivo reduce residuos, alarga la vida útil de los elementos existentes y evita sustituciones innecesarias. En obreko, eso es parte del criterio de trabajo, no un apartado de marketing.</p>
+    <div class="env-points">
+      <div class="env-point" contenteditable="true">Reparación antes que sustitución: alargamos la vida útil de los elementos existentes.</div>
+      <div class="env-point" contenteditable="true">Gestión adecuada de residuos y materiales sustituidos según normativa vigente.</div>
+      <div class="env-point" contenteditable="true">Recomendamos soluciones de bajo consumo energético en cada sustitución.</div>
+      <div class="env-point" contenteditable="true">Proveedores y materiales de proximidad para reducir el impacto logístico.</div>
+    </div>
+    <div style="margin-top:32px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+      <div style="background:var(--navy);padding:22px 18px;">
+        <div style="width:28px;height:28px;background:var(--yellow);margin-bottom:14px;"></div>
+        <div style="font-family:var(--serif);font-style:italic;color:#fff;font-size:13px;letter-spacing:.03em;margin-bottom:8px;" contenteditable="true">Residuos mínimos</div>
+        <div style="font-family:var(--sans);font-size:8.5px;color:var(--slate);line-height:1.55;" contenteditable="true">Planificamos las actuaciones para generar el mínimo residuo posible. Lo que se genera se gestiona conforme a la normativa vigente.</div>
+      </div>
+      <div style="background:var(--navy);padding:22px 18px;">
+        <div style="width:28px;height:28px;background:var(--yellow);margin-bottom:14px;"></div>
+        <div style="font-family:var(--serif);font-style:italic;color:#fff;font-size:13px;letter-spacing:.03em;margin-bottom:8px;" contenteditable="true">Eficiencia energética</div>
+        <div style="font-family:var(--sans);font-size:8.5px;color:var(--slate);line-height:1.55;" contenteditable="true">En cada sustitución evaluamos opciones de bajo consumo. Te asesoramos sobre el impacto de cada decisión en el coste energético del inmueble.</div>
+      </div>
+      <div style="background:var(--navy);padding:22px 18px;">
+        <div style="width:28px;height:28px;background:var(--yellow);margin-bottom:14px;"></div>
+        <div style="font-family:var(--serif);font-style:italic;color:#fff;font-size:13px;letter-spacing:.03em;margin-bottom:8px;" contenteditable="true">Proveedores de proximidad</div>
+        <div style="font-family:var(--sans);font-size:8.5px;color:var(--slate);line-height:1.55;" contenteditable="true">Trabajamos con proveedores y fabricantes de proximidad siempre que el proyecto lo permite. Menos logística, menor huella y mayor agilidad.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONDICIONES PARTICULARES ══ -->
+<div class="page" style="flex-direction:column">
+  <div style="padding:8mm 15mm 5mm;border-bottom:2px solid #FED544"><div style="font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:#5C7CD9;font-weight:600;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">Condiciones del plan</div><div style="font-family:'Playfair Display',Georgia,serif;font-size:22pt;font-weight:400;color:#1A2236;font-style:italic">Condiciones <em>particulares</em></div><div style="font-size:8pt;color:#8896B3;margin-top:2mm;font-family:'DM Sans',Arial,sans-serif">Limitación de responsabilidad · Condiciones económicas · Ley aplicable</div></div>
+  <div style="padding:6mm 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;align-content:start">
+    <div style="display:flex;flex-direction:column;gap:0;padding-right:3.5mm;border-right:1px solid #E8E2D3">
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">1. Alcance y limitación de responsabilidad</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">La responsabilidad de obreko queda limitada a las actuaciones descritas en el plan de mantenimiento contratado. obreko no responde de daños preexistentes no declarados, de averías provocadas por uso inadecuado o por intervenciones de terceros ajenos al plan, ni de deterioros derivados de la antigüedad natural del inmueble.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">2. Condiciones económicas y forma de pago</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El importe del plan se abonará según la periodicidad acordada (mensual, trimestral o anual). El retraso en el pago faculta a obreko a suspender las visitas programadas, sin que ello suponga incumplimiento, hasta la regularización de la deuda. Las actuaciones correctivas fuera del plan se facturan por separado.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">3. Modificaciones y ampliaciones del plan</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Cualquier modificación del alcance del plan (nuevas zonas, nuevas instalaciones, cambio de periodicidad) deberá solicitarse por escrito y dará lugar a un presupuesto complementario. No se ejecutarán trabajos fuera del plan sin presupuesto previo aprobado.</div></div>
+      <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">4. Fuerza mayor y circunstancias sobrevenidas</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">No constituirá incumplimiento la suspensión temporal del servicio motivada por causas ajenas a obreko: condiciones de acceso imposibles, restricciones administrativas o causas de fuerza mayor legalmente reconocidas. Las visitas afectadas se reprogramarán sin coste adicional.</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;padding-left:3.5mm">
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">5. Garantías e informes de actuación</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Cada actuación preventiva o correctiva queda documentada en el informe de visita. Las garantías sobre reparaciones ejecutadas aplican por un período de 6 meses, contado desde la fecha de cada intervención, siempre que no se deba a mal uso. No aplican en caso de manipulación posterior por terceros.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">6. Materiales de sustitución</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Los materiales de sustitución empleados en las reparaciones son de calidad equivalente o superior a los originales. Se presentará albarán de material en cada actuación. Los repuestos o materiales de alto coste requieren aprobación escrita del cliente antes de su instalación.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">7. Obligaciones del titular y acceso al inmueble</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El titular garantizará el acceso al inmueble en los horarios acordados para la realización de las visitas programadas. La imposibilidad de acceso imputable al titular en fecha acordada podrá generar un cargo por desplazamiento. Retrasos reiterados podrán justificar la revisión de las condiciones del plan.</div></div>
+      <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">8. Ley aplicable y resolución de controversias</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Este plan y el contrato derivado se rigen por la legislación española vigente. Para cualquier controversia no resuelta amistosamente, las partes se someten a los juzgados y tribunales del partido judicial correspondiente al inmueble objeto del mantenimiento.</div></div>
+    </div>
+  </div>
+  <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span><span style="font-size:7pt;color:#BBB;letter-spacing:.1em">Condiciones particulares</span></div>
+</div>
+
+<!-- ══ PROTECCIÓN DE DATOS ══ -->
+<div class="page" style="flex-direction:column">
+  <div style="padding:8mm 15mm 5mm;border-bottom:1px solid #E8E2D3"><div style="font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:#5C7CD9;font-weight:600;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">RGPD · LOPDGDD</div><div style="font-family:'Playfair Display',Georgia,serif;font-size:22pt;font-weight:400;color:#1A2236;font-style:italic">Protección de <em>datos</em></div><div style="font-size:8pt;color:#8896B3;margin-top:2mm;font-family:'DM Sans',Arial,sans-serif">Información básica sobre el tratamiento de sus datos personales</div></div>
+  <div style="padding:6mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm">
+    <div style="background:#1A2236;padding:6mm 8mm"><div style="font-size:6.5pt;color:#FED544;font-weight:600;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">Cláusula informativa — Reglamento (UE) 2016/679</div><div contenteditable="true" style="font-size:8pt;color:rgba(255,255,255,.65);line-height:1.8;font-family:'DM Sans',Arial,sans-serif">En cumplimiento del Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), le informamos que sus datos personales serán tratados por obreko en el marco de la presente relación de servicios de mantenimiento.</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:8pt;font-family:'DM Sans',Arial,sans-serif"><tbody>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;width:42mm;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Responsable</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">obreko · hola@obreko.com · obreko.com · 698 900 623</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Finalidad</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Gestión de la relación de mantenimiento, programación de visitas, emisión de informes y facturas, y cumplimiento de obligaciones legales y fiscales.</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Base jurídica</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Ejecución de un contrato de servicios (Art. 6.1.b RGPD) y cumplimiento de obligaciones legales (Art. 6.1.c RGPD).</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Destinatarios</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">No se cederán datos a terceros salvo obligación legal o cuando sea necesario para la prestación del servicio (técnicos especializados vinculados al plan).</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Conservación</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Durante la vigencia del contrato y los plazos legalmente exigidos (mínimo 5 años).</td></tr>
+      <tr style="background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Derechos</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Acceso, rectificación, supresión, portabilidad, oposición y limitación: <strong>hola@obreko.com</strong>. Autoridad de control: <strong>AEPD</strong> (www.aepd.es).</td></tr>
+    </tbody></table>
+    <div style="background:#F1EDE0;padding:4mm 6mm;border-left:3px solid #FED544;font-size:7.5pt;color:#666;line-height:1.65;font-family:'DM Sans',Arial,sans-serif" contenteditable="true">La firma de este plan de mantenimiento implica el consentimiento informado al tratamiento de sus datos para los fines descritos. obreko se compromete a su confidencialidad y seguridad.</div>
+  </div>
+  <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span><span style="font-size:7pt;color:#BBB;letter-spacing:.1em">Protección de datos</span></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE 10 — VALIDEZ Y CIERRE
+════════════════════════════════════════════════════ -->
+<div class="page closing-light">
+  <div class="closing-stripe"></div>
+  <div class="closing-inner">
+    <div class="closing-top-label" contenteditable="true">VALIDEZ Y ACEPTACIÓN</div>
+
+    <div class="closing-validity">
+      <span>Esta propuesta de mantenimiento tiene una validez de</span>
+      <input class="validity-days" type="text" value="30">
+      <span>días desde su emisión.</span>
+      <span style="width:100%;display:block;font-family:var(--sans);font-size:8.5px;color:var(--slate);margin-top:6px;" contenteditable="true">Las condiciones son fijas durante el período contratado.</span>
+    </div>
+
+    <div class="closing-heading" contenteditable="true">Tu inmueble,<br><em>siempre</em> en orden.</div>
+
+    <div class="next-steps">
+      <div class="next-steps-title">PRÓXIMOS PASOS</div>
+      <div class="next-step-list">
+        <div class="next-step"><div class="next-step-n">1</div><div class="next-step-text" contenteditable="true">Revisa esta propuesta con calma y anota cualquier duda o ajuste que necesites</div></div>
+        <div class="next-step"><div class="next-step-n">2</div><div class="next-step-text" contenteditable="true">Contacta con nosotros para aclarar cualquier punto antes de firmar</div></div>
+        <div class="next-step"><div class="next-step-n">3</div><div class="next-step-text" contenteditable="true">Una vez aceptada, formalizamos el contrato y fijamos la fecha de inicio de los trabajos</div></div>
+        <div class="next-step"><div class="next-step-n">4</div><div class="next-step-text" contenteditable="true">Recibes confirmación escrita de todos los acuerdos antes del comienzo</div></div>
+      </div>
+    </div>
+
+    <div class="closing-sig-area">
+      <div class="closing-sig-box">
+        <div class="closing-sig-label">EL INVERSOR · PROPIETARIO</div>
+        <div class="closing-sig-field"><div class="closing-sig-field-label">Nombre</div><input type="text" placeholder="Nombre completo"></div>
+        <div class="closing-sig-field"><div class="closing-sig-field-label">Teléfono</div><input type="tel" placeholder="+34 600 000 000"></div>
+        <div class="closing-sig-field"><div class="closing-sig-field-label">Email</div><input type="email" placeholder="cliente@ejemplo.com"></div>
+        <div class="closing-sig-field"><div class="closing-sig-field-label">Fecha</div><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="closing-sig-line"></div>
+        <div class="closing-sig-name" style="margin-top:4px;">Firma</div>
+      </div>
+      <div class="closing-sig-box">
+        <div class="closing-sig-label">OBREKO</div>
+        <div class="closing-sig-logo">obreko</div>
+        <div class="closing-sig-field"><div class="closing-sig-field-label">Fecha</div><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="closing-sig-line"></div>
+        <div class="closing-sig-name" style="margin-top:4px;">Firma</div>
+        <div class="closing-contacts">
+          <div class="closing-card">
+            <div class="closing-card-label">TELÉFONO</div>
+            <div class="closing-card-value" contenteditable="true">698 900 623</div>
+          </div>
+          <div class="closing-card">
+            <div class="closing-card-label">EMAIL</div>
+            <div class="closing-card-value" contenteditable="true">hola@obreko.com</div>
+          </div>
+          <div class="closing-card">
+            <div class="closing-card-label">WEB</div>
+            <div class="closing-card-value" contenteditable="true">obreko.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="closing-footer">
+    <span contenteditable="true">obreko · Tenerife · Madrid · obreko.com · 698 900 623</span>
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<script>
+// ── ZOOM ──
+function scalePages(){var s=Math.min(1,(window.innerWidth-48)/794);document.querySelectorAll('.page').forEach(function(p){p.style.zoom=s<1?s:'';})}
+scalePages();window.addEventListener('resize',scalePages);
+// ── ESTADO DE SITUACIÓN (foto por card) ──
+function setEstadoPhoto(input){
+  if(!input.files||!input.files[0])return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var label=input.closest('.estado-photo');
+    if(!label)return;
+    label.style.backgroundImage='url("'+e.target.result+'")';
+    label.classList.add('has-photo');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+var ESTADO_MAX_PER_PAGE = 4;
+function makeEstadoCard(){
+  var card=document.createElement('div');
+  card.className='estado-card';
+  card.innerHTML='<button type="button" class="estado-remove-btn" onclick="removeEstadoCard(this)" title="Eliminar zona">×</button>'+
+    '<label class="estado-photo"><input type="file" accept="image/*" onchange="setEstadoPhoto(this)" hidden>'+
+    '<div class="estado-photo-placeholder"><span>Clic para añadir foto</span></div>'+
+    '<div class="estado-photo-hint">Clic para cambiar</div></label>'+
+    '<div class="estado-body">'+
+      '<div class="estado-label">Problema detectado</div>'+
+      '<div class="estado-text" contenteditable="true" data-placeholder="Describe aquí el problema observado…"></div>'+
+      '<div class="estado-label">Solución propuesta</div>'+
+      '<div class="estado-text" contenteditable="true" data-placeholder="Describe la intervención prevista…"></div>'+
+    '</div>';
+  return card;
+}
+function addEstadoCard(btn){
+  // Último grid existente (en la última página de estado)
+  var grids=document.querySelectorAll('.estado-grid');
+  var target=grids[grids.length-1];
+  if(!target)return;
+  // Si ya está lleno (4 cards), crear nueva página adicional
+  if(target.querySelectorAll('.estado-card').length>=ESTADO_MAX_PER_PAGE){
+    var lastPage=target.closest('.page');
+    var newPage=document.createElement('div');
+    newPage.className='page';
+    newPage.innerHTML='<div class="page-inner">'+
+      '<div class="section-label" contenteditable="true">ESTADO ACTUAL</div>'+
+      '<h1 class="page-h1" contenteditable="true">Estado de <em>situación</em> de la vivienda</h1>'+
+      '<div class="yellow-rule"></div>'+
+      '<div class="estado-grid"></div>'+
+      '<button type="button" class="estado-add-btn" onclick="addEstadoCard(this)">Añadir zona</button>'+
+      '</div>';
+    lastPage.parentNode.insertBefore(newPage,lastPage.nextSibling);
+    target=newPage.querySelector('.estado-grid');
+  }
+  target.appendChild(makeEstadoCard());
+  refreshEstadoAddButtons();
+  if(typeof scalePages==='function')scalePages();
+}
+function removeEstadoCard(btn){
+  var card=btn.closest('.estado-card');
+  if(!card)return;
+  var page=card.closest('.page');
+  var grid=card.parentNode;
+  card.remove();
+  // Si queda vacía una página adicional, eliminarla
+  var allGrids=document.querySelectorAll('.estado-grid');
+  var isFirst=allGrids.length>0 && allGrids[0]===grid;
+  if(!isFirst && grid.children.length===0 && page){
+    page.remove();
+  }
+  refreshEstadoAddButtons();
+  if(typeof scalePages==='function')scalePages();
+}
+function refreshEstadoAddButtons(){
+  // Mantener solo visible el botón de la última página de estado
+  var btns=document.querySelectorAll('.estado-add-btn');
+  btns.forEach(function(b,i){b.style.display=(i===btns.length-1)?'':'none';});
+}
+// ── PLAN LINES (mejoras / mantenimiento preventivo y correctivo) ──
+function addPlanLine(btn){
+  var block=btn.closest('.plan-block');
+  if(!block)return;
+  var ul=block.querySelector('.plan-list');
+  if(!ul)return;
+  var li=document.createElement('li');
+  li.innerHTML='<span contenteditable="true"></span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button>';
+  ul.appendChild(li);
+  var span=li.querySelector('span');
+  if(span)span.focus();
+}
+function addPlanLineStandalone(btn){
+  // Encuentra el ul .plan-list hermano anterior del botón
+  var ul=btn.previousElementSibling;
+  while(ul && ul.tagName!=='UL'){ul=ul.previousElementSibling;}
+  if(!ul)return;
+  var li=document.createElement('li');
+  li.innerHTML='<span contenteditable="true"></span><button type="button" class="plan-line-remove" onclick="removePlanLine(this)" title="Eliminar">×</button>';
+  ul.appendChild(li);
+  var span=li.querySelector('span');
+  if(span)span.focus();
+}
+function removePlanLine(btn){
+  var li=btn.closest('li');
+  if(li)li.remove();
+}
+// ── BUDGET ──
+function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
+function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €':'—';}
+function calcBudget(){var sub=0;document.querySelectorAll('#budgetBody tr').forEach(function(tr){var mEl=tr.querySelector('[data-type="mat"]'),lEl=tr.querySelector('[data-type="labor"]'),tEl=tr.querySelector('[data-type="rowtotal"]');if(!mEl||!lEl||!tEl)return;var t=parseNum(mEl)+parseNum(lEl);tEl.textContent=fmtMoney(t);sub+=t;});var iva=sub*0.21,grand=sub+iva;var s=document.getElementById('subtotal'),v=document.getElementById('iva'),g=document.getElementById('grand');if(s)s.textContent=fmtMoney(sub);if(v)v.textContent=fmtMoney(iva);if(g)g.textContent=fmtMoney(grand);}
+document.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});
+function addBudgetRow(){
+  var tbody=document.getElementById('budgetBody');if(!tbody)return;
+  var n=tbody.querySelectorAll('tr').length+1;
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td>'+n+'</td>'+
+    '<td><input type="text" value=""></td>'+
+    '<td><input type="text" value=""></td>'+
+    '<td><input type="text" class="price-input qty" data-type="qty" value="" oninput="calcRow(this)" placeholder="1" style="text-align:center;"></td>'+
+    '<td><input type="text" class="price-input mat" data-type="mat" value="" oninput="calcRow(this)" placeholder="—"></td>'+
+    '<td class="line-total" data-type="rowtotal">—</td>'+
+    '<td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';
+  tbody.appendChild(tr);
+  if(typeof calcBudget==='function')calcBudget();
+}
+function removeBudgetRow(btn){var tr=btn.closest('tr');if(tr){tr.parentNode.removeChild(tr);calcBudget();}}
+function addBudgetCol(){
+  var tbl=document.getElementById('budgetTable');if(!tbl)return;
+  var n=tbl.querySelectorAll('thead tr th[data-custom]').length+1;
+  tbl.querySelectorAll('tr').forEach(function(tr,i){
+    var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];
+    if(i===0){var th=document.createElement('th');th.contentEditable='true';th.dataset.custom='true';th.textContent='Columna '+n;tr.insertBefore(th,last);}
+    else{var td=document.createElement('td');td.contentEditable='true';td.style.cssText='padding:3mm;border:1px solid #E8E2D3;font-size:8pt;color:#555;';tr.insertBefore(td,last);}
+  });
+}
+function removeBudgetLastCustomCol(){
+  var tbl=document.getElementById('budgetTable');if(!tbl)return;
+  var headers=Array.from(tbl.querySelectorAll('thead tr th'));
+  var removable=headers.slice(1,headers.length-1);
+  if(removable.length<=1)return;
+  var lastIdx=headers.indexOf(removable[removable.length-1]);
+  tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells[lastIdx])cells[lastIdx].remove();});
+  calcTotals();
+}
+function toggleTotalsRow(id){var row=document.getElementById(id);if(!row)return;row.classList.toggle('row-hidden');}
+// ── GANTT ──
+var _gPal=[{c:'',l:'Vacío'},{c:'#1A2236',l:'Navy'},{c:'#FED544',l:'Amarillo'},{c:'#5C7CD9',l:'Azul'},{c:'#2d9e4f',l:'Verde'},{c:'#e55039',l:'Rojo'},{c:'#F1EDE0',l:'Arena'},{c:'#8896B3',l:'Gris'}];
+function showGanttPicker(cell,e){var old=document.getElementById('_gPick');if(old){old.remove();return;}var p=document.createElement('div');p.id='_gPick';p.style.cssText='position:fixed;background:#1A2236;border:1.5px solid #FED544;padding:6px;display:flex;gap:5px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.45)';var rect=cell.getBoundingClientRect();p.style.top=(rect.bottom+4)+'px';p.style.left=Math.min(rect.left,window.innerWidth-230)+'px';_gPal.forEach(function(opt){var sw=document.createElement('div');sw.title=opt.l;sw.style.cssText='width:24px;height:24px;cursor:pointer;flex-shrink:0;box-sizing:border-box';sw.style.background=opt.c||'transparent';sw.style.border=opt.c?'2px solid rgba(255,255,255,.2)':'2px dashed rgba(255,255,255,.35)';sw.addEventListener('click',function(ev){ev.stopPropagation();cell.style.background=opt.c;cell.dataset.color=opt.c;p.remove();});p.appendChild(sw);});document.body.appendChild(p);setTimeout(function(){function cls(ev){if(!p.contains(ev.target)){p.remove();document.removeEventListener('click',cls);}}document.addEventListener('click',cls);},60);e.stopPropagation();}
+document.querySelectorAll('.gcell').forEach(function(c){c.style.cursor='pointer';c.addEventListener('click',function(e){showGanttPicker(this,e);});});
+function addGanttRow(){var tbl=document.getElementById('ganttTable');if(!tbl)return;var hdr=tbl.querySelector('tr');var cols=hdr?hdr.querySelectorAll('th,td').length:9;var tbody=tbl.querySelector('tbody');if(!tbody)return;var tr=document.createElement('tr');var tTask=document.createElement('td');tTask.contentEditable='true';tTask.style.cssText='padding:3mm 4mm;border:1px solid #E8E2D3;font-size:8pt;font-weight:500;color:#1A2236';tTask.textContent='Nueva tarea';tr.appendChild(tTask);for(var i=0;i<cols-2;i++){var td=document.createElement('td');td.className='gcell';td.style.cssText='border:1px solid #E8E2D3;cursor:pointer;height:9mm;transition:background .15s';td.addEventListener('click',function(e){showGanttPicker(this,e);});tr.appendChild(td);}var tDel=document.createElement('td');tDel.style.cssText='padding:1mm;border:1px solid #E8E2D3;text-align:center';tDel.innerHTML='<button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button>';tr.appendChild(tDel);tbody.appendChild(tr);}
+function removeGanttRow(btn){var tr=btn.closest('tr');if(tr)tr.parentNode.removeChild(tr);}
+function addGanttCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr,i){var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];if(i===0){var th=document.createElement('th');th.contentEditable='true';th.style.cssText='padding:3mm 2mm;background:#1A2236;color:rgba(255,255,255,.7);font-size:6.5pt;text-align:center;border:1px solid #283650;letter-spacing:.08em';th.textContent='Per.';tr.insertBefore(th,last);}else{var td=document.createElement('td');td.className='gcell';td.style.cssText='border:1px solid #E8E2D3;cursor:pointer;height:9mm;transition:background .15s';td.addEventListener('click',function(e){showGanttPicker(this,e);});tr.insertBefore(td,last);}});}
+function removeGanttLastCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells.length<=3)return;var last=cells[cells.length-1];var prev=cells[cells.length-2];if(last.querySelector&&last.querySelector('button')){if(prev&&!prev.querySelector('button'))tr.removeChild(prev);}else if(!last.querySelector||!last.querySelector('button'))tr.removeChild(last);});}
+function addPaymentItem(){var list=document.getElementById('paymentItems');if(!list)return;var div=document.createElement('div');div.className='payment-item';div.innerHTML='<div class="payment-dot"></div><input type="text" placeholder="Descripción del hito de pago..." style="background:transparent;border:none;border-bottom:1px solid #d0d0d0;font-family:\'DM Sans\',Arial,sans-serif;font-size:10px;color:#1A2236;padding:2px 0;outline:none;flex:1"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button>';list.appendChild(div);}
+function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)item.parentNode.removeChild(item);}
+// ── IMPRESIÓN: pág 2 en blanco + última en blanco ──
+(function(){
+  function mkBlank(){var b=document.createElement('div');b.className='page blank-page';b.style.cssText='background:#fff;box-shadow:none;border:none;height:297mm;';return b;}
+  function cleanBlanks(){document.querySelectorAll('.blank-page').forEach(function(el){el.remove();});}
+  window.addEventListener('beforeprint',function(){
+    document.querySelectorAll('.page:not(.blank-page)').forEach(function(p){p.style.zoom='';});
+    cleanBlanks();
+    var w=document.querySelector('.pages');if(!w)return;
+    var pages=Array.from(w.querySelectorAll('.page:not(.blank-page)'));
+    if(pages.length>1)w.insertBefore(mkBlank(),pages[1]);
+    w.appendChild(mkBlank());
+  });
+  window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
+})();
+</script>
+<script src="_crm-button.js"></script>
+<script src="_page-numbers.js"></script>
+<script src="_page-delete.js"></script>
+<script src="_mats-page.js"></script>
+<script src="_form-field-manager.js"></script>
+<script src="_budget-wrap.js"></script>
+<script src="_photo-zoom.js"></script>
+<script src="_budget-calc.js"></script>
+<script src="_budget-format.js"></script>
+
+<!-- Add/remove en columnas del alcance (pronexo-list) -->
+<style>
+  .pronexo-list{position:relative;}
+  .pronexo-list li{position:relative;}
+  .pronexo-li-remove-btn{
+    position:absolute;top:50%;right:-8px;transform:translateY(-50%);
+    width:20px;height:20px;border-radius:50%;
+    background:rgba(26,34,54,.82);color:#fff;border:none;font-size:13pt;line-height:1;
+    cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .15s,background .15s;
+    font-family:'DM Sans',Arial,sans-serif;z-index:2;
+  }
+  .pronexo-list li:hover .pronexo-li-remove-btn{opacity:1;}
+  .pronexo-li-remove-btn:hover{background:#C62828;}
+  .pronexo-li-add-btn{
+    display:inline-flex;align-items:center;gap:6px;margin-top:8px;
+    padding:5px 10px;border:1.5px dashed var(--blue, #5C7CD9);
+    background:rgba(92,124,217,.03);color:var(--blue, #5C7CD9);
+    font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;text-transform:uppercase;
+    letter-spacing:.14em;font-weight:700;cursor:pointer;transition:background .15s;
+  }
+  .pronexo-li-add-btn::before{content:'+';font-size:12px;font-weight:400;letter-spacing:0;line-height:1;}
+  .pronexo-li-add-btn:hover{background:rgba(92,124,217,.08);}
+  @media print{ .pronexo-li-remove-btn,.pronexo-li-add-btn{display:none !important;} }
+</style>
+<script>
+(function(){
+  'use strict';
+  function addRemoveBtn(li){
+    if(li.querySelector('.pronexo-li-remove-btn')) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='pronexo-li-remove-btn'; b.contentEditable='false';
+    b.textContent='×'; b.title='Eliminar línea';
+    b.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); li.remove(); });
+    li.appendChild(b);
+  }
+  function addAddBtn(ul){
+    if(ul.nextElementSibling && ul.nextElementSibling.classList.contains('pronexo-li-add-btn')) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='pronexo-li-add-btn'; b.contentEditable='false'; b.textContent='Añadir línea';
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      var li=document.createElement('li'); li.textContent='Nueva línea';
+      ul.appendChild(li); addRemoveBtn(li);
+      var r=document.createRange(); r.selectNodeContents(li);
+      var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); li.focus();
+    });
+    ul.parentNode.insertBefore(b,ul.nextSibling);
+  }
+  function init(){
+    document.querySelectorAll('.pronexo-list').forEach(function(u){
+      u.querySelectorAll(':scope > li').forEach(addRemoveBtn);
+      addAddBtn(u);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+<script src="_import-budget.js"></script>
+</body>
+</html>

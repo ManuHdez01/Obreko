@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Presupuestos internos · Proyectos</title>
+<link rel="stylesheet" href="_styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta">PRESUPUESTOS INTERNOS</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="index.html" class="on">Proyectos</a>
+    <a href="panel.html">Panel económico</a>
+    <a href="proveedores.html">Proveedores</a>
+    <a href="costes-config.html">Costes</a>
+    <a href="/presupuestos/">Propuestas cliente →</a>
+    <button class="topbar-logout" id="btnLogout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="login-wrap" id="loginWrap" style="display:none">
+  <div class="login-card">
+    <div class="login-title">Acceso interno</div>
+    <div class="login-sub">Esta herramienta calcula costes y márgenes internos. Introduce el PIN del equipo para acceder.</div>
+    <form class="login-form" id="loginForm">
+      <label for="pinInput">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <div class="main-head">
+    <div>
+      <h1 class="main-h1">Proyectos de <em>presupuesto</em></h1>
+      <div class="main-rule"></div>
+      <div class="main-sub">Cada proyecto reúne el análisis del inmueble, la selección de materiales con precios de proveedor, los costes internos, el margen y su control económico.</div>
+    </div>
+    <button class="btn btn-pri" onclick="toggleCreate()">+ Nuevo proyecto</button>
+  </div>
+
+  <div class="card" id="createCard" style="display:none">
+    <div class="card-h">Nuevo proyecto</div>
+    <div class="form-grid">
+      <div class="field-group span2">
+        <label for="cName">Cliente</label>
+        <input type="text" id="cName" placeholder="Nombre Apellido / Empresa">
+      </div>
+      <div class="field-group">
+        <label for="cRegion">Región</label>
+        <select id="cRegion">
+          <option value="tenerife">Tenerife</option>
+          <option value="madrid">Madrid</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="cMode">Modo</label>
+        <select id="cMode">
+          <option value="reforma">Reforma</option>
+          <option value="amueblar">Amueblar</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="cTipo">Tipo</label>
+        <select id="cTipo">
+          <option value="reforma integral">Reforma integral</option>
+          <option value="adecuacion">Adecuación</option>
+          <option value="obras-pequenas">Obras pequeñas</option>
+          <option value="mantenimiento">Mantenimiento</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="cM2">m²</label>
+        <input type="number" id="cM2" min="0" placeholder="85">
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <button class="btn btn-pri" id="createBtn" onclick="createProject()">Crear y abrir</button>
+      <button class="btn btn-sec" onclick="toggleCreate()">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Proyectos</div>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="projTable">
+        <thead>
+          <tr>
+            <th>Ref</th><th>Cliente</th><th>Tipo</th><th class="r">m²</th>
+            <th class="r">Coste interno</th><th class="r">PVP sugerido</th><th class="r">Margen</th>
+            <th>Actualizado</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="projBody">
+          <tr><td colspan="9" class="tbl-empty">Cargando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="_common.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

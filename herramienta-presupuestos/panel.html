@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Panel económico</title>
+<link rel="stylesheet" href="_styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta">PANEL ECONÓMICO</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="index.html">Proyectos</a>
+    <a href="panel.html" class="on">Panel económico</a>
+    <a href="proveedores.html">Proveedores</a>
+    <a href="costes-config.html">Costes</a>
+    <button class="topbar-logout" id="btnLogout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="login-wrap" id="loginWrap" style="display:none">
+  <div class="login-card">
+    <div class="login-title">Acceso interno</div>
+    <div class="login-sub">Introduce el PIN del equipo para acceder.</div>
+    <form class="login-form" id="loginForm">
+      <label for="pinInput">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <div class="main-head">
+    <div>
+      <h1 class="main-h1">Control <em>económico</em></h1>
+      <div class="main-rule"></div>
+      <div class="main-sub">Visión global de todos los proyectos: presupuestado, facturado, cobrado, coste real y margen previsto frente a real.</div>
+    </div>
+    <button class="btn btn-sec no-print" onclick="window.print()">Imprimir</button>
+  </div>
+
+  <div class="summary" id="globalSummary"></div>
+
+  <div class="card">
+    <div class="card-h">Proyectos</div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Ref</th><th>Cliente</th>
+            <th class="r">Coste previsto</th><th class="r">PVP</th><th class="r">Margen prev.</th>
+            <th class="r">Facturado</th><th class="r">Cobrado</th><th class="r">Coste real</th><th class="r">Margen real</th>
+          </tr>
+        </thead>
+        <tbody id="ecoBody"><tr><td colspan="9" class="tbl-empty">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="_common.js"></script>
+<script>
+const { $, escapeHtml, fmtMoney, fmtPct, api } = window.BT;
+
+async function loadPanel() {
+  try {
+    const data = await api('projects');
+    const items = data.items || [];
+
+    const sum = (fn) => items.reduce((s, p) => s + (fn(p.economics || {}) || 0), 0);
+    const g = {
+      pvp: sum((e) => e.suggestedPrice),
+      internalCost: sum((e) => e.internalCost),
+      invoiced: sum((e) => e.invoicedTotal),
+      collected: sum((e) => e.collectedTotal),
+      realCost: sum((e) => e.realCost),
+    };
+    const realMargin = g.invoiced - g.realCost;
+
+    $('globalSummary').innerHTML = `
+      <div class="summary-card"><div class="summary-label">Proyectos</div><div class="summary-value">${items.length}</div></div>
+      <div class="summary-card"><div class="summary-label">Presupuestado (PVP)</div><div class="summary-value">${fmtMoney(g.pvp)}</div></div>
+      <div class="summary-card"><div class="summary-label">Facturado</div><div class="summary-value">${fmtMoney(g.invoiced)}</div><div class="summary-extra">cobrado ${fmtMoney(g.collected)}</div></div>
+      <div class="summary-card"><div class="summary-label">Coste real</div><div class="summary-value">${fmtMoney(g.realCost)}</div><div class="summary-extra">previsto ${fmtMoney(g.internalCost)}</div></div>
+      <div class="summary-card"><div class="summary-label">Margen real</div><div class="summary-value">${fmtMoney(realMargin)}</div><div class="summary-extra">${g.invoiced > 0 ? fmtPct((realMargin / g.invoiced) * 100) : 'sin facturación'}</div></div>
+    `;
+
+    $('ecoBody').innerHTML = items.length ? items.map((p) => {
+      const e = p.economics || {};
+      const rm = e.realMarginPct;
+      return `<tr>
+        <td style="font-family:'Courier New',monospace;font-size:11px;color:var(--blue)">${escapeHtml(p.ref || '—')}</td>
+        <td><a href="proyecto.html?id=${encodeURIComponent(p.id)}" style="color:var(--navy);font-weight:600;text-decoration:none">${escapeHtml(p.clientName || '(sin cliente)')}</a></td>
+        <td class="r">${fmtMoney(e.internalCost)}</td>
+        <td class="r">${fmtMoney(e.suggestedPrice)}</td>
+        <td class="r">${fmtPct(e.marginPct)}</td>
+        <td class="r">${fmtMoney(e.invoicedTotal)}</td>
+        <td class="r">${fmtMoney(e.collectedTotal)}</td>
+        <td class="r">${fmtMoney(e.realCost)}</td>
+        <td class="r">${rm == null ? '<span style="color:var(--slate)">—</span>' : `<strong style="color:${rm >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtPct(rm)}</strong>`}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="9" class="tbl-empty">Sin proyectos todavía.</td></tr>';
+  } catch (e) {
+    $('ecoBody').innerHTML = '<tr><td colspan="9" class="tbl-empty" style="color:var(--red)">Error: ' + escapeHtml(e.message) + '</td></tr>';
+  }
+}
+
+window.BT.initAuth(loadPanel);
+</script>
+</body>
+</html>

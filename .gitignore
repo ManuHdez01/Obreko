@@ -5,3 +5,5 @@ node_modules/
 Thumbs.db
 .claude/
 .netlify/
+.dev.vars
+scripts/precios-materiales.json

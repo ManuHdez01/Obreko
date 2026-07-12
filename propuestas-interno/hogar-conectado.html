@@ -1,0 +1,1688 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>obreko — Hogar Conectado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair.woff2') format('woff2');font-style:normal;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1A2236;--yellow:#FED544;--sand:#F1EDE0;--sand2:#E8E2D3;
+  --blue:#5C7CD9;--slate:#8896B3;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans','Arial',sans-serif;
+}
+body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
+
+/* ──────────────────────────────────────────────
+   TOOLBAR
+────────────────────────────────────────────── */
+.toolbar{
+  position:sticky;top:0;z-index:200;background:var(--navy);
+  display:flex;align-items:center;gap:16px;padding:10px 24px;
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.toolbar-logo{font-family:var(--serif);font-style:italic;color:#fff;font-size:20px;letter-spacing:.03em;text-decoration:none;}
+.toolbar-service{color:var(--slate);font-size:11px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.08em;}
+.toolbar-hint{color:var(--slate);font-size:10px;font-family:var(--sans);margin-left:auto;opacity:.65;}
+.toolbar-btn{
+  background:transparent;border:1px solid var(--slate);color:#fff;
+  padding:6px 14px;font-size:11px;font-family:var(--sans);cursor:pointer;
+  letter-spacing:.05em;text-transform:uppercase;transition:all .2s;
+}
+.toolbar-btn:hover{background:var(--yellow);color:var(--navy);border-color:var(--yellow);}
+.toolbar-btn.primary{background:var(--yellow);color:var(--navy);border-color:var(--yellow);}
+.toolbar-btn.primary:hover{background:#e6bf3c;}
+.toolbar-back{color:var(--slate);font-size:11px;font-family:var(--sans);text-decoration:none;letter-spacing:.05em;text-transform:uppercase;}
+.toolbar-back:hover{color:#fff;}
+
+/* ──────────────────────────────────────────────
+   PAGES WRAPPER
+────────────────────────────────────────────── */
+.pages{padding:32px 24px;display:flex;flex-direction:column;gap:24px;align-items:center;}
+.page{
+  width:210mm;min-height:297mm;background:#fff;
+  box-shadow:0 4px 24px rgba(0,0,0,.18);
+  position:relative;overflow:hidden;
+  page-break-after:always;margin:0 auto 8mm;
+}
+
+/* ──────────────────────────────────────────────
+   CONTENTEDITABLE INTERACTIONS
+────────────────────────────────────────────── */
+[contenteditable]:hover{outline:2px solid rgba(254,213,68,.5);background:rgba(254,213,68,.06);}
+[contenteditable]:focus{outline:2px solid var(--yellow);background:rgba(254,213,68,.08);}
+
+/* ──────────────────────────────────────────────
+   PAGE 1 — COVER
+────────────────────────────────────────────── */
+.cover{background:var(--navy);}
+.cover-stripe{height:3px;background:var(--yellow);width:100%;}
+.cover-header{
+  padding:36px 48px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.cover-logo{
+  font-family:var(--serif);font-style:italic;color:#fff;
+  font-size:26pt;letter-spacing:.03em;line-height:1;
+}
+.cover-ref{
+  text-align:right;font-family:var(--sans);
+  color:rgba(255,255,255,.45);font-size:7pt;line-height:1.7;
+  letter-spacing:.06em;
+}
+
+/* Dot-grid accent top-right */
+.cover-dots{
+  position:absolute;top:0;right:0;width:160px;height:160px;
+  background-image:radial-gradient(circle,rgba(254,213,68,.28) 1.5px,transparent 1.5px);
+  background-size:14px 14px;
+  mask-image:radial-gradient(ellipse 100% 100% at 100% 0%,#000 30%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse 100% 100% at 100% 0%,#000 30%,transparent 80%);
+  pointer-events:none;
+}
+
+.cover-center{
+  position:absolute;bottom:248px;left:48px;right:48px;
+}
+.cover-tag{
+  font-family:var(--sans);color:var(--yellow);
+  font-size:6.5pt;text-transform:uppercase;letter-spacing:.3em;
+  margin-bottom:14px;
+}
+.cover-rule{width:30mm;height:2px;background:var(--yellow);margin:5mm 0;}
+.cover-heading{
+  font-family:var(--serif);font-style:italic;color:#fff;
+  font-size:46pt;line-height:.92;letter-spacing:.02em;
+}
+.cover-heading em{color:var(--yellow);font-style:italic;}
+.cover-subtext{
+  margin-top:5mm;font-family:var(--sans);
+  color:rgba(255,255,255,.45);font-size:9pt;
+  letter-spacing:.02em;
+}
+
+.cover-client{
+  position:absolute;bottom:40px;left:48px;right:48px;
+  background:rgba(241,237,224,.1);border:1px solid rgba(255,255,255,.13);
+  padding:6mm 8mm;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:24px;
+}
+.cover-client-left{flex:1;}
+.cover-client-name{
+  font-family:var(--serif);font-style:italic;color:#fff;
+  font-size:15px;letter-spacing:.03em;margin-bottom:5px;
+  background:transparent;border:none;
+  border-bottom:1px solid rgba(255,255,255,.25);
+  outline:none;width:100%;padding:3px 0;
+}
+.cover-client-name::placeholder{color:rgba(255,255,255,.3);}
+.cover-client-name:focus{border-bottom-color:var(--yellow);}
+.cover-client-addr{
+  font-family:var(--sans);color:rgba(255,255,255,.55);font-size:9px;
+  letter-spacing:.03em;
+  background:transparent;border:none;
+  border-bottom:1px solid rgba(255,255,255,.15);
+  outline:none;width:100%;padding:3px 0;margin-top:4px;
+}
+.cover-client-addr::placeholder{color:rgba(255,255,255,.25);}
+.cover-client-addr:focus{border-bottom-color:var(--yellow);}
+.cover-client-right{
+  text-align:right;font-family:var(--sans);
+  color:rgba(255,255,255,.38);font-size:8px;
+  letter-spacing:.06em;line-height:1.8;white-space:nowrap;
+  align-self:flex-end;
+}
+
+.cover-footer{
+  position:absolute;bottom:14px;left:48px;right:48px;
+  display:flex;justify-content:space-between;
+  font-family:var(--sans);color:rgba(255,255,255,.28);
+  font-size:7.5px;letter-spacing:.08em;text-transform:uppercase;
+}
+
+/* ──────────────────────────────────────────────
+   INNER PAGE COMMONS
+────────────────────────────────────────────── */
+.page-inner{padding:52px 56px;}
+.section-label{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.18em;color:var(--blue);margin-bottom:14px;
+}
+.page-h1{
+  font-family:var(--serif);font-style:italic;font-size:34px;
+  color:var(--navy);letter-spacing:.02em;line-height:1.15;margin-bottom:10px;
+}
+.page-h1 em{font-style:italic;color:var(--blue);}
+.yellow-rule{width:44px;height:3px;background:var(--yellow);margin-bottom:24px;}
+
+/* ──────────────────────────────────────────────
+   PAGE 2 — QUIÉNES SOMOS  (40 / 60 layout)
+────────────────────────────────────────────── */
+.qs-layout{display:grid;grid-template-columns:2fr 3fr;gap:0;margin-bottom:28px;min-height:220px;}
+.qs-left{
+  background:var(--navy);padding:36px 28px;
+  display:flex;flex-direction:column;justify-content:center;gap:28px;
+}
+.qs-quote{
+  font-family:var(--serif);font-style:italic;color:#fff;
+  font-size:14px;line-height:1.65;letter-spacing:.03em;
+}
+.qs-quote cite{
+  display:block;font-family:var(--sans);font-style:normal;
+  color:var(--slate);font-size:8px;text-transform:uppercase;
+  letter-spacing:.12em;margin-top:10px;
+}
+.qs-stats{display:flex;flex-direction:column;gap:12px;}
+.qs-stat{border-top:1px solid rgba(255,255,255,.12);padding-top:10px;}
+.qs-stat-n{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:20px;}
+.qs-stat-l{font-family:var(--sans);color:rgba(255,255,255,.55);font-size:8px;text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+.qs-right{padding:32px 28px;display:flex;flex-direction:column;justify-content:flex-start;gap:0;}
+.qs-body{font-family:var(--sans);font-size:10px;color:var(--navy);line-height:1.72;margin-bottom:16px;}
+.two-blocks{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.info-block{background:var(--sand);padding:22px 18px;}
+.info-block-title{
+  font-family:var(--sans);font-size:7.5px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:8px;
+}
+.info-block-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.62;}
+
+/* ──────────────────────────────────────────────
+   PAGE 3 — GRACIAS POR CONFIAR
+────────────────────────────────────────────── */
+.value-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.value-card{background:var(--sand);padding:20px 18px;border-top:3px solid var(--yellow);}
+.value-card-num{font-family:var(--serif);font-style:italic;color:var(--blue);font-size:11px;margin-bottom:3px;}
+.value-card-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--navy);font-weight:700;margin-bottom:6px;}
+.value-card-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.58;}
+.proceso-title{font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:14px;}
+.steps{display:flex;flex-direction:column;gap:10px;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;min-width:26px;flex-shrink:0;}
+.step-title{font-family:var(--sans);font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);font-weight:700;margin-bottom:2px;}
+.step-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.5;}
+.steps-note{
+  margin-top:18px;font-family:var(--sans);font-size:9.5px;
+  color:var(--slate);line-height:1.65;font-style:italic;
+  border-left:2px solid var(--yellow);padding-left:12px;
+}
+
+/* ──────────────────────────────────────────────
+   PAGE 4 — FICHA DEL INMUEBLE
+────────────────────────────────────────────── */
+.form-section{margin-bottom:24px;}
+.form-section-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--blue);
+  margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid #e0e0e0;
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;}
+.form-field{display:flex;flex-direction:column;}
+.form-field label{
+  font-family:var(--sans);font-size:7.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--blue);margin-bottom:4px;
+}
+.form-field input,.form-field textarea,.form-field select{
+  background:transparent;border:none;border-bottom:1px solid #d0d0d0;
+  font-family:var(--sans);font-size:10px;color:var(--navy);
+  padding:3px 0;outline:none;width:100%;
+}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{
+  border-bottom-color:var(--blue);
+}
+.form-field input::placeholder,.form-field textarea::placeholder{color:#bbb;}
+.form-field textarea{resize:vertical;min-height:70px;line-height:1.55;}
+.form-full{grid-column:1/-1;}
+
+/* ──────────────────────────────────────────────
+   PAGE 5 — SISTEMAS A INSTALAR
+────────────────────────────────────────────── */
+.scope-page{display:grid;grid-template-columns:8px 1fr;gap:0;}
+.scope-bar{background:var(--yellow);}
+.scope-content{padding:52px 52px 52px 44px;}
+.scope-heading{
+  font-family:var(--serif);font-style:italic;font-size:32px;
+  color:var(--navy);line-height:1.15;margin-bottom:8px;
+}
+.scope-desc{
+  font-family:var(--sans);font-size:10px;color:var(--navy);
+  line-height:1.72;margin-bottom:24px;
+}
+.scope-cols{display:grid;grid-template-columns:1fr 1fr;gap:6mm;}
+.scope-col-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--blue);margin-bottom:14px;
+  padding-bottom:6px;border-bottom:2px solid var(--yellow);
+}
+.scope-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.scope-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;
+}
+.scope-list li::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--yellow);flex-shrink:0;margin-top:4px;
+}
+.scope-list strong{
+  display:block;font-size:9px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--navy);font-weight:700;margin-bottom:1px;
+}
+.scope-list span{color:var(--slate);}
+
+/* ──────────────────────────────────────────────
+   PAGE 6 — PRESUPUESTO
+────────────────────────────────────────────── */
+.budget-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.budget-table th{
+  background:var(--navy);color:#fff;font-family:var(--sans);
+  font-size:7.5px;text-transform:uppercase;letter-spacing:.1em;
+  padding:9px 10px;text-align:left;
+}
+.budget-table th:nth-child(3),.budget-table th:nth-child(4),.budget-table th:nth-child(5){text-align:right;}
+.budget-table td{padding:7px 10px;border-bottom:1px solid #ebebeb;vertical-align:middle;}
+.budget-table td:first-child{width:32px;font-family:var(--sans);font-size:8.5px;color:var(--slate);text-align:center;}
+.budget-table td:nth-child(3),.budget-table td:nth-child(4),.budget-table td:nth-child(5){text-align:right;}
+.budget-table input[type=text]{
+  width:100%;background:transparent;border:none;
+  border-bottom:1px solid #e8e8e8;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);
+  padding:2px 0;outline:none;
+}
+.budget-table input[type=text]:focus{border-bottom-color:var(--blue);}
+.price-input{
+  width:72px;background:transparent;border:none;
+  border-bottom:1px solid #e8e8e8;
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);
+  padding:2px 0;outline:none;text-align:right;
+}
+.price-input:focus{border-bottom-color:var(--blue);}
+.line-total{font-family:var(--sans);font-size:9.5px;color:var(--navy);font-weight:600;}
+.totals-wrap{display:flex;justify-content:flex-end;margin-bottom:16px;}
+.totals-box{width:264px;background:var(--sand2);border:1px solid #ddd;padding:14px 18px;}
+.totals-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid #ddd;
+  font-family:var(--sans);font-size:9px;color:var(--navy);gap:6px;
+}
+.totals-row:last-child{border-bottom:none;}
+.totals-row.row-hidden{display:none;}
+.toggle-row-btn{background:none;border:none;cursor:pointer;font-size:10px;opacity:.35;padding:0;flex-shrink:0;line-height:1;transition:opacity .15s;}
+.toggle-row-btn:hover{opacity:.9;}
+@media print{.toggle-row-btn{display:none!important;}}
+.totals-total{
+  background:var(--navy);padding:10px 18px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.totals-total span{font-family:var(--sans);font-size:9.5px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:.08em;}
+.total-val{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--yellow);}
+.iva-input{
+  width:32px;background:transparent;border:none;
+  border-bottom:1px solid rgba(100,100,100,.4);
+  text-align:right;font-family:var(--sans);font-size:9px;
+  color:var(--navy);outline:none;
+}
+.iva-input:focus{border-bottom-color:var(--blue);}
+.conditions-note{
+  border-left:3px solid var(--yellow);padding:10px 14px;
+  background:rgba(254,213,68,.07);
+}
+.conditions-note p{font-family:var(--sans);font-size:9px;color:var(--navy);line-height:1.6;}
+
+/* ──────────────────────────────────────────────
+   PAGE 7 — CALENDARIO
+────────────────────────────────────────────── */
+.cal-dates{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;}
+.gantt-wrap{overflow-x:auto;}
+.gantt-table{width:100%;border-collapse:collapse;}
+.gantt-table th{
+  background:var(--navy);color:#fff;font-family:var(--sans);
+  font-size:7.5px;text-transform:uppercase;letter-spacing:.1em;
+  padding:8px 5px;text-align:center;
+}
+.gantt-table th:first-child{text-align:left;width:190px;padding-left:12px;}
+.gantt-table td{padding:0;border:1px solid #e4e4e4;height:34px;}
+.gantt-table td:first-child{
+  padding:0 10px;font-family:var(--sans);
+  font-size:9px;color:var(--navy);background:#f8f8f8;
+}
+.gcell{width:100%;height:100%;cursor:pointer;display:block;}
+.gcell.active{background:var(--navy);}
+.gcell.delivery{background:var(--yellow);}
+.gantt-legend{display:flex;gap:20px;margin-top:14px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-family:var(--sans);font-size:9px;color:var(--navy);}
+.legend-dot{width:14px;height:14px;flex-shrink:0;}
+.legend-navy{background:var(--navy);}
+.legend-yellow{background:var(--yellow);}
+
+/* ──────────────────────────────────────────────
+   PAGE 8 — GARANTÍAS  (4 cards)
+────────────────────────────────────────────── */
+.garantia-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+.garantia-card{background:var(--sand);padding:24px 20px;border-top:3px solid var(--yellow);}
+.garantia-badge{
+  font-family:var(--serif);font-style:italic;color:var(--blue);
+  font-size:26px;letter-spacing:.02em;line-height:1;margin-bottom:6px;
+}
+.garantia-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:10px;
+}
+.garantia-text{font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.62;}
+.payment-section{margin-bottom:28px;}
+.payment-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--navy);font-weight:700;margin-bottom:12px;
+}
+.payment-items{display:flex;flex-direction:column;gap:8px;}
+.payment-item{display:flex;align-items:center;gap:10px;}
+.payment-dot{width:7px;height:7px;background:var(--yellow);border-radius:50%;flex-shrink:0;}
+.payment-item input{
+  background:transparent;border:none;border-bottom:1px solid #d0d0d0;
+  font-family:var(--sans);font-size:10px;color:var(--navy);
+  padding:2px 0;outline:none;flex:1;
+}
+.payment-item input:focus{border-bottom-color:var(--blue);}
+.sig-area{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:20px;}
+.sig-title{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--blue);margin-bottom:14px;
+}
+.sig-logo{font-family:var(--serif);font-style:italic;color:var(--navy);font-size:17px;letter-spacing:.03em;margin-bottom:16px;}
+.sig-field{border-bottom:1px solid var(--navy);padding-bottom:3px;margin-bottom:10px;}
+.sig-field label{font-family:var(--sans);font-size:7.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;}
+.sig-field input{
+  width:100%;background:transparent;border:none;
+  font-family:var(--sans);font-size:10px;color:var(--navy);
+  padding:3px 0 2px;outline:none;
+}
+.sig-field input:focus{background:rgba(254,213,68,.06);}
+.sig-line-space{height:44px;border-bottom:1px solid var(--navy);margin-top:12px;}
+.sig-line-label{font-family:var(--sans);font-size:7.5px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em;margin-top:3px;}
+
+/* ──────────────────────────────────────────────
+   PAGE 9 — COMPROMISO MEDIOAMBIENTAL
+────────────────────────────────────────────── */
+.env-layout{display:grid;grid-template-columns:1fr 2fr;gap:32px;}
+.env-left{}
+.env-left-heading{
+  font-family:var(--serif);font-style:italic;color:var(--navy);
+  font-size:28px;line-height:1.2;margin-bottom:16px;
+}
+.env-left-heading em{color:var(--blue);font-style:italic;}
+.env-intro{
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);
+  line-height:1.7;
+}
+.env-points{display:flex;flex-direction:column;gap:14px;}
+.env-point{
+  background:var(--sand);padding:16px 16px;
+  border-left:3px solid var(--yellow);
+  font-family:var(--sans);font-size:9.5px;color:var(--navy);line-height:1.55;
+}
+.env-point strong{
+  display:block;font-size:8.5px;text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:4px;color:var(--navy);
+}
+
+/* ──────────────────────────────────────────────
+   PAGE 10 — VALIDEZ + CIERRE  (navy)
+────────────────────────────────────────────── */
+.closing-page{background:var(--navy);}
+.closing-stripe{height:3px;background:var(--yellow);}
+.closing-inner{
+  padding:52px 56px;
+  display:flex;flex-direction:column;
+  min-height:calc(297mm - 3px);
+}
+.validity-block{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.13);
+  padding:28px 32px;margin-bottom:36px;
+}
+.validity-label{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.18em;color:var(--yellow);margin-bottom:12px;
+}
+.validity-body{
+  font-family:var(--sans);font-size:10px;color:#fff;line-height:1.72;
+  margin-bottom:12px;
+}
+.validity-note{
+  font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.5);
+  line-height:1.6;font-style:italic;
+}
+.validity-days{
+  background:transparent;border:none;
+  border-bottom:2px solid var(--yellow);
+  color:var(--yellow);font-family:var(--serif);
+  font-style:italic;font-size:20px;
+  width:44px;text-align:center;outline:none;
+  vertical-align:baseline;
+}
+.validity-date-input{
+  background:transparent;border:none;
+  border-bottom:1px solid rgba(255,255,255,.3);
+  color:rgba(255,255,255,.75);font-family:var(--serif);
+  font-style:italic;font-size:12px;
+  width:180px;outline:none;padding:2px 4px;vertical-align:baseline;
+}
+.validity-date-input:focus{border-bottom-color:var(--yellow);}
+.sig-area-closing{
+  display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px;
+}
+.sig-title-closing{
+  font-family:var(--sans);font-size:8px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--slate);margin-bottom:14px;
+}
+.sig-logo-closing{
+  font-family:var(--serif);font-style:italic;color:#fff;
+  font-size:17px;letter-spacing:.03em;margin-bottom:16px;
+}
+.sig-field-closing{
+  border-bottom:1px solid rgba(255,255,255,.25);
+  padding-bottom:3px;margin-bottom:10px;
+}
+.sig-field-closing label{
+  font-family:var(--sans);font-size:7.5px;color:var(--slate);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.sig-field-closing input{
+  width:100%;background:transparent;border:none;
+  font-family:var(--sans);font-size:10px;color:#fff;
+  padding:3px 0 2px;outline:none;
+}
+.sig-field-closing input::placeholder{color:rgba(255,255,255,.3);}
+.sig-field-closing input:focus{background:rgba(254,213,68,.06);}
+.sig-line-space-closing{
+  height:44px;border-bottom:1px solid rgba(255,255,255,.25);
+  margin-top:12px;
+}
+.sig-line-label-closing{
+  font-family:var(--sans);font-size:7.5px;color:var(--slate);
+  text-transform:uppercase;letter-spacing:.1em;margin-top:3px;
+}
+.closing-coda{
+  margin-top:auto;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding-top:32px;
+}
+.closing-quote{
+  font-family:var(--serif);font-style:italic;
+  color:rgba(255,255,255,.2);font-size:52px;line-height:1;
+  letter-spacing:.02em;margin-bottom:24px;
+  white-space:nowrap;
+}
+.closing-quote em{color:rgba(254,213,68,.35);}
+.closing-contact-row{
+  display:flex;gap:20px;margin-bottom:24px;
+}
+.closing-contact-card{
+  border:1px solid rgba(255,255,255,.18);
+  padding:16px 28px;text-align:center;
+}
+.closing-contact-label{
+  font-family:var(--sans);color:var(--slate);
+  font-size:7.5px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;
+}
+.closing-contact-val{
+  background:transparent;border:none;color:#fff;
+  font-family:var(--sans);font-size:11.5px;
+  text-align:center;outline:none;width:190px;
+}
+.closing-contact-val:focus{background:rgba(254,213,68,.06);}
+.closing-footer-row{
+  font-family:var(--sans);color:rgba(255,255,255,.28);
+  font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+}
+
+.next-steps{margin-bottom:32px;}
+.next-steps-title{font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.5);font-weight:700;margin-bottom:16px;}
+.next-step-list{display:flex;flex-direction:column;gap:10px;}
+.next-step{display:flex;align-items:flex-start;gap:14px;}
+.next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
+.next-step-text{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);line-height:1.5;padding-top:4px;}
+
+/* ──────────────────────────────────────────────
+   PRINT STYLES
+────────────────────────────────────────────── */
+@media print{
+  @page{size:A4;margin:0;}
+  html,body{background:#fff;}
+  .toolbar{display:none!important;}
+  button{display:none!important;}
+  .page{box-shadow:none;margin:0;page-break-after:always;break-after:page;}
+  .page:last-child{page-break-after:auto;}
+  .pages{padding:0;gap:0;}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
+}
+</style>
+<link rel="stylesheet" href="_text-bump.css">
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<nav class="toolbar">
+  <a href="index.html" class="toolbar-back">← Volver</a>
+  <a href="#" class="toolbar-logo">obreko</a>
+  <span class="toolbar-service">Hogar Conectado</span>
+  <span class="toolbar-hint">Haz clic en cualquier texto para editarlo · zoom automático</span>
+  <button class="toolbar-btn" onclick="clearDoc()">Nuevo documento</button>
+  <button class="toolbar-btn primary" onclick="window.print()">Imprimir / PDF</button>
+</nav>
+
+<div class="pages">
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 1 — PORTADA
+════════════════════════════════════════════ -->
+<div class="page cover">
+  <div class="cover-stripe"></div>
+  <div class="cover-dots"></div>
+
+  <div class="cover-header">
+    <div class="cover-logo" contenteditable="true">obreko</div>
+    <div class="cover-ref" contenteditable="true">REF-2026-001<br>17 de abril de 2026</div>
+  </div>
+
+  <div class="cover-center">
+    <div class="cover-tag" contenteditable="true">Hogar Conectado</div>
+    <div class="cover-rule"></div>
+    <div class="cover-heading" contenteditable="true">Propuesta de<br><em>Hogar Conectado</em></div>
+    <div class="cover-subtext" contenteditable="true">Control total. Sin complicaciones.</div>
+  </div>
+
+  <div class="cover-client">
+    <div class="cover-client-left">
+      <input class="cover-client-name" type="text" placeholder="Nombre del cliente">
+      <input class="cover-client-addr" type="text" placeholder="Dirección del inmueble">
+    </div>
+    <div class="cover-client-right">obreko · hola@obreko.com</div>
+  </div>
+
+  <div class="cover-footer">
+    <span contenteditable="true">obreko.com</span>
+    <span contenteditable="true">698 900 623</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 2 — QUIÉNES SOMOS
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">QUIÉNES SOMOS</div>
+    <h1 class="page-h1" contenteditable="true">Quiénes <em>somos</em></h1>
+    <div class="yellow-rule"></div>
+
+    <div class="qs-layout">
+      <!-- Left 40% — navy -->
+      <div class="qs-left">
+        <div class="qs-quote" contenteditable="true">
+          "Que la tecnología trabaje para la familia, no al revés."
+          <cite>— obreko</cite>
+        </div>
+        <div class="qs-stats">
+          <div class="qs-stat">
+            <div class="qs-stat-n" contenteditable="true">+10</div>
+            <div class="qs-stat-l" contenteditable="true">años en el sector</div>
+          </div>
+          <div class="qs-stat">
+            <div class="qs-stat-n" contenteditable="true">+250</div>
+            <div class="qs-stat-l" contenteditable="true">instalaciones entregadas</div>
+          </div>
+          <div class="qs-stat">
+            <div class="qs-stat-n" contenteditable="true">2</div>
+            <div class="qs-stat-l" contenteditable="true">Tenerife y Madrid</div>
+          </div>
+        </div>
+      </div>
+      <!-- Right 60% -->
+      <div class="qs-right">
+        <p class="qs-body" contenteditable="true">En obreko instalamos domótica en viviendas, no en oficinas ni en proyectos de obra nueva. Eso significa que entendemos cómo vive una familia real: quién llega tarde, quién quiere controlar la calefacción desde el trabajo, quién no quiere aprender una app nueva cada año.</p>
+        <p class="qs-body" contenteditable="true">No instalamos y desaparecemos. Cuando entregamos un sistema, te explicamos cómo funciona hasta que te sientes cómodo. Y si tres meses después tienes una duda, seguimos disponibles — no como favor, sino como parte del servicio.</p>
+        <p class="qs-body" contenteditable="true">Tenerife y Madrid. Equipo propio, sin subcontratas para la programación ni para el soporte.</p>
+        <div class="two-blocks" style="margin-top:4px;">
+          <div class="info-block">
+            <div class="info-block-title" contenteditable="true">ENTREGAMOS EL SISTEMA FUNCIONANDO Y EXPLICADO</div>
+            <div class="info-block-text" contenteditable="true">La misma persona que instala programa y forma. No hay coordinación de terceros ni manuales de 80 páginas. Cuando nos vamos, sabes usar lo que has contratado.</div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title" contenteditable="true">SIN SOBREDIMENSIONAR, SIN QUEDARTE CORTO</div>
+            <div class="info-block-text" contenteditable="true">Proponemos lo que tu vivienda y tu forma de vivir necesitan. No vendemos el sistema más caro ni el más básico — evaluamos primero y presupuestamos después.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 3 — GRACIAS POR CONFIAR
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">NUESTROS VALORES</div>
+    <h1 class="page-h1" contenteditable="true">Gracias por <em>confiar</em> en nosotros</h1>
+    <div class="yellow-rule"></div>
+    <p style="font-family:var(--sans);font-size:10px;color:var(--navy);line-height:1.7;margin-bottom:22px;" contenteditable="true">Nos alegra que hayas elegido obreko para este proyecto. Estos son los cuatro compromisos que asumimos en cada instalación — no son aspiraciones, son el criterio con el que trabajamos.</p>
+
+    <div class="value-cards">
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">I</div>
+        <div class="value-card-title" contenteditable="true">TRANSPARENCIA</div>
+        <div class="value-card-text" contenteditable="true">El presupuesto detalla dispositivos, mano de obra e instalación. Sin partidas que aparecen al terminar. Lo que se presupuesta es lo que se cobra.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">II</div>
+        <div class="value-card-title" contenteditable="true">COMPROMISO</div>
+        <div class="value-card-text" contenteditable="true">Las fechas que firmamos son las que cumplimos. Si algo cambia, te avisamos antes de actuar — nunca después.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">III</div>
+        <div class="value-card-title" contenteditable="true">ARTESANÍA</div>
+        <div class="value-card-text" contenteditable="true">Cada instalación la ejecuta el técnico formado para ese sistema. No delegamos la programación ni la configuración final a quien no la conoce.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-card-num" contenteditable="true">IV</div>
+        <div class="value-card-title" contenteditable="true">PROXIMIDAD</div>
+        <div class="value-card-text" contenteditable="true">Un interlocutor directo durante toda la instalación. Alguien presente, accesible y con capacidad de decisión.</div>
+      </div>
+    </div>
+
+    <div class="proceso-title">CÓMO TRABAJAMOS EN CADA INSTALACIÓN</div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div><div class="step-title" contenteditable="true">Visita técnica inicial</div><div class="step-text" contenteditable="true">Evaluamos la instalación eléctrica existente, la cobertura WiFi y los sistemas actuales. Sin coste, sin compromiso.</div></div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div><div class="step-title" contenteditable="true">Diseño del sistema</div><div class="step-text" contenteditable="true">Definimos la arquitectura: plataforma, protocolo, dispositivos y zonas. Presupuesto cerrado con todo incluido.</div></div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div><div class="step-title" contenteditable="true">Instalación y cableado</div><div class="step-text" contenteditable="true">Instalamos la infraestructura y los dispositivos. Fechas fijadas en contrato. Actualizaciones periódicas.</div></div>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <div><div class="step-title" contenteditable="true">Programación y escenas</div><div class="step-text" contenteditable="true">Configuramos automatizaciones, escenas y accesos. El sistema funciona antes de llamarte para la entrega.</div></div>
+      </div>
+      <div class="step">
+        <span class="step-num">05</span>
+        <div><div class="step-title" contenteditable="true">Entrega y formación</div><div class="step-text" contenteditable="true">Formamos a todos los usuarios del hogar hasta que el sistema sea intuitivo. Garantía por escrito.</div></div>
+      </div>
+    </div>
+    <div class="steps-note" contenteditable="true">Así trabajamos en cada instalación de hogar conectado, desde la visita inicial hasta que el sistema funciona exactamente como lo imaginaste.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 4 — FICHA DEL INMUEBLE
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">FICHA DEL INMUEBLE</div>
+    <h1 class="page-h1" contenteditable="true">Datos del <em>proyecto</em></h1>
+    <div class="yellow-rule"></div>
+
+    <div class="form-section">
+      <div class="form-section-title">Inmueble</div>
+      <div class="form-grid" data-editable-fields="true">
+        <div class="form-field"><label>Tipo de inmueble</label><input type="text" placeholder="Piso / Casa / Ático / Chalet"></div>
+        <div class="form-field form-full"><label>Dirección completa</label><input type="text" placeholder="Calle, número, piso, puerta, municipio"></div>
+        <div class="form-field"><label>Superficie total (m²)</label><input type="text" placeholder="120 m²"></div>
+        <div class="form-field"><label>Número de estancias</label><input type="text" placeholder="5"></div>
+        <div class="form-field"><label>Estancias a domoticar</label><input type="text" placeholder="Salón, dormitorios, cocina…"></div>
+        <div class="form-field"><label>Instalación eléctrica</label><input type="text" placeholder="Nueva / Existente / En reforma"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Conectividad y control</div>
+      <div class="form-grid" data-editable-fields="true">
+        <div class="form-field"><label>Conectividad WiFi existente</label><input type="text" placeholder="Router básico / Mesh / Sin WiFi"></div>
+        <div class="form-field"><label>Sistema de control preferido</label><input type="text" placeholder="App / Voz / Panel / Todos"></div>
+        <div class="form-field"><label>Protocolo preferido</label><input type="text" placeholder="Zigbee / Z-Wave / KNX / Sin preferencia"></div>
+        <div class="form-field"><label>Integración asistente de voz</label><input type="text" placeholder="Alexa / Google / Apple / Sin preferencia"></div>
+        <div class="form-field"><label>Nivel de automatización deseado</label><input type="text" placeholder="Básico / Medio / Avanzado"></div>
+        <div class="form-field"><label>Presupuesto orientativo</label><input type="text" placeholder="€ aprox."></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Sistemas y funciones específicos solicitados / Observaciones</div>
+      <div class="form-field">
+        <textarea placeholder="Describe los sistemas que deseas instalar, funciones específicas, integraciones requeridas, restricciones de obra o cualquier condición relevante…" style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 5 — SISTEMAS A INSTALAR
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="scope-page">
+    <div class="scope-bar"></div>
+    <div class="scope-content">
+      <div class="section-label" contenteditable="true">ALCANCE TÉCNICO</div>
+      <h2 class="scope-heading" contenteditable="true">Sistemas y funciones <em>propuestos</em></h2>
+      <div class="yellow-rule"></div>
+      <p class="scope-desc" contenteditable="true">Instalación y configuración de los sistemas de domótica indicados, adaptados a la arquitectura eléctrica existente del inmueble. Todos los dispositivos se integran en una plataforma única de control accesible desde smartphone y panel mural.</p>
+
+      <div class="scope-cols">
+        <!-- Left column -->
+        <div>
+          <div class="scope-col-title" contenteditable="true">Sistemas de control</div>
+          <ul class="scope-list">
+            <li>
+              <div>
+                <strong contenteditable="true">Iluminación inteligente</strong>
+                <span contenteditable="true">Regulación de intensidad y temperatura de color. Control por app, voz y escenas programadas.</span>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong contenteditable="true">Climatización conectada</strong>
+                <span contenteditable="true">Termostatos inteligentes por estancia. Programación horaria y control remoto.</span>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong contenteditable="true">Persianas y toldos motorizados</strong>
+                <span contenteditable="true">Actuadores con programación horaria, integración solar y control por voz.</span>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong contenteditable="true">Escenas de ambiente</strong>
+                <span contenteditable="true">Cine, lectura, bienvenida y otras escenas personalizables. Activación por un gesto o voz.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Right column -->
+        <div>
+          <div class="scope-col-title" contenteditable="true">Seguridad y confort</div>
+          <ul class="scope-list">
+            <li>
+              <div>
+                <strong contenteditable="true">Sistema de seguridad integrado</strong>
+                <span contenteditable="true">Cámaras, sensores de movimiento y alarma conectada. Notificaciones en tiempo real.</span>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong contenteditable="true">Control de acceso</strong>
+                <span contenteditable="true">Cerraduras inteligentes y videoportero conectado con apertura remota.</span>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong contenteditable="true">Sensores de presencia, apertura y fugas</strong>
+                <span contenteditable="true">Detección de ventanas abiertas, presencia en estancias y alertas de fuga de agua o gas.</span>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong contenteditable="true">Audio multiroom</strong>
+                <span contenteditable="true">Música distribuida por estancias. Control de zona independiente desde la app.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 6 — LA RED INVISIBLE
+════════════════════════════════════════════ -->
+<div class="page" style="background:var(--navy);display:flex;flex-direction:column;">
+  <div style="height:3px;background:var(--yellow);flex-shrink:0;"></div>
+  <div style="padding:52px 56px;display:flex;flex-direction:column;flex:1;">
+
+    <!-- Header -->
+    <div style="margin-bottom:7mm;">
+      <div style="font-family:var(--sans);font-size:8px;text-transform:uppercase;letter-spacing:.18em;color:var(--yellow);margin-bottom:10px;">PROTOCOLO E INFRAESTRUCTURA</div>
+      <div style="font-family:var(--serif);font-style:italic;font-size:34px;color:#fff;letter-spacing:.02em;line-height:1.1;margin-bottom:8px;">La red que <em style="color:var(--yellow);">no se ve</em></div>
+      <div style="width:44px;height:3px;background:var(--yellow);margin-bottom:14px;"></div>
+      <p style="font-family:var(--sans);font-size:9.5px;color:rgba(255,255,255,.55);line-height:1.72;max-width:82%;" contenteditable="true">Cada dispositivo instalado forma parte de una arquitectura diseñada para funcionar de forma integrada y fiable. Los protocolos de comunicación determinan cómo se hablan los sistemas entre sí — de forma inalámbrica, sin cables adicionales, y con procesamiento local para que el hogar funcione aunque falle internet.</p>
+    </div>
+
+    <!-- Layer stack -->
+    <div style="margin-bottom:7mm;">
+      <div style="font-family:var(--sans);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.28);margin-bottom:4mm;">CAPAS DEL SISTEMA</div>
+
+      <!-- Layer: Usuario -->
+      <div style="display:flex;align-items:stretch;gap:0;margin-bottom:2px;">
+        <div style="width:26px;background:var(--yellow);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:var(--sans);font-size:6px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.1em;writing-mode:vertical-rl;transform:rotate(180deg);">Usuario</span>
+        </div>
+        <div style="flex:1;background:rgba(254,213,68,.08);border:1px solid rgba(254,213,68,.22);border-left:none;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Aplicación móvil</span>
+          <span style="color:rgba(254,213,68,.4);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Control por voz</span>
+          <span style="color:rgba(254,213,68,.4);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Panel táctil mural</span>
+          <span style="color:rgba(254,213,68,.4);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Automatizaciones y escenas</span>
+          <span style="color:rgba(254,213,68,.4);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Acceso remoto</span>
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div style="display:flex;margin-bottom:2px;">
+        <div style="width:26px;flex-shrink:0;display:flex;justify-content:center;"><div style="width:1px;height:8px;background:rgba(254,213,68,.25);"></div></div>
+      </div>
+
+      <!-- Layer: Control -->
+      <div style="display:flex;align-items:stretch;gap:0;margin-bottom:2px;">
+        <div style="width:26px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:var(--sans);font-size:6px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.1em;writing-mode:vertical-rl;transform:rotate(180deg);">Control</span>
+        </div>
+        <div style="flex:1;background:rgba(92,124,217,.1);border:1px solid rgba(92,124,217,.28);border-left:none;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Hub local (sin dependencia de internet)</span>
+          <span style="color:rgba(92,124,217,.6);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Procesamiento en dispositivo</span>
+          <span style="color:rgba(92,124,217,.6);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">API abierta</span>
+          <span style="color:rgba(92,124,217,.6);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:#fff;">Backup en nube opcional</span>
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div style="display:flex;margin-bottom:2px;">
+        <div style="width:26px;flex-shrink:0;display:flex;justify-content:center;"><div style="width:1px;height:8px;background:rgba(92,124,217,.3);"></div></div>
+      </div>
+
+      <!-- Layer: Protocolo -->
+      <div style="display:flex;align-items:stretch;gap:0;margin-bottom:2px;">
+        <div style="width:26px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:var(--sans);font-size:6px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.1em;writing-mode:vertical-rl;transform:rotate(180deg);">Protocolo</span>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-left:none;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.7);">WiFi 6</span>
+          <span style="color:rgba(255,255,255,.2);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.7);">Zigbee 3.0</span>
+          <span style="color:rgba(255,255,255,.2);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.7);">Z-Wave Plus</span>
+          <span style="color:rgba(255,255,255,.2);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.7);">Thread / Matter</span>
+          <span style="color:rgba(255,255,255,.2);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.7);">Bluetooth LE</span>
+          <span style="color:rgba(255,255,255,.2);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.7);">KNX (opcional)</span>
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div style="display:flex;margin-bottom:2px;">
+        <div style="width:26px;flex-shrink:0;display:flex;justify-content:center;"><div style="width:1px;height:8px;background:rgba(255,255,255,.12);"></div></div>
+      </div>
+
+      <!-- Layer: Dispositivos -->
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <div style="width:26px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:var(--sans);font-size:6px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;writing-mode:vertical-rl;transform:rotate(180deg);">Dispositivos</span>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-left:none;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Iluminación</span>
+          <span style="color:rgba(255,255,255,.12);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Climatización</span>
+          <span style="color:rgba(255,255,255,.12);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Persianas</span>
+          <span style="color:rgba(255,255,255,.12);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Cámaras</span>
+          <span style="color:rgba(255,255,255,.12);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Cerraduras</span>
+          <span style="color:rgba(255,255,255,.12);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Sensores</span>
+          <span style="color:rgba(255,255,255,.12);">·</span>
+          <span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.35);">Audio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Protocol cards -->
+    <div style="margin-bottom:7mm;">
+      <div style="font-family:var(--sans);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.28);margin-bottom:4mm;">PROTOCOLOS DE COMUNICACIÓN INALÁMBRICA</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:center;">
+          <div style="font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;margin-bottom:5px;">WiFi 6</div>
+          <div style="font-family:var(--sans);font-size:7px;color:rgba(255,255,255,.35);line-height:1.6;">Alta velocidad<br>2.4 · 5 GHz<br>Cámaras y audio</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:center;">
+          <div style="font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;margin-bottom:5px;">Zigbee 3.0</div>
+          <div style="font-family:var(--sans);font-size:7px;color:rgba(255,255,255,.35);line-height:1.6;">Red en malla<br>Bajo consumo<br>Luces · sensores</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:center;">
+          <div style="font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;margin-bottom:5px;">Z-Wave</div>
+          <div style="font-family:var(--sans);font-size:7px;color:rgba(255,255,255,.35);line-height:1.6;">868 MHz<br>Sin interferencias<br>Persianas · cierre</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:center;">
+          <div style="font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;margin-bottom:5px;">Matter</div>
+          <div style="font-family:var(--sans);font-size:7px;color:rgba(255,255,255,.35);line-height:1.6;">Estándar universal<br>Thread · IPv6<br>Interoperabilidad</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:center;">
+          <div style="font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:13px;margin-bottom:5px;">BLE</div>
+          <div style="font-family:var(--sans);font-size:7px;color:rgba(255,255,255,.35);line-height:1.6;">Bluetooth LE<br>Bajo consumo<br>Accesos · paneles</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ecosystems row -->
+    <div style="margin-top:auto;">
+      <div style="font-family:var(--sans);font-size:7px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.28);margin-bottom:4mm;">ECOSISTEMAS COMPATIBLES</div>
+      <div style="display:flex;gap:3mm;flex-wrap:wrap;">
+        <div style="border:1px solid rgba(255,255,255,.12);padding:8px 16px;"><span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.55);">Amazon Alexa</span></div>
+        <div style="border:1px solid rgba(255,255,255,.12);padding:8px 16px;"><span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.55);">Google Home</span></div>
+        <div style="border:1px solid rgba(255,255,255,.12);padding:8px 16px;"><span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.55);">Apple HomeKit</span></div>
+        <div style="border:1px solid rgba(255,255,255,.12);padding:8px 16px;"><span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.55);">Home Assistant</span></div>
+        <div style="border:1px solid rgba(255,255,255,.12);padding:8px 16px;"><span style="font-family:var(--sans);font-size:9px;color:rgba(255,255,255,.55);">Samsung SmartThings</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 7 — PRESUPUESTO
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">DESGLOSE ECONÓMICO</div>
+    <h1 class="page-h1" contenteditable="true">Presupuesto <em>detallado</em></h1>
+    <div class="yellow-rule"></div>
+
+    <table class="budget-table" id="budgetTable">
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>PARTIDA</th>
+          <th>DESCRIPCIÓN</th>
+          <th>MAT. €</th>
+          <th>M.O. €</th>
+          <th>TOTAL €</th>
+          <th style="width:8mm;background:var(--navy)"></th>
+        </tr>
+      </thead>
+      <tbody id="budgetBody">
+        <tr>
+          <td>1</td>
+          <td><input type="text" value="Hub y centralita" data-type="desc"></td>
+          <td><input type="text" value="Controlador principal e infraestructura de red" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="text" value="Iluminación inteligente" data-type="desc"></td>
+          <td><input type="text" value="Dispositivos, drivers y programación" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><input type="text" value="Climatización conectada" data-type="desc"></td>
+          <td><input type="text" value="Termostatos y unidades de control" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><input type="text" value="Motorización de persianas" data-type="desc"></td>
+          <td><input type="text" value="Actuadores y programación" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><input type="text" value="Seguridad y acceso" data-type="desc"></td>
+          <td><input type="text" value="Cámaras, sensores y cerraduras" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><input type="text" value="Audio multiroom" data-type="desc"></td>
+          <td><input type="text" value="Altavoces, amplificación y zona" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><input type="text" value="Instalación y cableado" data-type="desc"></td>
+          <td><input type="text" value="Mano de obra, canalizaciones y conexión" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><input type="text" value="Configuración y formación" data-type="desc"></td>
+          <td><input type="text" value="Programación de escenas y formación al usuario" data-type="desc"></td>
+          <td><input type="text" class="price-input" data-type="mat" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td><input type="text" class="price-input" data-type="labor" value="" placeholder="—" oninput="calcRow(this)"></td>
+          <td class="line-total" data-type="rowtotal">—</td>
+          <td style="padding:2mm;border:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display:flex;gap:6mm;margin:4mm 0 2mm"><button onclick="addBudgetRow()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir partida</button><button onclick="addBudgetCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Columna</button><button onclick="removeBudgetLastCustomCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">− Columna</button></div>
+
+    <div class="totals-wrap">
+      <div>
+        <div class="totals-box">
+          <div class="totals-row" id="rowSubMat"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button><span>Subtotal materiales</span><span id="subtotalMat">—</span></div>
+          <div class="totals-row" id="rowSubLabor"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubLabor')" title="Mostrar / ocultar">👁</button><span>Subtotal mano de obra</span><span id="subtotalLab">—</span></div>
+          <div class="totals-row" id="rowBase"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowBase')" title="Mostrar / ocultar">👁</button><span>Base imponible</span><span id="baseImp">—</span></div>
+          <div class="totals-row" id="rowIva"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button>
+            <span><input class="iva-input" id="ivaRate" type="text" value="21" oninput="calcTotals()" style="display:none"></span>
+            <span id="ivaAmt">—</span>
+          </div>
+        </div>
+        <div class="totals-total">
+          <span>Total</span>
+          <span class="total-val" id="grandTotal">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="conditions-note">
+      <p contenteditable="true">* Los precios incluyen hardware, instalación y configuración básica. Ampliaciones futuras bajo presupuesto independiente. IVA no incluido salvo indicación expresa. Validez 30 días.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 7 — CALENDARIO
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">PLANIFICACIÓN</div>
+    <h1 class="page-h1" contenteditable="true">Calendario <em>de instalación</em></h1>
+    <div class="yellow-rule"></div>
+
+    <div class="cal-dates">
+      <div class="form-field"><label>Fecha de inicio prevista</label><input type="text" placeholder="dd/mm/aaaa"></div>
+      <div class="form-field"><label>Fecha de entrega prevista</label><input type="text" placeholder="dd/mm/aaaa"></div>
+      <div class="form-field"><label>Duración estimada</label><input type="text" placeholder="4–6 semanas"></div>
+    </div>
+
+    <div class="gantt-wrap">
+      <table class="gantt-table" id="ganttTable">
+        <thead>
+          <tr>
+            <th>Fase</th>
+            <th>Sem 1</th><th>Sem 2</th><th>Sem 3</th><th>Sem 4</th>
+            <th>Sem 5</th><th>Sem 6</th><th>Sem 7</th><th>Sem 8</th>
+            <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true">Visita técnica y diseño</td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #e4e4e4;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Instalación infraestructura</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #e4e4e4;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Instalación dispositivos</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #e4e4e4;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Configuración y escenas</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #e4e4e4;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Pruebas y ajustes</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell active" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #e4e4e4;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+          <tr>
+            <td contenteditable="true">Formación y entrega</td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell delivery" onclick="cycleGantt(this)"></span></td>
+            <td><span class="gcell" onclick="cycleGantt(this)"></span></td>
+            <td style="padding:1mm;border:1px solid #e4e4e4;text-align:center"><button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:6mm;margin:4mm 0 2mm;flex-wrap:wrap"><button onclick="addGanttRow()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir fase</button><button onclick="addGanttCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Semana</button><button onclick="removeGanttLastCol()" style="background:#F1EDE0;color:#1A2236;border:1px solid #E8E2D3;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">− Semana</button></div>
+
+    <div class="gantt-legend">
+      <div class="legend-item"><div class="legend-dot legend-navy"></div><span>Instalación activa</span></div>
+      <div class="legend-item"><div class="legend-dot legend-yellow"></div><span>Entrega / Puesta en marcha</span></div>
+    </div>
+
+    <p style="font-family:var(--sans);font-size:9px;color:var(--slate);line-height:1.6;margin-top:16px;" contenteditable="true">Los plazos son orientativos y dependen de la complejidad de la instalación y disponibilidad de los materiales. Las fechas definitivas se confirman en el contrato.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 8 — GARANTÍAS
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">GARANTÍAS Y SOPORTE</div>
+    <h1 class="page-h1" contenteditable="true">Nuestras <em>garantías</em></h1>
+    <div class="yellow-rule"></div>
+
+    <div class="garantia-cards">
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">6 meses</div>
+        <div class="garantia-title" contenteditable="true">GARANTÍA DE HARDWARE — siempre que no se deba a mal uso</div>
+        <div class="garantia-text" contenteditable="true">Todos los dispositivos instalados cuentan con garantía de seis meses. Gestionamos la garantía de fabricante directamente, sin que tengas que hacer nada.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">6 meses</div>
+        <div class="garantia-title" contenteditable="true">GARANTÍA DE CONFIGURACIÓN — siempre que no se deba a mal uso</div>
+        <div class="garantia-text" contenteditable="true">Si algo falla en la programación o en la integración de los sistemas durante los primeros 6 meses, lo resolvemos sin coste adicional.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">Sop.</div>
+        <div class="garantia-title" contenteditable="true">SOPORTE REMOTO INCLUIDO</div>
+        <div class="garantia-text" contenteditable="true">Primer año de soporte técnico remoto incluido. Resolvemos incidencias de configuración por teléfono o acceso remoto sin desplazamiento.</div>
+      </div>
+      <div class="garantia-card">
+        <div class="garantia-badge" contenteditable="true">Form.</div>
+        <div class="garantia-title" contenteditable="true">FORMACIÓN AL USUARIO</div>
+        <div class="garantia-text" contenteditable="true">Antes de cerrar el proyecto, formamos a todos los usuarios del hogar en el uso del sistema hasta que sea intuitivo. Sin límite de sesiones.</div>
+      </div>
+    </div>
+
+    <div class="payment-section">
+      <div class="payment-title">CONDICIONES DE PAGO</div>
+      <div class="payment-items" id="paymentItems">
+        <div class="payment-item"><div class="payment-dot"></div><input type="text" value="40% a la firma del contrato (adquisición de materiales y planificación)"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button></div>
+        <div class="payment-item"><div class="payment-dot"></div><input type="text" value="40% al inicio de la instalación física"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button></div>
+        <div class="payment-item"><div class="payment-dot"></div><input type="text" value="20% a la puesta en marcha y entrega del sistema"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button></div>
+      </div>
+      <div style="margin-top:8px"><button onclick="addPaymentItem()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',Arial,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:.08em;padding:4px 12px">+ Añadir hito</button></div>
+    </div>
+
+    <div class="sig-area">
+      <div>
+        <div class="sig-title">POR OBREKO</div>
+        <div class="sig-logo">obreko</div>
+        <div class="sig-field"><label>Fecha</label><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="sig-line-space"></div>
+        <div class="sig-line-label">Firma</div>
+      </div>
+      <div>
+        <div class="sig-title">EL CLIENTE</div>
+        <div class="sig-field"><label>Nombre completo</label><input type="text" placeholder="Nombre y apellidos"></div>
+        <div class="sig-field"><label>DNI / NIE</label><input type="text" placeholder="00000000X"></div>
+        <div class="sig-field"><label>Fecha</label><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="sig-line-space"></div>
+        <div class="sig-line-label">Firma</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 9 — COMPROMISO MEDIOAMBIENTAL
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-label" contenteditable="true">SOSTENIBILIDAD</div>
+    <div class="yellow-rule"></div>
+
+    <div class="env-layout">
+      <div class="env-left">
+        <h2 class="env-left-heading" contenteditable="true">Tecnología<br>con <em>criterio</em>.</h2>
+        <p class="env-intro" contenteditable="true">En obreko la sostenibilidad no es un apartado del presupuesto — es parte de cómo seleccionamos, instalamos y dimensionamos cada sistema.</p>
+      </div>
+      <div>
+        <div class="env-points">
+          <div class="env-point">
+            <strong contenteditable="true">Dispositivos certificados y de bajo consumo</strong>
+            <span contenteditable="true">Seleccionamos dispositivos con certificación energética y bajo consumo en reposo. No instalamos hardware sobredimensionado.</span>
+          </div>
+          <div class="env-point">
+            <strong contenteditable="true">Reducción del consumo energético</strong>
+            <span contenteditable="true">El control inteligente de iluminación y climatización reduce el consumo medio entre un 20% y un 40%, según el nivel de automatización instalado.</span>
+          </div>
+          <div class="env-point">
+            <strong contenteditable="true">Solo lo necesario</strong>
+            <span contenteditable="true">Instalamos únicamente lo que tiene sentido para el inmueble y sus usuarios. No sobredimensionamos el sistema ni generamos residuos electrónicos innecesarios.</span>
+          </div>
+          <div class="env-point">
+            <strong contenteditable="true">Gestión de embalajes y residuos</strong>
+            <span contenteditable="true">Los embalajes y materiales sustituidos se gestionan mediante puntos limpios y reciclaje homologado. Lo documentamos y te lo entregamos.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 11 — CONDICIONES PARTICULARES
+════════════════════════════════════════════ -->
+<div class="page" style="flex-direction:column">
+  <div style="padding:8mm 15mm 5mm;border-bottom:2px solid #FED544"><div style="font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:#5C7CD9;font-weight:600;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">Condiciones del servicio</div><div style="font-family:'Playfair Display',Georgia,serif;font-size:22pt;font-weight:400;color:#1A2236;font-style:italic">Condiciones <em>particulares</em></div><div style="font-size:8pt;color:#8896B3;margin-top:2mm;font-family:'DM Sans',Arial,sans-serif">Limitación de responsabilidad · Condiciones económicas · Ley aplicable</div></div>
+  <div style="padding:6mm 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;align-content:start">
+    <div style="display:flex;flex-direction:column;gap:0;padding-right:3.5mm;border-right:1px solid #E8E2D3">
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">1. Alcance y limitación de responsabilidad</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">La responsabilidad de obreko queda limitada estrictamente a los sistemas y dispositivos descritos en esta propuesta. obreko no responde de fallos en la instalación eléctrica preexistente no declarada, de interferencias entre protocolos no incluidos en el alcance, ni de incidencias derivadas de cortes de suministro eléctrico, actualizaciones de firmware de fabricante o incompatibilidades de plataformas de terceros (Alexa, Google, Apple HomeKit).</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">2. Condiciones económicas y forma de pago</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El precio incluye hardware, instalación y configuración inicial conforme al alcance técnico acordado. Las condiciones de pago son las descritas en la propuesta (40 / 40 / 20 %). Cualquier dispositivo adicional o ampliación del alcance será presupuestada y aprobada por escrito antes de ejecutarse y facturada de forma independiente.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">3. Modificaciones del alcance</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Si durante la instalación se detectan necesidades técnicas no previstas (infraestructura eléctrica inadecuada, cobertura WiFi insuficiente, incompatibilidades de protocolo), obreko las comunicará al cliente antes de actuar. Las adaptaciones necesarias serán presupuestadas por separado. Sin aprobación escrita, no se ejecutarán.</div></div>
+      <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">4. Fuerza mayor y causas externas</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">obreko no será responsable de demoras o incumplimientos debidos a retrasos en la entrega de dispositivos por parte de fabricante o distribuidor, cortes de suministro eléctrico, fallos en redes de telecomunicaciones, o cualquier causa ajena a su control. En tal caso se comunicará con la mayor brevedad y se propondrá nueva fecha.</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;padding-left:3.5mm">
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">5. Garantías y reclamaciones</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">La garantía de hardware es de 6 meses desde la puesta en marcha, siempre que no se deba a mal uso. La garantía de instalación y configuración es de 6 meses desde la puesta en marcha, siempre que no se deba a mal uso. Quedan excluidos de garantía los fallos por picos o cortes de tensión, manipulación del sistema por el cliente o terceros no autorizados, actualizaciones de firmware incompatibles aplicadas por el usuario, o mal uso de la plataforma.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">6. Materiales y sustituciones</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">obreko se reserva el derecho a sustituir un dispositivo especificado por otro de características técnicas equivalentes o superiores si el modelo original no está disponible en el momento de la instalación. En tal caso se informará al cliente con antelación. Si el cliente aporta sus propios dispositivos, obreko no responde de su calidad ni del resultado de la integración.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">7. Obligaciones del cliente</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El cliente facilitará acceso al inmueble en los horarios acordados, garantizará que la instalación eléctrica cumple los requisitos mínimos indicados en la visita técnica, y no realizará modificaciones en la configuración del sistema durante el período de instalación salvo indicación expresa de obreko. El cliente es responsable de la seguridad de sus credenciales de acceso a la plataforma.</div></div>
+      <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">8. Ley aplicable y jurisdicción</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Este contrato se rige por la legislación española vigente. Para cualquier controversia no resuelta amistosamente, las partes se someten a los juzgados y tribunales del domicilio del inmueble donde se realizó la instalación, con renuncia expresa a cualquier otro fuero que pudiera corresponderles.</div></div>
+    </div>
+  </div>
+  <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span><span style="font-size:7pt;color:#BBB;letter-spacing:.1em">Condiciones particulares</span></div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 12 — PROTECCIÓN DE DATOS
+════════════════════════════════════════════ -->
+<div class="page" style="flex-direction:column">
+  <div style="padding:8mm 15mm 5mm;border-bottom:1px solid #E8E2D3"><div style="font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:#5C7CD9;font-weight:600;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">RGPD · LOPDGDD</div><div style="font-family:'Playfair Display',Georgia,serif;font-size:22pt;font-weight:400;color:#1A2236;font-style:italic">Protección de <em>datos</em></div><div style="font-size:8pt;color:#8896B3;margin-top:2mm;font-family:'DM Sans',Arial,sans-serif">Información básica sobre el tratamiento de sus datos personales</div></div>
+  <div style="padding:6mm 15mm;flex:1;display:flex;flex-direction:column;gap:5mm">
+    <div style="background:#1A2236;padding:6mm 8mm"><div style="font-size:6.5pt;color:#FED544;font-weight:600;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Sans',Arial,sans-serif;margin-bottom:3mm">Cláusula informativa — Reglamento (UE) 2016/679</div><div contenteditable="true" style="font-size:8pt;color:rgba(255,255,255,.65);line-height:1.8;font-family:'DM Sans',Arial,sans-serif">En cumplimiento del Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), le informamos que sus datos serán tratados por obreko en el marco de la presente propuesta e instalación de hogar conectado.</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:8pt;font-family:'DM Sans',Arial,sans-serif"><tbody>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;width:42mm;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Responsable</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">obreko · hola@obreko.com · obreko.com · 698 900 623</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Finalidad</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Gestión de la solicitud de servicio, visita técnica, elaboración y seguimiento de presupuesto, ejecución del contrato de instalación en vivienda y cumplimiento de obligaciones fiscales y legales.</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Base jurídica</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Ejecución del contrato de servicios (Art. 6.1.b RGPD) y cumplimiento de obligaciones legales (Art. 6.1.c RGPD).</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Destinatarios</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">No se cederán datos a terceros salvo obligación legal o subcontratistas técnicos vinculados por acuerdo de confidencialidad.</td></tr>
+      <tr style="border-bottom:1px solid #E8E2D3"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Conservación</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Durante la vigencia del contrato y los plazos legalmente exigidos (mínimo 5 años por obligaciones fiscales).</td></tr>
+      <tr style="background:#FAFAFA"><td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Derechos</td><td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Acceso, rectificación, supresión, portabilidad, oposición y limitación: <strong>hola@obreko.com</strong>. Autoridad de control: <strong>AEPD</strong> (www.aepd.es).</td></tr>
+    </tbody></table>
+    <div style="background:#F1EDE0;padding:4mm 6mm;border-left:3px solid #FED544;font-size:7.5pt;color:#666;line-height:1.65;font-family:'DM Sans',Arial,sans-serif" contenteditable="true">La solicitud y aceptación de esta propuesta implica el consentimiento al tratamiento de sus datos para los fines descritos. obreko no trata datos de los sistemas domóticos instalados (configuraciones, hábitos, registros de dispositivos): estos permanecen en la plataforma del fabricante conforme a sus propias políticas de privacidad.</div>
+  </div>
+  <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto"><span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span><span style="font-size:7pt;color:#BBB;letter-spacing:.1em">Protección de datos</span></div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PÁGINA 13 — VALIDEZ + CIERRE  (navy)
+════════════════════════════════════════════ -->
+<div class="page closing-page">
+  <div class="closing-stripe"></div>
+  <div class="closing-inner">
+
+    <div class="section-label" style="color:var(--slate);" contenteditable="true">VALIDEZ Y ACEPTACIÓN</div>
+    <h1 style="font-family:var(--serif);font-style:italic;font-size:32px;color:#fff;letter-spacing:.02em;line-height:1.15;margin-bottom:10px;" contenteditable="true">Validez de <em style="color:var(--yellow);">la propuesta</em></h1>
+    <div style="width:44px;height:3px;background:var(--yellow);margin-bottom:24px;"></div>
+
+    <div class="validity-block">
+      <div class="validity-label">CONDICIONES DE VALIDEZ</div>
+      <p class="validity-body">
+        Esta propuesta tiene una validez de
+        <input class="validity-days" type="text" value="30">
+        días naturales desde la fecha de emisión:
+        <input class="validity-date-input" type="text" placeholder="17 de abril de 2026">.
+      </p>
+      <p class="validity-note" contenteditable="true">El precio de los dispositivos está sujeto a disponibilidad de stock. La validez se mantiene siempre que los modelos especificados estén disponibles. Cualquier modificación del alcance será presupuestada y aprobada por escrito antes de ejecutarse.</p>
+    </div>
+
+    <div class="next-steps">
+      <div class="next-steps-title">PRÓXIMOS PASOS</div>
+      <div class="next-step-list">
+        <div class="next-step"><div class="next-step-n">1</div><div class="next-step-text" contenteditable="true">Revisa esta propuesta con calma y anota cualquier duda o ajuste que necesites</div></div>
+        <div class="next-step"><div class="next-step-n">2</div><div class="next-step-text" contenteditable="true">Contacta con nosotros para aclarar cualquier punto antes de firmar</div></div>
+        <div class="next-step"><div class="next-step-n">3</div><div class="next-step-text" contenteditable="true">Una vez aceptada, formalizamos el contrato y fijamos la fecha de inicio de los trabajos</div></div>
+        <div class="next-step"><div class="next-step-n">4</div><div class="next-step-text" contenteditable="true">Recibes confirmación escrita de todos los acuerdos antes del comienzo</div></div>
+      </div>
+    </div>
+
+    <div class="sig-area-closing">
+      <div>
+        <div class="sig-title-closing">EL CLIENTE</div>
+        <div class="sig-field-closing"><label>Nombre completo</label><input type="text" placeholder="Nombre y apellidos"></div>
+        <div class="sig-field-closing"><label>DNI / NIE</label><input type="text" placeholder="00000000X"></div>
+        <div class="sig-field-closing"><label>Fecha</label><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="sig-line-space-closing"></div>
+        <div class="sig-line-label-closing">Firma del cliente</div>
+      </div>
+      <div>
+        <div class="sig-title-closing">OBREKO</div>
+        <div class="sig-logo-closing">obreko</div>
+        <div class="sig-field-closing"><label>Nombre</label><input type="text" placeholder="Representante obreko"></div>
+        <div class="sig-field-closing"><label>Fecha</label><input type="text" placeholder="dd/mm/aaaa"></div>
+        <div class="sig-line-space-closing"></div>
+        <div class="sig-line-label-closing">Firma obreko</div>
+      </div>
+    </div>
+
+    <div class="closing-coda">
+      <div class="closing-quote" contenteditable="true">Tu hogar,<br>bajo <em>control</em>.</div>
+      <div class="closing-contact-row">
+        <div class="closing-contact-card">
+          <div class="closing-contact-label">TELÉFONO</div>
+          <div><input class="closing-contact-val" type="text" value="698 900 623"></div>
+        </div>
+        <div class="closing-contact-card">
+          <div class="closing-contact-label">EMAIL</div>
+          <div><input class="closing-contact-val" type="text" value="hola@obreko.com"></div>
+        </div>
+        <div class="closing-contact-card">
+          <div class="closing-contact-label">WEB</div>
+          <div><input class="closing-contact-val" type="text" value="obreko.com"></div>
+        </div>
+      </div>
+      <div class="closing-footer-row" contenteditable="true">obreko · Tenerife · Madrid · obreko.com</div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<script>
+// ── ZOOM ──
+function scalePages(){var s=Math.min(1,(window.innerWidth-48)/794);document.querySelectorAll('.page').forEach(function(p){p.style.zoom=s<1?s:'';})}
+scalePages();window.addEventListener('resize',scalePages);
+
+// ── BUDGET CALCULATION ──
+function fmtEur(n){return n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
+function getVal(el){return el?parseFloat((el.value||el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0:0;}
+function calcRow(input){
+  var row=input.closest('tr');if(!row)return;
+  var m=getVal(row.querySelector('[data-type="mat"]'));
+  var l=getVal(row.querySelector('[data-type="labor"]'));
+  var totEl=row.querySelector('[data-type="rowtotal"]');
+  if(totEl)totEl.textContent=(m+l)>0?fmtEur(m+l):'—';
+  calcTotals();
+}
+function calcTotals(){
+  var mats=0,labs=0,hasData=false;
+  document.querySelectorAll('#budgetBody tr').forEach(function(row){
+    var m=getVal(row.querySelector('[data-type="mat"]'));
+    var l=getVal(row.querySelector('[data-type="labor"]'));
+    if(m||l)hasData=true;
+    mats+=m;labs+=l;
+    var totEl=row.querySelector('[data-type="rowtotal"]');
+    if(totEl)totEl.textContent=(m+l)>0?fmtEur(m+l):'—';
+  });
+  var base=mats+labs;
+  var ivaRate=parseFloat((document.getElementById('ivaRate')||{}).value)||21;
+  var ivaAmt=base*(ivaRate/100),total=base+ivaAmt;
+  var sm=document.getElementById('subtotalMat'),sl=document.getElementById('subtotalLab'),bi=document.getElementById('baseImp'),ia=document.getElementById('ivaAmt'),gt=document.getElementById('grandTotal');
+  if(sm)sm.textContent=hasData?fmtEur(mats):'—';
+  if(sl)sl.textContent=hasData?fmtEur(labs):'—';
+  if(bi)bi.textContent=hasData?fmtEur(base):'—';
+  if(ia)ia.textContent=hasData?fmtEur(ivaAmt):'—';
+  if(gt)gt.textContent=hasData?fmtEur(total):'—';
+}
+calcTotals();
+
+// ── ADD / REMOVE BUDGET ROWS ──
+function addBudgetRow(){
+  var tbody=document.getElementById('budgetBody');if(!tbody)return;
+  var n=tbody.querySelectorAll('tr').length+1;
+  var tr=document.createElement('tr');tr.style.background=n%2===0?'#FAFAFA':'#fff';
+  tr.innerHTML='<td style="padding:7px 10px;border-bottom:1px solid #ebebeb;text-align:center;font-size:8.5px;color:#8896B3">'+n+'</td>'
+    +'<td style="padding:7px 10px;border-bottom:1px solid #ebebeb"><input type="text" style="width:100%;background:transparent;border:none;border-bottom:1px solid #e8e8e8;font-family:\'DM Sans\',Arial,sans-serif;font-size:9.5px;color:#1A2236;padding:2px 0;outline:none" placeholder="Partida" data-type="desc"></td>'
+    +'<td style="padding:7px 10px;border-bottom:1px solid #ebebeb"><input type="text" style="width:100%;background:transparent;border:none;border-bottom:1px solid #e8e8e8;font-family:\'DM Sans\',Arial,sans-serif;font-size:9.5px;color:#1A2236;padding:2px 0;outline:none" placeholder="Descripción" data-type="desc"></td>'
+    +'<td style="padding:7px 10px;border-bottom:1px solid #ebebeb;text-align:right"><input type="text" class="price-input" data-type="mat" placeholder="—" oninput="calcRow(this)" style="width:72px;background:transparent;border:none;border-bottom:1px solid #e8e8e8;font-family:\'DM Sans\',Arial,sans-serif;font-size:9.5px;color:#1A2236;padding:2px 0;outline:none;text-align:right"></td>'
+    +'<td style="padding:7px 10px;border-bottom:1px solid #ebebeb;text-align:right"><input type="text" class="price-input" data-type="labor" placeholder="—" oninput="calcRow(this)" style="width:72px;background:transparent;border:none;border-bottom:1px solid #e8e8e8;font-family:\'DM Sans\',Arial,sans-serif;font-size:9.5px;color:#1A2236;padding:2px 0;outline:none;text-align:right"></td>'
+    +'<td class="line-total" data-type="rowtotal" style="padding:7px 10px;border-bottom:1px solid #ebebeb;text-align:right;font-size:9.5px;font-weight:600;color:#1A2236">—</td>'
+    +'<td style="padding:2mm;border-bottom:1px solid #ebebeb;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';
+  tbody.appendChild(tr);
+}
+function removeBudgetRow(btn){var tr=btn.closest('tr');if(tr){tr.parentNode.removeChild(tr);calcTotals();}}
+function addBudgetCol(){
+  var tbl=document.getElementById('budgetTable');if(!tbl)return;
+  var n=tbl.querySelectorAll('thead tr th[data-custom]').length+1;
+  tbl.querySelectorAll('tr').forEach(function(tr,i){
+    var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];
+    if(i===0){var th=document.createElement('th');th.contentEditable='true';th.dataset.custom='true';th.textContent='Columna '+n;tr.insertBefore(th,last);}
+    else{var td=document.createElement('td');td.contentEditable='true';td.style.cssText='padding:3mm;border:1px solid #E8E2D3;font-size:8pt;color:#555;';tr.insertBefore(td,last);}
+  });
+}
+function removeBudgetLastCustomCol(){
+  var tbl=document.getElementById('budgetTable');if(!tbl)return;
+  var headers=Array.from(tbl.querySelectorAll('thead tr th'));
+  var removable=headers.slice(1,headers.length-1);
+  if(removable.length<=1)return;
+  var lastIdx=headers.indexOf(removable[removable.length-1]);
+  tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells[lastIdx])cells[lastIdx].remove();});
+  calcTotals();
+}
+function toggleTotalsRow(id){var row=document.getElementById(id);if(!row)return;row.classList.toggle('row-hidden');}
+
+// ── GANTT COLOR PICKER ──
+var _gPal=[{c:'',l:'Vacío'},{c:'#1A2236',l:'Navy'},{c:'#FED544',l:'Amarillo'},{c:'#5C7CD9',l:'Azul'},{c:'#2d9e4f',l:'Verde'},{c:'#e55039',l:'Rojo'},{c:'#F1EDE0',l:'Arena'},{c:'#8896B3',l:'Gris'}];
+function showGanttPicker(cell,e){
+  var old=document.getElementById('_gPick');if(old){old.remove();return;}
+  var p=document.createElement('div');p.id='_gPick';
+  p.style.cssText='position:fixed;background:#1A2236;border:1.5px solid #FED544;padding:6px;display:flex;gap:5px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.45)';
+  var rect=cell.getBoundingClientRect();
+  p.style.top=(rect.bottom+4)+'px';p.style.left=Math.min(rect.left,window.innerWidth-230)+'px';
+  _gPal.forEach(function(opt){
+    var sw=document.createElement('div');sw.title=opt.l;
+    sw.style.cssText='width:24px;height:24px;cursor:pointer;flex-shrink:0;box-sizing:border-box';
+    sw.style.background=opt.c||'transparent';
+    sw.style.border=opt.c?'2px solid rgba(255,255,255,.2)':'2px dashed rgba(255,255,255,.35)';
+    sw.addEventListener('click',function(ev){ev.stopPropagation();cell.style.background=opt.c;cell.dataset.color=opt.c;p.remove();});
+    p.appendChild(sw);
+  });
+  document.body.appendChild(p);
+  setTimeout(function(){function cls(ev){if(!p.contains(ev.target)){p.remove();document.removeEventListener('click',cls);}}document.addEventListener('click',cls);},60);
+  e.stopPropagation();
+}
+document.querySelectorAll('.gcell').forEach(function(c){c.style.cursor='pointer';c.addEventListener('click',function(e){showGanttPicker(this,e);});});
+
+// ── ADD / REMOVE GANTT ROWS & COLS ──
+function addGanttRow(){
+  var tbl=document.getElementById('ganttTable');if(!tbl)return;
+  var hdr=tbl.querySelector('tr');var cols=hdr?hdr.querySelectorAll('th,td').length:10;
+  var tbody=tbl.querySelector('tbody');if(!tbody)return;
+  var tr=document.createElement('tr');
+  var tTask=document.createElement('td');tTask.contentEditable='true';
+  tTask.style.cssText='padding:0 10px;font-family:\'DM Sans\',Arial,sans-serif;font-size:9px;color:#1A2236;background:#f8f8f8;height:34px;border:1px solid #e4e4e4';
+  tTask.textContent='Nueva fase';tr.appendChild(tTask);
+  for(var i=0;i<cols-2;i++){
+    var td=document.createElement('td');td.style.cssText='padding:0;border:1px solid #e4e4e4;height:34px;';
+    var sp=document.createElement('span');sp.className='gcell';sp.style.cssText='width:100%;height:100%;cursor:pointer;display:block';
+    sp.addEventListener('click',function(e){showGanttPicker(this,e);});
+    td.appendChild(sp);tr.appendChild(td);
+  }
+  var tDel=document.createElement('td');tDel.style.cssText='padding:1mm;border:1px solid #e4e4e4;text-align:center';
+  tDel.innerHTML='<button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button>';
+  tr.appendChild(tDel);tbody.appendChild(tr);
+}
+function removeGanttRow(btn){var tr=btn.closest('tr');if(tr)tr.parentNode.removeChild(tr);}
+function addGanttCol(){
+  var tbl=document.getElementById('ganttTable');if(!tbl)return;
+  tbl.querySelectorAll('tr').forEach(function(tr,i){
+    var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];
+    if(i===0){
+      var th=document.createElement('th');th.contentEditable='true';
+      th.style.cssText='padding:8px 5px;background:#1A2236;color:rgba(255,255,255,.7);font-family:\'DM Sans\',Arial,sans-serif;font-size:7.5px;text-transform:uppercase;letter-spacing:.1em;text-align:center;border:1px solid #283650';
+      th.textContent='Sem';tr.insertBefore(th,last);
+    }else{
+      var td=document.createElement('td');td.style.cssText='padding:0;border:1px solid #e4e4e4;height:34px;';
+      var sp=document.createElement('span');sp.className='gcell';sp.style.cssText='width:100%;height:100%;cursor:pointer;display:block';
+      sp.addEventListener('click',function(e){showGanttPicker(this,e);});
+      td.appendChild(sp);tr.insertBefore(td,last);
+    }
+  });
+}
+function removeGanttLastCol(){
+  var tbl=document.getElementById('ganttTable');if(!tbl)return;
+  tbl.querySelectorAll('tr').forEach(function(tr){
+    var cells=tr.querySelectorAll('th,td');if(cells.length<=3)return;
+    var last=cells[cells.length-1];var prev=cells[cells.length-2];
+    if(last.querySelector&&last.querySelector('button')){if(prev&&!prev.querySelector('button'))tr.removeChild(prev);}
+    else if(!last.querySelector||!last.querySelector('button'))tr.removeChild(last);
+  });
+}
+
+// ── CLEAR DOCUMENT ──
+function clearDoc(){
+  if(!confirm('¿Limpiar todos los datos del documento? Esta acción no se puede deshacer.'))return;
+  document.querySelectorAll('input[type=text],textarea').forEach(function(el){el.value='';});
+  calcTotals();
+}
+function addPaymentItem(){var list=document.getElementById('paymentItems');if(!list)return;var div=document.createElement('div');div.className='payment-item';div.innerHTML='<div class="payment-dot"></div><input type="text" placeholder="Descripción del hito de pago..." style="background:transparent;border:none;border-bottom:1px solid #d0d0d0;font-family:\'DM Sans\',Arial,sans-serif;font-size:10px;color:#1A2236;padding:2px 0;outline:none;flex:1"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button>';list.appendChild(div);}
+function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)item.parentNode.removeChild(item);}
+// ── IMPRESIÓN: pág 2 en blanco + última en blanco ──
+(function(){
+  function mkBlank(){var b=document.createElement('div');b.className='page blank-page';b.style.cssText='background:#fff;box-shadow:none;border:none;height:297mm;';return b;}
+  function cleanBlanks(){document.querySelectorAll('.blank-page').forEach(function(el){el.remove();});}
+  window.addEventListener('beforeprint',function(){
+    document.querySelectorAll('.page:not(.blank-page)').forEach(function(p){p.style.zoom='';});
+    cleanBlanks();
+    var w=document.querySelector('.pages');if(!w)return;
+    var pages=Array.from(w.querySelectorAll('.page:not(.blank-page)'));
+    if(pages.length>1)w.insertBefore(mkBlank(),pages[1]);
+    w.appendChild(mkBlank());
+  });
+  window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
+})();
+</script>
+<script src="_crm-button.js"></script>
+<script src="_tax-selector.js"></script>
+<script src="_page-numbers.js"></script>
+<script src="_page-delete.js"></script>
+<script src="_form-field-manager.js"></script>
+<script src="_budget-wrap.js"></script>
+<script src="_photo-zoom.js"></script>
+<script src="_budget-calc.js"></script>
+<script src="_budget-format.js"></script>
+
+<!-- Add/remove en Sistemas a instalar (estructura scope-list) -->
+<style>
+  .scope-list{position:relative;}
+  .scope-list li{position:relative;}
+  .scope-li-remove-btn{
+    position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;
+    background:rgba(26,34,54,.82);color:#fff;border:none;font-size:13pt;line-height:1;
+    cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .15s,background .15s;
+    font-family:'DM Sans',Arial,sans-serif;z-index:2;
+  }
+  .scope-list li:hover .scope-li-remove-btn{opacity:1;}
+  .scope-li-remove-btn:hover{background:#C62828;}
+  .scope-li-add-btn{
+    display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+    padding:6px 12px;border:1.5px dashed var(--blue, #5C7CD9);
+    background:rgba(92,124,217,.03);color:var(--blue, #5C7CD9);
+    font-family:'DM Sans',Arial,sans-serif;font-size:8pt;text-transform:uppercase;
+    letter-spacing:.14em;font-weight:700;cursor:pointer;transition:background .15s;
+  }
+  .scope-li-add-btn::before{content:'+';font-size:13px;font-weight:400;letter-spacing:0;line-height:1;}
+  .scope-li-add-btn:hover{background:rgba(92,124,217,.08);}
+  @media print{ .scope-li-remove-btn,.scope-li-add-btn{display:none !important;} }
+</style>
+<script>
+(function(){
+  'use strict';
+  function addRemoveBtn(li){
+    if(li.querySelector('.scope-li-remove-btn')) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='scope-li-remove-btn'; b.textContent='×'; b.title='Eliminar';
+    b.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); li.remove(); });
+    li.appendChild(b);
+  }
+  function addAddBtn(ul){
+    if(ul.nextElementSibling && ul.nextElementSibling.classList.contains('scope-li-add-btn')) return;
+    var b=document.createElement('button');
+    b.type='button'; b.className='scope-li-add-btn'; b.textContent='Añadir';
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      var li=document.createElement('li');
+      var wrap=document.createElement('div');
+      var s=document.createElement('strong'); s.setAttribute('contenteditable','true'); s.textContent='Nuevo elemento';
+      var sp=document.createElement('span'); sp.setAttribute('contenteditable','true'); sp.textContent='Descripción…';
+      wrap.appendChild(s); wrap.appendChild(sp);
+      li.appendChild(wrap);
+      ul.appendChild(li); addRemoveBtn(li);
+      var r=document.createRange(); r.selectNodeContents(s);
+      var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); s.focus();
+    });
+    ul.parentNode.insertBefore(b,ul.nextSibling);
+  }
+  function init(){
+    document.querySelectorAll('.scope-list').forEach(function(u){
+      u.querySelectorAll(':scope > li').forEach(addRemoveBtn);
+      addAddBtn(u);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+<script src="_import-budget.js"></script>
+</body>
+</html>

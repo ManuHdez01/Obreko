@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>obreko — Proyecto</title>
+<link rel="stylesheet" href="_styles.css">
+<style>
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.tab{padding:9px 16px;border-radius:7px;border:1px solid rgba(26,34,54,.14);background:#fff;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);}
+.tab.on{background:var(--navy);color:var(--yellow);border-color:var(--navy);}
+.tab-panel{display:none;}
+.tab-panel.on{display:block;}
+.drop{border:2px dashed rgba(26,34,54,.2);border-radius:10px;padding:26px;text-align:center;color:var(--slate);font-size:12.5px;cursor:pointer;transition:border-color .15s,background .15s;}
+.drop:hover,.drop.over{border-color:var(--blue);background:var(--sand-lt);}
+.check-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12.5px;border-bottom:1px solid rgba(26,34,54,.05);}
+.check-row input[type=checkbox]{accent-color:var(--navy);width:15px;height:15px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">obreko</div>
+    <div class="topbar-meta" id="topRef">PROYECTO</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="index.html">← Proyectos</a>
+    <a href="panel.html">Panel económico</a>
+    <a href="proveedores.html">Proveedores</a>
+    <a href="costes-config.html">Costes</a>
+    <button class="topbar-logout" id="btnLogout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="login-wrap" id="loginWrap" style="display:none">
+  <div class="login-card">
+    <div class="login-title">Acceso interno</div>
+    <div class="login-sub">Introduce el PIN del equipo para acceder.</div>
+    <form class="login-form" id="loginForm">
+      <label for="pinInput">PIN de equipo</label>
+      <input type="password" id="pinInput" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Acceder</button>
+      <div class="login-err" id="loginErr">PIN incorrecto. Prueba otra vez.</div>
+    </form>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <div class="main-head">
+    <div>
+      <h1 class="main-h1" id="projTitle">Proyecto</h1>
+      <div class="main-rule"></div>
+      <div class="main-sub" id="projSub"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-blue" onclick="enviarAPropuesta()">Enviar a propuesta →</button>
+      <button class="btn btn-pri" onclick="saveProject(true)">Guardar</button>
+    </div>
+  </div>
+
+  <div class="summary" id="ecoSummary"></div>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="datos" onclick="showTab('datos')">Datos & Análisis</button>
+    <button class="tab" data-tab="materiales" onclick="showTab('materiales')">Materiales</button>
+    <button class="tab" data-tab="costes" onclick="showTab('costes')">Costes & Margen</button>
+    <button class="tab" data-tab="rfq" onclick="showTab('rfq')">Solicitudes (RFQ)</button>
+    <button class="tab" data-tab="facturas" onclick="showTab('facturas')">Facturas</button>
+  </div>
+
+  <!-- ═══ TAB DATOS & ANÁLISIS ═══ -->
+  <div class="tab-panel on" id="tab-datos">
+    <div class="card">
+      <div class="card-h">Cliente e inmueble</div>
+      <div class="form-grid">
+        <div class="field-group span2">
+          <label>Cliente</label>
+          <input type="text" id="fClientName">
+        </div>
+        <div class="field-group">
+          <label>Email</label>
+          <input type="email" id="fClientEmail">
+        </div>
+        <div class="field-group">
+          <label>Teléfono</label>
+          <input type="tel" id="fClientPhone">
+        </div>
+        <div class="field-group span2">
+          <label>Dirección de la obra</label>
+          <input type="text" id="fAddress">
+        </div>
+        <div class="field-group">
+          <label>Referencia</label>
+          <input type="text" id="fRef">
+        </div>
+        <div class="field-group">
+          <label>Región</label>
+          <select id="fRegion"><option value="tenerife">Tenerife</option><option value="madrid">Madrid</option></select>
+        </div>
+        <div class="field-group">
+          <label>Modo</label>
+          <select id="fMode"><option value="reforma">Reforma</option><option value="amueblar">Amueblar</option></select>
+        </div>
+        <div class="field-group">
+          <label>Tipo de intervención</label>
+          <select id="fTipo">
+            <option value="reforma integral">Reforma integral</option>
+            <option value="adecuacion">Adecuación</option>
+            <option value="obras-pequenas">Obras pequeñas</option>
+            <option value="mantenimiento">Mantenimiento</option>
+            <option value="amueblar">Amueblar</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Superficie (m²)</label>
+          <input type="number" id="fM2" min="0">
+        </div>
+        <div class="field-group">
+          <label>Calidad objetivo</label>
+          <select id="fCalidad"><option value="economica">Económica</option><option value="media">Media</option><option value="alta">Alta</option></select>
+        </div>
+        <div class="field-group">
+          <label>Cocinas</label>
+          <input type="number" id="fCocinas" min="0">
+        </div>
+        <div class="field-group">
+          <label>Baños</label>
+          <input type="number" id="fBanos" min="0">
+        </div>
+        <div class="field-group">
+          <label>Dormitorios</label>
+          <input type="number" id="fDormitorios" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Análisis de plano o fotografía (IA)</div>
+      <div class="card-hint">Sube un plano o una foto del inmueble: la IA estima superficie, estancias, estado y trabajos, y puedes aplicar el resultado a los campos de arriba.</div>
+      <div style="display:grid;grid-template-columns:180px 180px 1fr;gap:12px;align-items:start;flex-wrap:wrap">
+        <div class="drop" id="dropPlano" onclick="pickFile('plano')">📐<br><strong>Subir plano</strong><br>JPG · PNG · WebP</div>
+        <div class="drop" id="dropFoto" onclick="pickFile('foto')">📷<br><strong>Subir foto</strong><br>JPG · PNG · WebP</div>
+        <div id="analysisResult"><div class="state">Sin análisis todavía.</div></div>
+      </div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+    </div>
+  </div>
+
+  <!-- ═══ TAB MATERIALES ═══ -->
+  <div class="tab-panel" id="tab-materiales">
+    <div class="card">
+      <div class="card-h">
+        <span>Buscar precios en proveedores</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <div class="field-group" style="flex:1;min-width:200px">
+          <label>Qué buscar</label>
+          <input type="text" id="searchQuery" placeholder="cemento cola, plato de ducha 120, sofá 3 plazas…">
+        </div>
+        <div class="field-group" style="width:210px">
+          <label>Proveedor</label>
+          <select id="searchSupplier"><option value="">Todos (según región)</option></select>
+        </div>
+        <button class="btn btn-blue" id="searchBtn" onclick="buscarPrecios()">Buscar</button>
+      </div>
+      <div id="searchResults" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <span>Materiales del proyecto</span>
+        <button class="btn btn-sm btn-pri" id="recBtn" onclick="recomendarIA()">✨ Recomendar con IA</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Total</th><th></th></tr></thead>
+          <tbody id="itemsBody"><tr><td colspan="6" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-sec" onclick="addItemManual()">+ Añadir a mano</button>
+        <div style="font-size:13.5px"><span style="color:var(--slate)">Coste materiales:</span> <strong id="itemsTotal">0,00 €</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB COSTES & MARGEN ═══ -->
+  <div class="tab-panel" id="tab-costes">
+    <div class="card">
+      <div class="card-h">Mano de obra y costes indirectos</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Horas de trabajo</label>
+          <input type="number" id="fLaborHours" min="0" step="0.5">
+        </div>
+        <div class="field-group">
+          <label>Tarifa media (€/h)</label>
+          <input type="number" id="fLaborRate" min="0" step="0.5">
+        </div>
+        <div class="field-group">
+          <label>Coste indirecto (%)</label>
+          <input type="number" id="fIndirectPct" min="0" max="100" step="0.5">
+        </div>
+        <div class="field-group">
+          <label>Margen objetivo (%)</label>
+          <input type="number" id="fMarginPct" min="0" max="95" step="0.5">
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn btn-sm btn-sec" onclick="sugerirHoras()">Sugerir horas y tarifa según configuración</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">Desglose económico (interno — no sale al cliente)</div>
+      <div class="totals-box" id="costBreakdown"></div>
+      <div class="notice" style="margin-top:12px">El PVP sugerido aplica el margen objetivo sobre el precio de venta (PVP = coste ÷ (1 − margen)). El IVA/IGIC se aplica en la propuesta al cliente, no aquí.</div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB RFQ ═══ -->
+  <div class="tab-panel" id="tab-rfq">
+    <div class="card">
+      <div class="card-h">Pedir presupuesto a proveedores</div>
+      <div class="card-hint">Selecciona artículos y proveedores; verás una vista previa del email antes de confirmar el envío. Los proveedores necesitan email configurado en <a href="proveedores.html">Proveedores</a>.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:6px">Artículos</div>
+          <div id="rfqItems"><div class="state">Añade materiales en la pestaña Materiales.</div></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:6px">Proveedores</div>
+          <div id="rfqSuppliers"><div class="state">Cargando…</div></div>
+        </div>
+      </div>
+      <div class="field-group" style="margin-top:12px">
+        <label>Mensaje adicional (opcional)</label>
+        <textarea id="rfqMessage" rows="2" placeholder="Necesitamos entrega antes del día 20 en Santa Cruz…"></textarea>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-pri" onclick="previewRfq()">Vista previa y enviar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">Solicitudes enviadas</div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>Fecha</th><th>Proveedor</th><th>Artículos</th><th>Estado</th><th class="r">Importe ofertado</th></tr></thead>
+          <tbody id="rfqHistory"><tr><td colspan="5" class="tbl-empty">Ninguna solicitud enviada todavía.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB FACTURAS ═══ -->
+  <div class="tab-panel" id="tab-facturas">
+    <div class="card">
+      <div class="card-h">Registrar factura</div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Tipo</label>
+          <select id="invTipo">
+            <option value="emitida">Emitida (al cliente)</option>
+            <option value="recibida">Recibida (de proveedor)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Contraparte</label>
+          <input type="text" id="invContraparte" placeholder="Cliente / proveedor">
+        </div>
+        <div class="field-group">
+          <label>Nº factura</label>
+          <input type="text" id="invNumero">
+        </div>
+        <div class="field-group">
+          <label>Fecha</label>
+          <input type="date" id="invFecha">
+        </div>
+        <div class="field-group">
+          <label>Base (€)</label>
+          <input type="number" id="invBase" min="0" step="0.01">
+        </div>
+        <div class="field-group">
+          <label>Impuesto (%)</label>
+          <input type="number" id="invImpuesto" min="0" max="100" step="0.5" value="7">
+        </div>
+        <div class="field-group">
+          <label>Estado</label>
+          <select id="invEstado">
+            <option value="pendiente">Pendiente</option>
+            <option value="cobrada">Cobrada</option>
+            <option value="pagada">Pagada</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-pri" onclick="addInvoice()">Registrar factura</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">Facturas del proyecto</div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>Tipo</th><th>Contraparte</th><th>Nº</th><th>Fecha</th><th class="r">Base</th><th class="r">Total</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="invBody"><tr><td colspan="8" class="tbl-empty">Sin facturas registradas.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">Previsto vs real</div>
+      <div class="totals-box" id="realBreakdown"></div>
+    </div>
+  </div>
+</div>
+
+<script src="_common.js"></script>
+<script src="proyecto.js"></script>
+</body>
+</html>

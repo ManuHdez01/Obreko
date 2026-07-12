@@ -1,0 +1,628 @@
+// Lógica de proyecto.html — ficha completa de proyecto.
+const { $, escapeHtml, fmtMoney, fmtPct, toast, api } = window.BT;
+
+let project = null;
+let economics = null;
+let costsConfig = null;
+let suppliers = [];
+let pendingKind = 'plano';
+let lastSearchResults = []; // extraCatalog para recommend
+
+const projectId = new URL(location.href).searchParams.get('id');
+
+// ── Carga inicial ────────────────────────────────────────────────────────
+
+async function load() {
+  if (!projectId) {
+    $('projTitle').textContent = 'Proyecto no indicado';
+    toast('Falta ?id= en la URL', 'error');
+    return;
+  }
+  try {
+    const [projData, cfg, sup] = await Promise.all([
+      api('projects?id=' + encodeURIComponent(projectId)),
+      api('costs-config'),
+      api('suppliers'),
+    ]);
+    project = projData.project;
+    economics = projData.economics;
+    costsConfig = cfg;
+    suppliers = sup.suppliers || [];
+    renderAll();
+  } catch (e) {
+    toast('Error cargando: ' + e.message, 'error');
+  }
+}
+
+function renderAll() {
+  $('topRef').textContent = 'PROYECTO · ' + (project.ref || project.id);
+  $('projTitle').innerHTML = escapeHtml(project.clientName || 'Proyecto') + ' <em>' + escapeHtml(project.ref || '') + '</em>';
+  $('projSub').textContent = [project.tipo, project.m2 ? project.m2 + ' m²' : '', project.region].filter(Boolean).join(' · ');
+
+  // Datos
+  const map = {
+    fClientName: 'clientName', fClientEmail: 'clientEmail', fClientPhone: 'clientPhone',
+    fAddress: 'address', fRef: 'ref', fRegion: 'region', fMode: 'mode', fTipo: 'tipo',
+    fM2: 'm2', fCalidad: 'calidad',
+    fLaborHours: 'laborHours', fLaborRate: 'laborRate', fIndirectPct: 'indirectPct', fMarginPct: 'marginPct',
+  };
+  for (const [el, key] of Object.entries(map)) $(el).value = project[key] != null ? project[key] : '';
+  const est = project.estancias || {};
+  $('fCocinas').value = est.cocinas != null ? est.cocinas : 1;
+  $('fBanos').value = est.banos != null ? est.banos : 1;
+  $('fDormitorios').value = est.dormitorios != null ? est.dormitorios : 2;
+
+  renderAnalysis();
+  renderItems();
+  renderEconomics();
+  renderSupplierSelect();
+  renderRfqSection();
+  renderInvoices();
+}
+
+// ── Guardado ─────────────────────────────────────────────────────────────
+
+function collectForm() {
+  return {
+    id: project.id,
+    clientName: $('fClientName').value.trim(),
+    clientEmail: $('fClientEmail').value.trim(),
+    clientPhone: $('fClientPhone').value.trim(),
+    address: $('fAddress').value.trim(),
+    ref: $('fRef').value.trim(),
+    region: $('fRegion').value,
+    mode: $('fMode').value,
+    tipo: $('fTipo').value,
+    m2: Number($('fM2').value) || 0,
+    calidad: $('fCalidad').value,
+    estancias: {
+      cocinas: Number($('fCocinas').value) || 0,
+      banos: Number($('fBanos').value) || 0,
+      dormitorios: Number($('fDormitorios').value) || 0,
+    },
+    laborHours: Number($('fLaborHours').value) || 0,
+    laborRate: Number($('fLaborRate').value) || 0,
+    indirectPct: Number($('fIndirectPct').value) || 0,
+    marginPct: Number($('fMarginPct').value) || 0,
+    items: project.items || [],
+    rfqs: project.rfqs || [],
+    invoices: project.invoices || [],
+    analysis: project.analysis || null,
+  };
+}
+
+// Los guardados se serializan: cada save espera al anterior y captura el
+// estado del formulario en el momento de ejecutarse. Evita que la respuesta
+// de un guardado antiguo pise cambios más recientes (carrera al editar
+// varias celdas seguidas).
+let saveChain = Promise.resolve();
+function saveProject(showToast) {
+  saveChain = saveChain.then(async () => {
+    try {
+      const data = await api('projects', { method: 'POST', body: collectForm() });
+      project = data.project;
+      economics = data.economics;
+      renderEconomics();
+      renderItems();
+      renderRfqSection();
+      renderInvoices();
+      if (showToast) toast('Proyecto guardado ✓', 'success');
+    } catch (e) {
+      toast('Error guardando: ' + e.message, 'error');
+    }
+  });
+  return saveChain;
+}
+window.saveProject = saveProject;
+
+// ── Pestañas ─────────────────────────────────────────────────────────────
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('on', t.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach((p) => p.classList.toggle('on', p.id === 'tab-' + name));
+}
+window.showTab = showTab;
+
+// ── Análisis (plano/foto) ────────────────────────────────────────────────
+
+function pickFile(kind) {
+  pendingKind = kind;
+  $('fileInput').click();
+}
+window.pickFile = pickFile;
+
+$('fileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  $('analysisResult').innerHTML = '<div class="state">Comprimiendo imagen…</div>';
+  try {
+    const { base64, mediaType } = await compressImage(file);
+    $('analysisResult').innerHTML = '<div class="state">Analizando con IA… (puede tardar unos segundos)</div>';
+    const data = await api('analyze', {
+      method: 'POST',
+      body: { projectId: project.id, kind: pendingKind, mediaType, imageBase64: base64 },
+    });
+    project.analysis = { ...data.analysis, kind: data.kind, imageKey: data.imageKey, analyzedAt: new Date().toISOString() };
+    renderAnalysis();
+    toast('Análisis completado', 'success');
+  } catch (err) {
+    $('analysisResult').innerHTML = '<div class="state error">Error: ' + escapeHtml(err.message) + '</div>';
+  }
+});
+
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1600;
+      let { width, height } = img;
+      if (width > MAX || height > MAX) {
+        const k = Math.min(MAX / width, MAX / height);
+        width = Math.round(width * k);
+        height = Math.round(height * k);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      resolve({ base64: dataUrl.split(',')[1], mediaType: 'image/jpeg' });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen')); };
+    img.src = url;
+  });
+}
+
+function renderAnalysis() {
+  const a = project.analysis;
+  if (!a) { $('analysisResult').innerHTML = '<div class="state">Sin análisis todavía.</div>'; return; }
+  const est = a.estancias || {};
+  $('analysisResult').innerHTML = `
+    <div style="font-size:12.5px;line-height:1.7">
+      <div><strong>${a.kind === 'plano' ? '📐 Plano' : '📷 Foto'}</strong> · confianza <span class="badge ${a.confianza === 'alta' ? 'badge-ok' : a.confianza === 'media' ? 'badge-warn' : 'badge-err'}">${escapeHtml(a.confianza || '—')}</span></div>
+      <div><span style="color:var(--slate)">Superficie estimada:</span> <strong>${a.m2Estimados ? a.m2Estimados + ' m²' : 'no estimable'}</strong></div>
+      <div><span style="color:var(--slate)">Estancias:</span> ${est.cocinas ?? '—'} cocina(s) · ${est.banos ?? '—'} baño(s) · ${est.dormitorios ?? '—'} dormitorio(s)${(est.otras || []).length ? ' · ' + est.otras.map(escapeHtml).join(', ') : ''}</div>
+      <div><span style="color:var(--slate)">Estado:</span> ${escapeHtml(a.estadoAparente || '—')}</div>
+      ${(a.trabajosSugeridos || []).length ? `<div><span style="color:var(--slate)">Trabajos sugeridos:</span> ${a.trabajosSugeridos.map(escapeHtml).join(' · ')}</div>` : ''}
+      ${a.notas ? `<div style="color:var(--slate);font-size:11.5px;margin-top:4px">${escapeHtml(a.notas)}</div>` : ''}
+      <button class="btn btn-sm btn-pri" style="margin-top:8px" onclick="applyAnalysis()">Aplicar al proyecto</button>
+    </div>`;
+}
+
+function applyAnalysis() {
+  const a = project.analysis;
+  if (!a) return;
+  if (a.m2Estimados > 0) $('fM2').value = a.m2Estimados;
+  const est = a.estancias || {};
+  if (est.cocinas != null) $('fCocinas').value = est.cocinas;
+  if (est.banos != null) $('fBanos').value = est.banos;
+  if (est.dormitorios != null) $('fDormitorios').value = est.dormitorios;
+  saveProject(true);
+}
+window.applyAnalysis = applyAnalysis;
+
+// ── Búsqueda de precios ──────────────────────────────────────────────────
+
+function renderSupplierSelect() {
+  const sel = $('searchSupplier');
+  sel.innerHTML = '<option value="">Todos (según región)</option>' +
+    suppliers.filter((s) => s.active && s.searchUrl).map((s) =>
+      `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)} (${escapeHtml(s.region)})</option>`).join('');
+}
+
+async function buscarPrecios() {
+  const query = $('searchQuery').value.trim();
+  if (!query) { toast('Escribe qué buscar', 'error'); return; }
+  const btn = $('searchBtn');
+  btn.disabled = true; btn.textContent = 'Buscando…';
+  $('searchResults').innerHTML = '<div class="state">Consultando proveedores y extrayendo precios con IA…</div>';
+  try {
+    const data = await api('search-prices', {
+      method: 'POST',
+      body: { query, supplierId: $('searchSupplier').value || null, region: $('fRegion').value },
+    });
+    renderSearchResults(data);
+  } catch (e) {
+    $('searchResults').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Buscar';
+  }
+}
+window.buscarPrecios = buscarPrecios;
+
+function renderSearchResults(data) {
+  lastSearchResults = [];
+  const blocks = (data.results || []).map((r) => {
+    if (!r.ok) {
+      return `<div class="notice" style="border-left-color:var(--red)"><strong>${escapeHtml(r.supplierName)}:</strong> ${escapeHtml(r.error || 'falló')}</div>`;
+    }
+    r.items.forEach((it) => lastSearchResults.push({ ...it, supplier: r.supplierName, region: r.region }));
+    const rows = r.items.map((it, i) => `
+      <tr>
+        <td>${it.url ? `<a href="${escapeHtml(it.url)}" target="_blank" rel="noopener" style="color:var(--navy)">${escapeHtml(it.name)}</a>` : escapeHtml(it.name)}</td>
+        <td class="r">${fmtMoney(it.price)}${it.unit ? '/' + escapeHtml(it.unit) : ''}</td>
+        <td class="r"><button class="btn btn-sm btn-pri" onclick='addItemFromSearch(${JSON.stringify(JSON.stringify({ ...it, supplier: r.supplierName }))})'>+ Añadir</button></td>
+      </tr>`).join('');
+    return `
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">${escapeHtml(r.supplierName)} <span class="badge badge-muted">${r.items.length}</span>${data.cached ? ' <span class="badge badge-warn">caché 24h</span>' : ''}</div>
+        <table class="tbl">${rows || '<tr><td class="tbl-empty">Sin resultados con precio.</td></tr>'}</table>
+      </div>`;
+  });
+  $('searchResults').innerHTML = blocks.join('') || '<div class="state">Sin resultados.</div>';
+}
+
+function addItemFromSearch(jsonStr) {
+  const it = JSON.parse(jsonStr);
+  project.items = project.items || [];
+  project.items.push({
+    name: it.name, supplier: it.supplier, unit: it.unit || 'ud',
+    unitPrice: Number(it.price) || 0, quantity: 1,
+    totalPrice: Number(it.price) || 0, reasoning: '', url: it.url || '',
+  });
+  renderItems();
+  saveProject(false);
+  toast('Añadido: ' + it.name, 'success');
+}
+window.addItemFromSearch = addItemFromSearch;
+
+// ── Recomendación IA ─────────────────────────────────────────────────────
+
+async function recomendarIA() {
+  const btn = $('recBtn');
+  btn.disabled = true; btn.textContent = 'Pensando…';
+  try {
+    const body = {
+      mode: $('fMode').value,
+      region: $('fRegion').value,
+      tipo: $('fTipo').value,
+      m2: Number($('fM2').value) || 0,
+      calidad: $('fCalidad').value,
+      estancias: {
+        cocinas: Number($('fCocinas').value) || 0,
+        banos: Number($('fBanos').value) || 0,
+        dormitorios: Number($('fDormitorios').value) || 0,
+      },
+      extraCatalog: lastSearchResults,
+    };
+    if (!body.m2) throw new Error('Indica los m² del proyecto (pestaña Datos).');
+    const rec = await api('recommend', { method: 'POST', body });
+    const items = (rec.items || []).map((it) => ({
+      name: it.name, supplier: it.supplier, unit: it.unit || 'ud',
+      unitPrice: Number(it.unitPrice) || 0, quantity: Number(it.quantity) || 1,
+      totalPrice: Number(it.totalPrice) || 0, reasoning: it.reasoning || '',
+    }));
+    if (!items.length) throw new Error('La IA no devolvió artículos.');
+    const replace = !project.items || !project.items.length || confirm('Ya hay ' + project.items.length + ' artículos. ¿Reemplazarlos por la nueva recomendación? (Cancelar = añadir al final)');
+    project.items = replace ? items : project.items.concat(items);
+    renderItems();
+    await saveProject(false);
+    toast('Recomendación aplicada (' + items.length + ' artículos)', 'success');
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '✨ Recomendar con IA';
+  }
+}
+window.recomendarIA = recomendarIA;
+
+// ── Tabla de materiales ──────────────────────────────────────────────────
+
+function renderItems() {
+  const items = project.items || [];
+  const body = $('itemsBody');
+  if (!items.length) {
+    body.innerHTML = '<tr><td colspan="6" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr>';
+  } else {
+    body.innerHTML = items.map((it, i) => `
+      <tr>
+        <td>
+          <input type="text" style="width:100%" value="${escapeHtml(it.name)}" onchange="updItem(${i},'name',this.value)">
+          ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
+        </td>
+        <td>${escapeHtml(it.supplier || '—')}</td>
+        <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
+        <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
+        <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
+        <td class="r"><button class="btn btn-sm btn-danger" onclick="delItem(${i})">×</button></td>
+      </tr>`).join('');
+  }
+  const total = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  $('itemsTotal').textContent = fmtMoney(total);
+  renderRfqItems();
+}
+
+function updItem(i, field, value) {
+  const it = project.items[i];
+  if (!it) return;
+  if (field === 'name') it.name = value;
+  else it[field] = Number(value) || 0;
+  it.totalPrice = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
+  renderItems();
+  saveProject(false);
+}
+window.updItem = updItem;
+
+function delItem(i) {
+  project.items.splice(i, 1);
+  renderItems();
+  saveProject(false);
+}
+window.delItem = delItem;
+
+function addItemManual() {
+  project.items = project.items || [];
+  project.items.push({ name: '', supplier: '', unit: 'ud', unitPrice: 0, quantity: 1, totalPrice: 0, reasoning: '' });
+  renderItems();
+}
+window.addItemManual = addItemManual;
+
+// ── Costes & margen ──────────────────────────────────────────────────────
+
+function sugerirHoras() {
+  const tipo = $('fMode').value === 'amueblar' ? 'amueblar' : $('fTipo').value;
+  const hpm2 = Number(costsConfig.hoursPerM2 && costsConfig.hoursPerM2[tipo]) || 0;
+  const m2 = Number($('fM2').value) || 0;
+  const rates = Object.values(costsConfig.laborRates || {});
+  const avg = rates.length ? rates.reduce((a, b) => a + b, 0) / rates.length : 0;
+  $('fLaborHours').value = (m2 * hpm2).toFixed(1);
+  $('fLaborRate').value = avg.toFixed(2);
+  if (!Number($('fIndirectPct').value)) $('fIndirectPct').value = costsConfig.indirectPct != null ? costsConfig.indirectPct : 15;
+  if (!Number($('fMarginPct').value)) $('fMarginPct').value = costsConfig.defaultMarginPct != null ? costsConfig.defaultMarginPct : 25;
+  saveProject(true);
+}
+window.sugerirHoras = sugerirHoras;
+
+function renderEconomics() {
+  const e = economics || {};
+  $('ecoSummary').innerHTML = `
+    <div class="summary-card"><div class="summary-label">Coste interno</div><div class="summary-value">${fmtMoney(e.internalCost)}</div><div class="summary-extra">mat + MO + indirectos</div></div>
+    <div class="summary-card"><div class="summary-label">PVP sugerido</div><div class="summary-value">${fmtMoney(e.suggestedPrice)}</div><div class="summary-extra">margen ${fmtPct(e.marginPct)}</div></div>
+    <div class="summary-card"><div class="summary-label">Margen previsto</div><div class="summary-value">${fmtMoney(e.marginAmount)}</div><div class="summary-extra">sobre venta</div></div>
+    <div class="summary-card"><div class="summary-label">Facturado</div><div class="summary-value">${fmtMoney(e.invoicedTotal)}</div><div class="summary-extra">cobrado ${fmtMoney(e.collectedTotal)}</div></div>
+    <div class="summary-card"><div class="summary-label">Margen real</div><div class="summary-value">${e.realMarginPct == null ? '—' : fmtMoney(e.realMargin)}</div><div class="summary-extra">${e.realMarginPct == null ? 'sin facturas emitidas' : fmtPct(e.realMarginPct)}</div></div>
+  `;
+  $('costBreakdown').innerHTML = `
+    <div class="totals-row"><span>Materiales</span><span class="val">${fmtMoney(e.materialsCost)}</span></div>
+    <div class="totals-row"><span>Mano de obra</span><span class="val">${fmtMoney(e.laborCost)}</span></div>
+    <div class="totals-row"><span>Coste indirecto</span><span class="val">${fmtMoney(e.indirectCost)}</span></div>
+    <div class="totals-row grand"><span>Coste interno total</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
+    <div class="totals-row"><span>Margen objetivo (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
+    <div class="totals-row grand"><span>PVP sugerido (sin impuestos)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
+  `;
+  $('realBreakdown').innerHTML = `
+    <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
+    <div class="totals-row"><span>Facturado al cliente</span><span class="val">${fmtMoney(e.invoicedTotal)}</span></div>
+    <div class="totals-row"><span>Cobrado</span><span class="val">${fmtMoney(e.collectedTotal)}</span></div>
+    <div class="totals-row"><span>Coste previsto</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
+    <div class="totals-row"><span>Coste real (facturas recibidas)</span><span class="val">${fmtMoney(e.realCost)}</span></div>
+    <div class="totals-row grand"><span>Margen real</span><span class="val">${e.realMarginPct == null ? '—' : fmtMoney(e.realMargin) + ' (' + fmtPct(e.realMarginPct) + ')'}</span></div>
+  `;
+}
+
+// ── RFQ ──────────────────────────────────────────────────────────────────
+
+function renderRfqSection() {
+  renderRfqItems();
+  const withEmail = suppliers.filter((s) => s.active);
+  $('rfqSuppliers').innerHTML = withEmail.length ? withEmail.map((s) => `
+    <label class="check-row">
+      <input type="checkbox" class="rfq-sup" value="${escapeHtml(s.id)}" ${s.email ? '' : 'disabled'}>
+      <span>${escapeHtml(s.name)} <span style="color:var(--slate);font-size:10.5px">${s.email ? escapeHtml(s.email) : 'sin email — configúralo en Proveedores'}</span></span>
+    </label>`).join('') : '<div class="state">Sin proveedores.</div>';
+  renderRfqHistory();
+}
+
+function renderRfqItems() {
+  const items = project ? (project.items || []) : [];
+  const el = $('rfqItems');
+  if (!el) return;
+  el.innerHTML = items.length ? items.map((it, i) => `
+    <label class="check-row">
+      <input type="checkbox" class="rfq-item" value="${i}" checked>
+      <span>${escapeHtml(it.name)} <span style="color:var(--slate);font-size:10.5px">· ${it.quantity} ${escapeHtml(it.unit || 'ud')}</span></span>
+    </label>`).join('') : '<div class="state">Añade materiales en la pestaña Materiales.</div>';
+}
+
+function renderRfqHistory() {
+  const rfqs = project.rfqs || [];
+  $('rfqHistory').innerHTML = rfqs.length ? rfqs.slice().reverse().map((r) => {
+    const idx = project.rfqs.indexOf(r);
+    return `<tr>
+      <td style="font-size:11px">${new Date(r.sentAt).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td>
+      <td>${escapeHtml(r.supplierName)}</td>
+      <td style="font-size:11px;color:var(--slate)">${(r.items || []).length} artículos</td>
+      <td>
+        <select onchange="updRfq(${idx},'status',this.value)" style="padding:4px 6px;border:1px solid rgba(26,34,54,.12);border-radius:5px;font-size:11px">
+          <option value="enviada" ${r.status === 'enviada' ? 'selected' : ''}>Enviada</option>
+          <option value="respondida" ${r.status === 'respondida' ? 'selected' : ''}>Respondida</option>
+          <option value="error" ${r.status === 'error' ? 'selected' : ''}>Error</option>
+        </select>
+        ${r.sendError ? `<div style="font-size:10px;color:var(--red)">${escapeHtml(r.sendError)}</div>` : ''}
+      </td>
+      <td class="r"><input class="num" type="number" min="0" step="0.01" value="${r.quotedAmount != null ? r.quotedAmount : ''}" placeholder="—" onchange="updRfq(${idx},'quotedAmount',this.value)"></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5" class="tbl-empty">Ninguna solicitud enviada todavía.</td></tr>';
+}
+
+function updRfq(i, field, value) {
+  const r = project.rfqs[i];
+  if (!r) return;
+  r[field] = field === 'quotedAmount' ? (value === '' ? null : Number(value)) : value;
+  saveProject(false);
+}
+window.updRfq = updRfq;
+
+function selectedRfqData() {
+  const itemIdxs = Array.from(document.querySelectorAll('.rfq-item:checked')).map((c) => Number(c.value));
+  const supplierIds = Array.from(document.querySelectorAll('.rfq-sup:checked')).map((c) => c.value);
+  const items = itemIdxs.map((i) => project.items[i]).filter(Boolean)
+    .map((it) => ({ name: it.name, quantity: it.quantity, unit: it.unit || 'ud' }));
+  return { items, supplierIds };
+}
+
+function previewRfq() {
+  const { items, supplierIds } = selectedRfqData();
+  if (!items.length) { toast('Selecciona al menos un artículo', 'error'); return; }
+  if (!supplierIds.length) { toast('Selecciona al menos un proveedor (con email)', 'error'); return; }
+  const sups = supplierIds.map((id) => suppliers.find((s) => s.id === id)).filter(Boolean);
+  const msg = $('rfqMessage').value.trim();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `
+    <div class="modal">
+      <div class="modal-head"><div class="t">Vista previa de la solicitud</div><div class="s">Se enviará un email por proveedor</div></div>
+      <div class="modal-body">
+        <p><strong>Para:</strong> ${sups.map((s) => escapeHtml(s.name) + ' &lt;' + escapeHtml(s.email) + '&gt;').join(' · ')}</p>
+        <p><strong>Asunto:</strong> Solicitud de presupuesto · obreko · ${escapeHtml(project.ref || '')}</p>
+        <table class="tbl" style="margin:10px 0">
+          <thead><tr><th>Artículo</th><th class="r">Cantidad</th></tr></thead>
+          <tbody>${items.map((it) => `<tr><td>${escapeHtml(it.name)}</td><td class="r">${it.quantity} ${escapeHtml(it.unit)}</td></tr>`).join('')}</tbody>
+        </table>
+        ${msg ? `<p style="background:var(--sand-lt);padding:8px 12px;border-radius:6px">${escapeHtml(msg)}</p>` : ''}
+        <p style="color:var(--slate);font-size:11.5px">El email sale desde obrekobot@obreko.com con la plantilla de marca. Las respuestas llegarán a esa dirección salvo que configures otro reply-to.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-sec" id="rfqCancel">Cancelar</button>
+        <button class="btn btn-pri" id="rfqConfirm">Confirmar envío (${sups.length})</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
+  wrap.querySelector('#rfqCancel').addEventListener('click', () => wrap.remove());
+  wrap.querySelector('#rfqConfirm').addEventListener('click', async () => {
+    const btn = wrap.querySelector('#rfqConfirm');
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    try {
+      const data = await api('rfq', {
+        method: 'POST',
+        body: { projectId: project.id, supplierIds, items, message: msg },
+      });
+      project.rfqs = data.rfqs;
+      renderRfqHistory();
+      wrap.remove();
+      toast(`Solicitudes enviadas: ${data.sent}/${data.total}`, data.sent === data.total ? 'success' : 'error');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = 'Reintentar';
+      toast('Error: ' + e.message, 'error');
+    }
+  });
+}
+window.previewRfq = previewRfq;
+
+// ── Facturas ─────────────────────────────────────────────────────────────
+
+function addInvoice() {
+  const base = Number($('invBase').value) || 0;
+  if (!base) { toast('Indica la base de la factura', 'error'); return; }
+  const impuestoPct = Number($('invImpuesto').value) || 0;
+  project.invoices = project.invoices || [];
+  project.invoices.push({
+    id: 'f' + Date.now().toString(36),
+    tipo: $('invTipo').value,
+    contraparte: $('invContraparte').value.trim(),
+    numero: $('invNumero').value.trim(),
+    fecha: $('invFecha').value || new Date().toISOString().slice(0, 10),
+    base,
+    impuestoPct,
+    total: +(base * (1 + impuestoPct / 100)).toFixed(2),
+    estado: $('invEstado').value,
+  });
+  ['invContraparte', 'invNumero', 'invBase'].forEach((id) => { $(id).value = ''; });
+  saveProject(true);
+}
+window.addInvoice = addInvoice;
+
+function renderInvoices() {
+  const inv = project.invoices || [];
+  $('invBody').innerHTML = inv.length ? inv.map((f, i) => `
+    <tr>
+      <td><span class="badge ${f.tipo === 'emitida' ? 'badge-ok' : 'badge-muted'}">${f.tipo}</span></td>
+      <td>${escapeHtml(f.contraparte || '—')}</td>
+      <td style="font-family:'Courier New',monospace;font-size:11px">${escapeHtml(f.numero || '—')}</td>
+      <td style="font-size:11.5px">${escapeHtml(f.fecha || '—')}</td>
+      <td class="r">${fmtMoney(f.base)}</td>
+      <td class="r"><strong>${fmtMoney(f.total)}</strong></td>
+      <td>
+        <select onchange="updInvoice(${i},this.value)" style="padding:4px 6px;border:1px solid rgba(26,34,54,.12);border-radius:5px;font-size:11px">
+          <option value="pendiente" ${f.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+          <option value="cobrada" ${f.estado === 'cobrada' ? 'selected' : ''}>Cobrada</option>
+          <option value="pagada" ${f.estado === 'pagada' ? 'selected' : ''}>Pagada</option>
+        </select>
+      </td>
+      <td class="r"><button class="btn btn-sm btn-danger" onclick="delInvoice(${i})">×</button></td>
+    </tr>`).join('') : '<tr><td colspan="8" class="tbl-empty">Sin facturas registradas.</td></tr>';
+}
+
+function updInvoice(i, estado) {
+  if (!project.invoices[i]) return;
+  project.invoices[i].estado = estado;
+  saveProject(false);
+}
+window.updInvoice = updInvoice;
+
+function delInvoice(i) {
+  if (!confirm('¿Eliminar esta factura del registro?')) return;
+  project.invoices.splice(i, 1);
+  saveProject(true);
+}
+window.delInvoice = delInvoice;
+
+// ── Enviar a propuesta (plataforma cliente) ──────────────────────────────
+
+const TEMPLATE_BY_TIPO = {
+  'reforma integral': 'reformas.html',
+  'adecuacion': 'adecuacion.html',
+  'obras-pequenas': 'obras-pequenas.html',
+  'mantenimiento': 'mantenimiento.html',
+  'amueblar': 'reformas.html',
+};
+
+async function enviarAPropuesta() {
+  await saveProject(false);
+  const e = economics || {};
+  const items = project.items || [];
+  if (!items.length || !e.internalCost) {
+    toast('El proyecto no tiene materiales o costes calculados todavía', 'error');
+    return;
+  }
+  // Factor de venta: reparte indirectos + margen proporcionalmente entre
+  // materiales y mano de obra. El coste interno NUNCA sale al documento.
+  const directCost = (e.materialsCost || 0) + (e.laborCost || 0);
+  const factor = directCost > 0 ? (e.suggestedPrice || directCost) / directCost : 1;
+
+  const rows = items.map((it) => ({
+    concept: it.name,
+    desc: it.supplier ? 'Suministro e instalación · ' + it.supplier : 'Suministro e instalación',
+    mat: +((Number(it.totalPrice) || 0) * factor).toFixed(2),
+    labor: 0,
+  }));
+  if (e.laborCost > 0) {
+    rows.push({
+      concept: 'Mano de obra',
+      desc: 'Ejecución completa de los trabajos descritos',
+      mat: 0,
+      labor: +((e.laborCost || 0) * factor).toFixed(2),
+    });
+  }
+
+  const payload = {
+    v: 1,
+    createdAt: new Date().toISOString(),
+    ref: project.ref || '',
+    clientName: project.clientName || '',
+    rows,
+    total: +(e.suggestedPrice || 0).toFixed(2),
+  };
+  localStorage.setItem('obreko_budget_import', JSON.stringify(payload));
+  const tpl = TEMPLATE_BY_TIPO[project.tipo] || 'reformas.html';
+  window.open('/propuestas-interno/' + tpl, '_blank', 'noopener');
+  toast('Presupuesto preparado — confirma la importación en la plantilla que se ha abierto', 'success');
+}
+window.enviarAPropuesta = enviarAPropuesta;
+
+// ── Bootstrap ────────────────────────────────────────────────────────────
+window.BT.initAuth(load);
