@@ -12,4 +12,4 @@ bucket_name = "obreko-archivo"
 # y sustituir el id de abajo por el que devuelva ese comando.
 [[kv_namespaces]]
 binding = "BUDGET_TOOL"
-id = "REEMPLAZA_CON_EL_ID_REAL_DEL_NAMESPACE"
+id = "97737b195b384156b8cfbcda6db92f8b"
