@@ -73,6 +73,17 @@
       </table>
     </div>
   </div>
+
+  <div class="card">
+    <div class="card-h">Rentabilidad por tipo de obra</div>
+    <div class="card-hint">Margen real medio agrupado por tipo y región — solo cuenta proyectos con facturas emitidas (margen real calculable).</div>
+    <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>Tipo</th><th>Región</th><th class="r">Proyectos</th><th class="r">Margen real medio</th></tr></thead>
+        <tbody id="profitBody"><tr><td colspan="4" class="tbl-empty">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script src="_common.js"></script>
@@ -139,9 +150,45 @@ async function loadPanel() {
         <td class="r">${rm == null ? '<span style="color:var(--slate)">—</span>' : `<strong style="color:${rm >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtPct(rm)}</strong>`}</td>
       </tr>`;
     }).join('') : '<tr><td colspan="9" class="tbl-empty">Sin proyectos todavía.</td></tr>';
+
+    renderProfitByType(items);
   } catch (e) {
     $('ecoBody').innerHTML = '<tr><td colspan="9" class="tbl-empty" style="color:var(--red)">Error: ' + escapeHtml(e.message) + '</td></tr>';
   }
+}
+
+// Agrupa por tipo+región y calcula el margen real medio — se deriva de la
+// misma lista de /projects que ya se carga arriba, sin endpoint nuevo.
+// Los proyectos sin facturación (realMarginPct null) no cuentan para la
+// media, pero sí para el recuento de "proyectos" del grupo.
+function renderProfitByType(items) {
+  const body = $('profitBody');
+  if (!body) return;
+  if (!items.length) {
+    body.innerHTML = '<tr><td colspan="4" class="tbl-empty">Sin proyectos todavía.</td></tr>';
+    return;
+  }
+  const groups = {};
+  for (const p of items) {
+    const tipo = p.tipo || 'sin especificar';
+    const region = p.region || 'sin especificar';
+    const key = tipo + '|' + region;
+    if (!groups[key]) groups[key] = { tipo, region, count: 0, marginSum: 0, marginCount: 0 };
+    const g = groups[key];
+    g.count += 1;
+    const rm = p.economics ? p.economics.realMarginPct : null;
+    if (rm != null) { g.marginSum += rm; g.marginCount += 1; }
+  }
+  const rows = Object.values(groups).sort((a, b) => b.count - a.count);
+  body.innerHTML = rows.map((g) => {
+    const avg = g.marginCount > 0 ? g.marginSum / g.marginCount : null;
+    return `<tr>
+      <td style="text-transform:capitalize">${escapeHtml(g.tipo)}</td>
+      <td style="text-transform:capitalize">${escapeHtml(g.region)}</td>
+      <td class="r">${g.count}</td>
+      <td class="r">${avg == null ? '<span style="color:var(--slate)">sin facturación</span>' : `<strong style="color:${avg >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtPct(avg)}</strong>`}</td>
+    </tr>`;
+  }).join('');
 }
 
 window.BT.initAuth(async () => {

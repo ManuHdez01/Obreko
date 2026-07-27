@@ -59,6 +59,7 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-sec" id="memoriaBtn" onclick="generarMemoria()">📝 Memoria IA</button>
       <button class="btn btn-sec" id="informeBtn" onclick="generarInforme()">📄 Informe IA</button>
+      <button class="btn btn-sec" onclick="guardarComoPlantilla()">💾 Guardar como plantilla</button>
       <button class="btn btn-blue" onclick="enviarAPropuesta()">Enviar a propuesta →</button>
       <button class="btn btn-sec" id="ganadoBtn" onclick="marcarGanado()">🏆 Marcar como Ganado</button>
       <button class="btn btn-pri" onclick="saveProject(true)">Guardar</button>
@@ -197,6 +198,7 @@
         </span>
       </div>
       <div id="reviewResult"></div>
+      <datalist id="itemNameSuggestions"></datalist>
       <div style="overflow-x:auto">
         <table class="tbl">
           <thead><tr><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Total</th><th></th></tr></thead>
@@ -288,6 +290,11 @@
         </table>
       </div>
     </div>
+    <div class="card">
+      <div class="card-h">Comparativa de ofertas</div>
+      <div class="card-hint">Solo se comparan las solicitudes marcadas como "Respondida" con importe ofertado.</div>
+      <div id="rfqComparador"><div class="state">Aún no hay ofertas respondidas que comparar.</div></div>
+    </div>
   </div>
 
   <!-- ═══ TAB FACTURAS ═══ -->
@@ -346,6 +353,7 @@
     </div>
     <div class="card">
       <div class="card-h">Previsto vs real</div>
+      <div id="deviationAlert"></div>
       <div class="totals-box" id="realBreakdown"></div>
     </div>
   </div>

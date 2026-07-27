@@ -361,7 +361,7 @@ function renderItems() {
     body.innerHTML = items.map((it, i) => `
       <tr>
         <td>
-          <input type="text" style="width:100%" value="${escapeHtml(it.name)}" onchange="updItem(${i},'name',this.value)">
+          <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
           ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
         </td>
         <td>${escapeHtml(it.supplier || '—')}</td>
@@ -403,6 +403,52 @@ function addItemManual() {
   renderItems();
 }
 window.addItemManual = addItemManual;
+
+// ── Autocompletar precio al escribir una partida a mano ──────────────────
+// Reutiliza la biblioteca de precios (GET /api/budget-tool/library?q=)
+// para sugerir nombre/precio mientras el usuario teclea en la fila.
+
+let itemNameSuggestTimer = null;
+const itemSuggestCache = {}; // índice de fila -> Map(nombre en minúsculas -> item de biblioteca)
+
+function onItemNameInput(i, value) {
+  clearTimeout(itemNameSuggestTimer);
+  const q = value.trim();
+  if (q.length < 2) return;
+  itemNameSuggestTimer = setTimeout(async () => {
+    try {
+      const data = await api('library?mode=' + encodeURIComponent(project.mode || 'reforma') + '&q=' + encodeURIComponent(q));
+      const items = data.items || [];
+      const dl = $('itemNameSuggestions');
+      if (dl) dl.innerHTML = items.map((it) => `<option value="${escapeHtml(it.name)}">`).join('');
+      itemSuggestCache[i] = new Map(items.map((it) => [it.name.toLowerCase(), it]));
+    } catch { /* sin sugerencias si falla, no bloquea la edición manual */ }
+  }, 300);
+}
+window.onItemNameInput = onItemNameInput;
+
+function onItemNameChange(i, value) {
+  const it = project.items[i];
+  if (!it) return;
+  const cache = itemSuggestCache[i];
+  const match = cache && cache.get(value.trim().toLowerCase());
+  // Solo autorrellena si el precio sigue a 0 — no pisa un precio que el
+  // usuario ya haya escrito a mano para esa fila.
+  if (match && !it.unitPrice) {
+    it.name = value;
+    it.supplier = match.supplier || it.supplier;
+    it.unit = match.unit || it.unit;
+    it.unitPrice = match.unitPrice;
+    it.quantity = it.quantity || 1;
+    it.totalPrice = it.quantity * it.unitPrice;
+    renderItems();
+    toast('Precio sugerido de la biblioteca: ' + fmtMoney(match.unitPrice), 'success');
+    saveProject(false);
+  } else {
+    updItem(i, 'name', value);
+  }
+}
+window.onItemNameChange = onItemNameChange;
 
 // ── Costes & margen ──────────────────────────────────────────────────────
 
@@ -447,6 +493,24 @@ function renderEconomics() {
     <div class="totals-row"><span>Coste real (facturas recibidas)</span><span class="val">${fmtMoney(e.realCost)}</span></div>
     <div class="totals-row grand"><span>Margen real</span><span class="val">${e.realMarginPct == null ? '—' : fmtMoney(e.realMargin) + ' (' + fmtPct(e.realMarginPct) + ')'}</span></div>
   `;
+
+  // Aviso de desviación: solo si ya hay coste real registrado (facturas
+  // de proveedor recibidas), para no avisar en falso en un proyecto sin empezar.
+  const devEl = $('deviationAlert');
+  if (devEl) {
+    if (e.internalCost > 0 && e.realCost > 0) {
+      const ratio = e.realCost / e.internalCost;
+      if (ratio >= 1) {
+        devEl.innerHTML = `<div class="notice" style="border-left-color:var(--red);margin-bottom:10px">⚠️ El coste real (${fmtMoney(e.realCost)}) ha superado el coste previsto (${fmtMoney(e.internalCost)}) — ${fmtPct((ratio - 1) * 100)} por encima.</div>`;
+      } else if (ratio >= 0.9) {
+        devEl.innerHTML = `<div class="notice" style="border-left-color:#b8860b;margin-bottom:10px">El coste real está al ${fmtPct(ratio * 100)} del previsto — queda poco margen de desviación.</div>`;
+      } else {
+        devEl.innerHTML = '';
+      }
+    } else {
+      devEl.innerHTML = '';
+    }
+  }
 }
 
 // ── RFQ ──────────────────────────────────────────────────────────────────
@@ -460,6 +524,37 @@ function renderRfqSection() {
       <span>${escapeHtml(s.name)} <span style="color:var(--slate);font-size:10.5px">${s.email ? escapeHtml(s.email) : 'sin email — configúralo en Proveedores'}</span></span>
     </label>`).join('') : '<div class="state">Sin proveedores.</div>';
   renderRfqHistory();
+  renderRfqComparador();
+}
+
+// Compara las ofertas ya respondidas (con importe) de la solicitud de
+// presupuesto — no hay precio por partida en el RFQ, así que la
+// comparación es por importe total ofertado por proveedor.
+function renderRfqComparador() {
+  const el = $('rfqComparador');
+  if (!el) return;
+  const rfqs = (project.rfqs || []).filter((r) => r.status === 'respondida' && r.quotedAmount != null);
+  if (!rfqs.length) {
+    el.innerHTML = '<div class="state">Aún no hay ofertas respondidas que comparar.</div>';
+    return;
+  }
+  const sorted = rfqs.slice().sort((a, b) => (a.quotedAmount || 0) - (b.quotedAmount || 0));
+  const min = sorted[0].quotedAmount;
+  el.innerHTML = `
+    <table class="tbl">
+      <thead><tr><th>Proveedor</th><th class="r">Importe</th><th class="r">Diferencia vs. más barato</th></tr></thead>
+      <tbody>
+        ${sorted.map((r, i) => {
+          const diff = r.quotedAmount - min;
+          const diffPct = min > 0 ? (diff / min) * 100 : 0;
+          return `<tr${i === 0 ? ' style="background:rgba(26,140,74,.06)"' : ''}>
+            <td>${i === 0 ? '🏆 ' : ''}${escapeHtml(r.supplierName)}</td>
+            <td class="r"><strong>${fmtMoney(r.quotedAmount)}</strong></td>
+            <td class="r">${i === 0 ? '—' : '+' + fmtMoney(diff) + ' (' + fmtPct(diffPct) + ')'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
 }
 
 function renderRfqItems() {
@@ -1208,6 +1303,36 @@ function descargarInformeWord(bodyHtml) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// ── Plantillas reutilizables ─────────────────────────────────────────────
+
+async function guardarComoPlantilla() {
+  const items = project.items || [];
+  if (!items.length) { toast('El proyecto no tiene partidas que guardar como plantilla', 'error'); return; }
+  const name = prompt('Nombre de la plantilla (ej. "Reforma integral 1 dormitorio"):', project.tipo || '');
+  if (!name || !name.trim()) return;
+  try {
+    await api('templates', {
+      method: 'POST',
+      body: {
+        name: name.trim(),
+        tipo: project.tipo,
+        mode: project.mode,
+        region: project.region,
+        items,
+        laborHours: project.laborHours,
+        laborRate: project.laborRate,
+        indirectPct: project.indirectPct,
+        marginPct: project.marginPct,
+        taxPct: project.taxPct,
+      },
+    });
+    toast('Plantilla guardada ✓ — ya disponible al crear un proyecto nuevo', 'success');
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+window.guardarComoPlantilla = guardarComoPlantilla;
 
 // ── Bootstrap ────────────────────────────────────────────────────────────
 window.BT.initAuth(load);
