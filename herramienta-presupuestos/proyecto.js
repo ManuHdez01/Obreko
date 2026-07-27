@@ -37,7 +37,18 @@ async function load() {
 function renderAll() {
   $('topRef').textContent = 'PROYECTO · ' + (project.ref || project.id);
   $('projTitle').innerHTML = escapeHtml(project.clientName || 'Proyecto') + ' <em>' + escapeHtml(project.ref || '') + '</em>';
-  $('projSub').textContent = [project.tipo, project.m2 ? project.m2 + ' m²' : '', project.region].filter(Boolean).join(' · ');
+  const statusTxt = project.status === 'ganado' ? ' · 🏆 Ganado' : project.status === 'perdido' ? ' · Perdido' : '';
+  $('projSub').textContent = [project.tipo, project.m2 ? project.m2 + ' m²' : '', project.region].filter(Boolean).join(' · ') + statusTxt;
+  const ganadoBtn = $('ganadoBtn');
+  if (ganadoBtn) {
+    if (project.status === 'ganado') {
+      ganadoBtn.textContent = '🏆 Ganado';
+      ganadoBtn.disabled = true;
+    } else {
+      ganadoBtn.textContent = '🏆 Marcar como Ganado';
+      ganadoBtn.disabled = false;
+    }
+  }
 
   // Datos
   const map = {
@@ -88,8 +99,19 @@ function collectForm() {
     rfqs: project.rfqs || [],
     invoices: project.invoices || [],
     analysis: project.analysis || null,
+    status: project.status || 'borrador',
   };
 }
+
+// Marca el proyecto como Ganado: guarda y, en el servidor, esto vuelca sus
+// partidas a la memoria de precios (una única vez, ver price-memory.js).
+function marcarGanado() {
+  if (!project || project.status === 'ganado') return;
+  if (!confirm('¿Marcar este proyecto como Ganado?\n\nSus partidas y precios se guardarán en la memoria de precios de obreko para futuras recomendaciones. Esta acción no se puede deshacer.')) return;
+  project.status = 'ganado';
+  saveProject(true);
+}
+window.marcarGanado = marcarGanado;
 
 // Los guardados se serializan: cada save espera al anterior y captura el
 // estado del formulario en el momento de ejecutarse. Evita que la respuesta

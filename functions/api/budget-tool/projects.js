@@ -15,6 +15,8 @@
 //     rfqs: [{ id, supplierId, supplierName, sentAt, items, status, quotedAmount }],
 //     invoices: [{ id, tipo:'emitida'|'recibida', contraparte, numero, fecha,
 //                  base, impuestoPct, total, estado:'pendiente'|'cobrada'|'pagada' }],
+//     status: 'borrador'|'ganado'|'perdido',
+//     pricesLearned: bool,  // true tras volcar las partidas a price-memory.js (solo una vez, al ganar)
 //     createdAt, updatedAt
 //   }
 //
@@ -22,8 +24,10 @@
 // se devuelve como campo `economics` (no se persiste redundante salvo caché).
 
 import { verifySession } from './_auth.js';
+import { recordProjectPrices } from './price-memory.js';
 
 const INDEX_KEY = 'projects:index';
+const STATUS_VALUES = ['borrador', 'ganado', 'perdido'];
 
 export async function onRequestGet({ request, env }) {
   if (!(await verifySession(request, env))) return json({ error: 'No autenticado' }, 401);
@@ -91,6 +95,14 @@ export async function onRequestPost({ request, env }) {
     };
   }
 
+  // Al marcar un proyecto como "ganado" (una única vez, controlado por
+  // pricesLearned) volcamos sus partidas a la memoria de precios — ver
+  // price-memory.js. No se dispara en cada autoguardado de un borrador.
+  if (project.status === 'ganado' && !project.pricesLearned) {
+    await recordProjectPrices(env, project).catch(() => {});
+    project.pricesLearned = true;
+  }
+
   await env.BUDGET_TOOL.put('project:' + project.id, JSON.stringify(project));
   await upsertIndex(env, { id: project.id, updatedAt: now });
 
@@ -156,6 +168,7 @@ function defaultProject() {
     items: [],
     laborHours: 0, laborRate: 0, indirectPct: 15, marginPct: 25,
     rfqs: [], invoices: [],
+    status: 'borrador', pricesLearned: false,
   };
 }
 
@@ -170,6 +183,7 @@ function sanitizeProject(payload) {
   for (const f of NUM_FIELDS) if (payload[f] != null) out[f] = Number(payload[f]) || 0;
   for (const f of OBJ_FIELDS) if (payload[f] != null && typeof payload[f] === 'object') out[f] = payload[f];
   for (const f of ARR_FIELDS) if (Array.isArray(payload[f])) out[f] = payload[f].slice(0, 500);
+  if (STATUS_VALUES.includes(payload.status)) out.status = payload.status;
   return out;
 }
 

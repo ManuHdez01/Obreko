@@ -22,6 +22,7 @@
 
 import { verifySession } from './_auth.js';
 import { readLibrary } from './library.js';
+import { readPriceMemory } from './price-memory.js';
 
 const CLAUDE_MODEL = 'claude-sonnet-5';
 const CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
@@ -122,8 +123,24 @@ export async function onRequestPost({ request, env }) {
     }))
     .slice(0, 120);
 
+  // Memoria de precios: partidas de proyectos ganados (ver price-memory.js).
+  // Van justo después de la biblioteca porque también son costes reales
+  // propios, no estimaciones — pero se guardan solas para conservar el
+  // agregado (media/min/max/nº muestras) sin mezclarlas con la biblioteca.
+  const memoryEntries = (await readPriceMemory(env, mode, region))
+    .map((m) => ({
+      supplier: `Memoria de precios (${m.samples} proyecto${m.samples === 1 ? '' : 's'} ganado${m.samples === 1 ? '' : 's'})`,
+      region,
+      category: mode,
+      name: m.name,
+      unit: m.unit || 'ud',
+      price: m.avg,
+    }))
+    .slice(0, 150);
+
   const entries = Array.isArray(allPrices.entries) ? allPrices.entries : [];
   const catalog = libraryEntries
+    .concat(memoryEntries)
     .concat(
       entries
         .filter((e) => e.category === mode)

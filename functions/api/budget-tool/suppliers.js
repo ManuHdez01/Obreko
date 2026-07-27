@@ -17,6 +17,12 @@ const SEED_SUPPLIERS = [
   { id: 'obramat', name: 'Obramat (Bricomart)', region: 'madrid', email: '', searchUrl: 'https://www.obramat.es/search?q={q}', active: true, notes: 'Profesional. NO envía a Canarias.' },
   { id: 'ikea', name: 'IKEA', region: 'nacional', email: '', searchUrl: 'https://www.ikea.com/es/es/search/?q={q}', active: true, notes: 'Mobiliario. Envío nacional.' },
   { id: 'chafiras', name: 'Chafiras', region: 'tenerife', email: '', searchUrl: 'https://chafiras.com/buscar?controller=search&s={q}', active: true, notes: 'Materiales de construcción en Tenerife.' },
+  { id: 'maderas-santana', name: 'Maderas Santana', region: 'tenerife', email: '', searchUrl: 'https://www.maderassantana.com/?s={q}', active: true, notes: 'Cocina/madera y parquet. Santa Úrsula, Tenerife. Buscador confirmado.' },
+  { id: 'xiel-deco-hogar', name: 'Xiel Deco Hogar', region: 'tenerife', email: '', searchUrl: 'https://www.xieldecohogar.com/busqueda?s={q}', active: true, notes: 'Cocina y electrodomésticos. La Laguna, Tenerife. Buscador confirmado.' },
+  { id: 'el-bano-barato', name: 'El Baño Barato', region: 'tenerife', email: '', searchUrl: 'https://xn--elbaobarato-4db.es/busqueda?s={q}', active: true, notes: 'Baño. La Orotava, Tenerife. Buscador confirmado.' },
+  { id: 'grupo-san-isidro', name: 'Grupo San Isidro', region: 'tenerife', email: '', searchUrl: 'https://www.gruposanisidro.net/busqueda?s={q}', active: true, notes: 'Baño y cerámica. Los Realejos, Tenerife. Buscador confirmado.' },
+  { id: 'ceramicas-tacoronte', name: 'Cerámicas Tacoronte', region: 'tenerife', email: '', searchUrl: 'https://tienda.ceramicastacoronte.com/busqueda?s={q}', active: false, notes: 'Cerámica y azulejos. Tacoronte, Tenerife. Buscador con relevancia floja (mezcla sanitarios); desactivado por defecto, actívalo si lo quieres probar.' },
+  { id: 'kuchenhouse-tenerife', name: 'KüchenHouse Tenerife', region: 'tenerife', email: '', searchUrl: 'https://www.kuchenhouse.es/?s={q}', active: false, notes: 'Cocina. Santa Cruz de Tenerife. El buscador mezcla contenido editorial, resultados poco fiables; desactivado por defecto.' },
 ];
 
 export async function onRequestGet({ request, env }) {
@@ -85,12 +91,25 @@ export async function readSuppliers(env) {
     await env.BUDGET_TOOL.put(KV_KEY, JSON.stringify(SEED_SUPPLIERS));
     return SEED_SUPPLIERS.slice();
   }
+  let list;
   try {
     const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr : [];
+    list = Array.isArray(arr) ? arr : [];
   } catch {
-    return [];
+    list = [];
   }
+  // Backfill: añade a la lista guardada los proveedores nuevos de la semilla
+  // que aún no estén presentes (permite ampliar SEED_SUPPLIERS sin perder
+  // las ediciones manuales del usuario en los ya existentes).
+  let changed = false;
+  for (const seed of SEED_SUPPLIERS) {
+    if (!list.some((s) => s.id === seed.id)) {
+      list.push(seed);
+      changed = true;
+    }
+  }
+  if (changed) await env.BUDGET_TOOL.put(KV_KEY, JSON.stringify(list));
+  return list;
 }
 
 function slugify(s) {
