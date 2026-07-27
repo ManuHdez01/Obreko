@@ -12,6 +12,7 @@
 //     items: [{ name, supplier, unit, unitPrice, quantity, totalPrice, reasoning }],
 //     laborHours, laborRate,           // editable; por defecto de costs-config
 //     marginPct,                       // margen objetivo del proyecto
+//     taxPct,                          // IGIC/IVA manual, informativo (7 Tenerife / 21 Madrid por defecto)
 //     rfqs: [{ id, supplierId, supplierName, sentAt, items, status, quotedAmount }],
 //     invoices: [{ id, tipo:'emitida'|'recibida', contraparte, numero, fecha,
 //                  base, impuestoPct, total, estado:'pendiente'|'cobrada'|'pagada' }],
@@ -138,6 +139,14 @@ export function computeEconomics(p) {
   const suggestedPrice = marginPct > 0 ? internalCost / (1 - marginPct / 100) : internalCost;
   const marginAmount = suggestedPrice - internalCost;
 
+  // IGIC/IVA: porcentaje manual (editable en la ficha), informativo aquí —
+  // el cálculo real de la propuesta al cliente sigue viviendo en
+  // propuestas-interno/_tax-selector.js, esto es solo para ver el total
+  // con impuesto sin salir de la herramienta de presupuestos.
+  const taxPct = Number(p.taxPct) || 0;
+  const taxAmount = suggestedPrice * (taxPct / 100);
+  const suggestedPriceWithTax = suggestedPrice + taxAmount;
+
   // Real: facturas
   const invoices = p.invoices || [];
   const issued = invoices.filter((i) => i.tipo === 'emitida');
@@ -152,6 +161,7 @@ export function computeEconomics(p) {
   return {
     materialsCost, laborCost, indirectCost, internalCost,
     marginPct, suggestedPrice, marginAmount,
+    taxPct, taxAmount, suggestedPriceWithTax,
     invoicedTotal, collectedTotal, realCost, paidCost, realMargin, realMarginPct,
   };
 }
@@ -166,14 +176,14 @@ function defaultProject() {
     estancias: { cocinas: 1, banos: 1, dormitorios: 2 },
     analysis: null,
     items: [],
-    laborHours: 0, laborRate: 0, indirectPct: 15, marginPct: 25,
+    laborHours: 0, laborRate: 0, indirectPct: 15, marginPct: 25, taxPct: 7,
     rfqs: [], invoices: [],
     status: 'borrador', pricesLearned: false,
   };
 }
 
 const STR_FIELDS = ['ref', 'clientName', 'clientEmail', 'clientPhone', 'address', 'region', 'mode', 'tipo', 'calidad'];
-const NUM_FIELDS = ['m2', 'laborHours', 'laborRate', 'indirectPct', 'marginPct'];
+const NUM_FIELDS = ['m2', 'laborHours', 'laborRate', 'indirectPct', 'marginPct', 'taxPct'];
 const OBJ_FIELDS = ['estancias', 'analysis'];
 const ARR_FIELDS = ['items', 'rfqs', 'invoices'];
 

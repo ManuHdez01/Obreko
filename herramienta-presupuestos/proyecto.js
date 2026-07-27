@@ -56,6 +56,7 @@ function renderAll() {
     fAddress: 'address', fRef: 'ref', fRegion: 'region', fMode: 'mode', fTipo: 'tipo',
     fM2: 'm2', fCalidad: 'calidad',
     fLaborHours: 'laborHours', fLaborRate: 'laborRate', fIndirectPct: 'indirectPct', fMarginPct: 'marginPct',
+    fTaxPct: 'taxPct',
   };
   for (const [el, key] of Object.entries(map)) $(el).value = project[key] != null ? project[key] : '';
   const est = project.estancias || {};
@@ -95,6 +96,7 @@ function collectForm() {
     laborRate: Number($('fLaborRate').value) || 0,
     indirectPct: Number($('fIndirectPct').value) || 0,
     marginPct: Number($('fMarginPct').value) || 0,
+    taxPct: Number($('fTaxPct').value) || 0,
     items: project.items || [],
     rfqs: project.rfqs || [],
     invoices: project.invoices || [],
@@ -434,6 +436,8 @@ function renderEconomics() {
     <div class="totals-row grand"><span>Coste interno total</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
     <div class="totals-row"><span>Margen objetivo (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
     <div class="totals-row grand"><span>PVP sugerido (sin impuestos)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
+    <div class="totals-row"><span>IGIC/IVA (${fmtPct(e.taxPct)})</span><span class="val">${fmtMoney(e.taxAmount)}</span></div>
+    <div class="totals-row grand"><span>PVP con IGIC/IVA</span><span class="val">${fmtMoney(e.suggestedPriceWithTax)}</span></div>
   `;
   $('realBreakdown').innerHTML = `
     <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>

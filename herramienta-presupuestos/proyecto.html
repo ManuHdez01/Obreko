@@ -230,6 +230,10 @@
           <label>Margen objetivo (%)</label>
           <input type="number" id="fMarginPct" min="0" max="95" step="0.5">
         </div>
+        <div class="field-group">
+          <label>IGIC / IVA (%)</label>
+          <input type="number" id="fTaxPct" min="0" max="100" step="0.5">
+        </div>
       </div>
       <div style="margin-top:10px">
         <button class="btn btn-sm btn-sec" onclick="sugerirHoras()">Sugerir horas y tarifa según configuración</button>
@@ -238,7 +242,7 @@
     <div class="card">
       <div class="card-h">Desglose económico (interno — no sale al cliente)</div>
       <div class="totals-box" id="costBreakdown"></div>
-      <div class="notice" style="margin-top:12px">El PVP sugerido aplica el margen objetivo sobre el precio de venta (PVP = coste ÷ (1 − margen)). El IVA/IGIC se aplica en la propuesta al cliente, no aquí.</div>
+      <div class="notice" style="margin-top:12px">El PVP sugerido aplica el margen objetivo sobre el precio de venta (PVP = coste ÷ (1 − margen)). El IGIC/IVA de aquí es informativo, para ver el total con impuesto sin salir de esta pantalla; la propuesta final al cliente sigue teniendo su propio selector IVA/IGIC.</div>
     </div>
 
     <div class="card">
