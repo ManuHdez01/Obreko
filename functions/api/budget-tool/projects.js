@@ -134,10 +134,10 @@ export function computeEconomics(p) {
   const indirectCost = (materialsCost + laborCost) * (indirectPct / 100);
   const internalCost = materialsCost + laborCost + indirectCost;
 
-  const marginPct = Math.min(Number(p.marginPct) || 0, 95);
-  // PVP tal que margen sobre venta = marginPct
-  const suggestedPrice = marginPct > 0 ? internalCost / (1 - marginPct / 100) : internalCost;
-  const marginAmount = suggestedPrice - internalCost;
+  const marginPct = Math.max(Number(p.marginPct) || 0, 0);
+  // Recargo sobre coste: PVP = coste interno × (1 + margen/100)
+  const marginAmount = internalCost * (marginPct / 100);
+  const suggestedPrice = internalCost + marginAmount;
 
   // IGIC/IVA: porcentaje manual (editable en la ficha), informativo aquí —
   // el cálculo real de la propuesta al cliente sigue viviendo en
