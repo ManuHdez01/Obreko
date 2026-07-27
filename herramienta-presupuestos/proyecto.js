@@ -994,8 +994,8 @@ async function revisarPresupuesto() {
 window.revisarPresupuesto = revisarPresupuesto;
 
 function renderReview(data) {
-  const missing = data.missing || [];
-  const warnings = data.warnings || [];
+  const missing = Array.isArray(data.missing) ? data.missing : [];
+  const warnings = Array.isArray(data.warnings) ? data.warnings : [];
   if (data.verdict === 'completo' && !warnings.length) {
     $('reviewResult').innerHTML = '<div class="notice" style="border-left-color:var(--green)">✓ El presupuesto parece completo para este tipo de obra.</div>';
     return;

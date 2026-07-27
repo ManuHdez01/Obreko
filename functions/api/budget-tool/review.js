@@ -19,6 +19,7 @@ const CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
 const REVIEW_TOOL = {
   name: 'return_review',
   description: 'Devuelve la revisión del presupuesto.',
+  strict: true,
   input_schema: {
     type: 'object',
     properties: {
@@ -36,6 +37,7 @@ const REVIEW_TOOL = {
             quantity: { type: 'number' },
           },
           required: ['name', 'reason', 'unit', 'unitPrice', 'quantity'],
+          additionalProperties: false,
         },
       },
       warnings: {
@@ -45,6 +47,7 @@ const REVIEW_TOOL = {
       },
     },
     required: ['verdict', 'missing', 'warnings'],
+    additionalProperties: false,
   },
 };
 
@@ -115,7 +118,14 @@ Sé concreto y no infles: si el presupuesto está razonablemente completo, dilo 
   const toolUse = (data.content || []).find((c) => c.type === 'tool_use' && c.name === 'return_review');
   if (!toolUse) return json({ error: 'Respuesta inesperada de Claude.' }, 502);
 
-  return json(toolUse.input);
+  // Defensa extra además de strict:true — nunca devolver algo que el
+  // frontend no pueda recorrer con .map().
+  const input = toolUse.input || {};
+  return json({
+    verdict: input.verdict === 'completo' ? 'completo' : 'faltan-partidas',
+    missing: Array.isArray(input.missing) ? input.missing : [],
+    warnings: Array.isArray(input.warnings) ? input.warnings : [],
+  });
 }
 
 function json(data, status = 200) {
