@@ -996,11 +996,13 @@ window.revisarPresupuesto = revisarPresupuesto;
 function renderReview(data) {
   const missing = Array.isArray(data.missing) ? data.missing : [];
   const warnings = Array.isArray(data.warnings) ? data.warnings : [];
-  if (data.verdict === 'completo' && !warnings.length) {
+  const strengths = Array.isArray(data.strengths) ? data.strengths : [];
+  if (data.verdict === 'completo' && !warnings.length && !strengths.length) {
     $('reviewResult').innerHTML = '<div class="notice" style="border-left-color:var(--green)">✓ El presupuesto parece completo para este tipo de obra.</div>';
     return;
   }
   $('reviewResult').innerHTML = `
+    ${strengths.length ? `<div class="notice" style="border-left-color:var(--green)"><strong>✓ Puntos fuertes:</strong><br>${strengths.map(escapeHtml).join('<br>')}</div>` : ''}
     ${missing.length ? `
       <div class="notice" style="border-left-color:var(--red)"><strong>Posibles partidas olvidadas (${missing.length}):</strong></div>
       <table class="tbl" style="margin-bottom:10px">${missing.map((m, i) => `
@@ -1056,6 +1058,156 @@ async function generarMemoria() {
   }
 }
 window.generarMemoria = generarMemoria;
+
+// ── Informe de revisión y recomendación (descargable en Word) ───────────
+// Combina "Revisar (anti-pérdidas)" y "Comparar con mercado" en un único
+// documento. No hace una tercera llamada a la IA: es una síntesis de lo
+// que ya devuelven review.js y benchmark.js.
+
+async function generarInforme() {
+  const btn = $('informeBtn');
+  btn.disabled = true; btn.textContent = 'Generando…';
+  try {
+    await saveProject(false);
+    const e = economics || {};
+    const m2 = Number($('fM2').value) || 0;
+    const body = { project: collectForm() };
+
+    const [reviewRes, benchRes] = await Promise.all([
+      (project.items || []).length
+        ? api('review', { method: 'POST', body }).catch((err) => ({ error: err.message }))
+        : Promise.resolve(null),
+      (m2 && e.suggestedPrice)
+        ? api('benchmark', {
+            method: 'POST',
+            body: {
+              tipo: $('fMode').value === 'amueblar' ? 'amueblar' : $('fTipo').value,
+              region: $('fRegion').value,
+              calidad: $('fCalidad').value,
+              m2,
+              pvp: e.suggestedPrice,
+            },
+          }).catch((err) => ({ error: err.message }))
+        : Promise.resolve(null),
+    ]);
+
+    const html = buildInformeHtml({ p: project, e, review: reviewRes, bench: benchRes });
+    mostrarInforme(html);
+  } catch (err) {
+    toast('Error generando el informe: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '📄 Informe IA';
+  }
+}
+window.generarInforme = generarInforme;
+
+function buildInformeHtml({ p, e, review, bench }) {
+  const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+  const items = p.items || [];
+
+  const itemsRows = items.map((it) => `
+    <tr>
+      <td>${escapeHtml(it.name)}</td>
+      <td style="text-align:right">${it.quantity} ${escapeHtml(it.unit || 'ud')}</td>
+      <td style="text-align:right">${fmtMoney(it.unitPrice)}</td>
+      <td style="text-align:right">${fmtMoney(it.totalPrice)}</td>
+    </tr>`).join('');
+
+  const strengths = review && Array.isArray(review.strengths) ? review.strengths : [];
+  const missing = review && Array.isArray(review.missing) ? review.missing : [];
+  const warnings = review && Array.isArray(review.warnings) ? review.warnings : [];
+  const reviewError = review && review.error ? review.error : (items.length ? null : 'El proyecto no tiene partidas todavía.');
+
+  const missingRows = missing.map((m) => `
+    <tr>
+      <td>${escapeHtml(m.name)}<br><span style="font-size:10px;color:#5b6472">${escapeHtml(m.reason || '')}</span></td>
+      <td style="text-align:right">${m.quantity} ${escapeHtml(m.unit || 'ud')}</td>
+      <td style="text-align:right">${fmtMoney(m.unitPrice)}</td>
+    </tr>`).join('');
+
+  const market = bench && bench.market ? bench.market : null;
+  const benchError = bench && bench.error ? bench.error : (!bench ? 'No se pudo comparar con mercado (falta m² o PVP calculado).' : null);
+  const verdictLabel = market ? (market.verdict === 'bajo' ? 'Por debajo de mercado' : market.verdict === 'alto' ? 'Por encima de mercado' : 'Competitivo') : '';
+
+  return `
+    <h1 style="font-family:Georgia,serif">Informe de revisión y recomendación</h1>
+    <p><strong>${escapeHtml(p.clientName || 'Proyecto')}</strong> — ${escapeHtml(p.ref || p.id || '')}<br>
+    ${escapeHtml(p.tipo || '')} · ${p.m2 || '?'} m² · ${p.region === 'madrid' ? 'Madrid' : 'Tenerife'}<br>
+    Fecha: ${fecha}</p>
+
+    <h2>Resumen económico</h2>
+    <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">
+      <tr><td>Coste de materiales</td><td style="text-align:right">${fmtMoney(e.materialsCost)}</td></tr>
+      <tr><td>Mano de obra</td><td style="text-align:right">${fmtMoney(e.laborCost)}</td></tr>
+      <tr><td>Coste interno total</td><td style="text-align:right">${fmtMoney(e.internalCost)}</td></tr>
+      <tr><td><strong>PVP sugerido (sin impuestos)</strong></td><td style="text-align:right"><strong>${fmtMoney(e.suggestedPrice)}</strong></td></tr>
+      <tr><td>IGIC/IVA (${fmtPct(e.taxPct)})</td><td style="text-align:right">${fmtMoney(e.taxAmount)}</td></tr>
+      <tr><td><strong>PVP con IGIC/IVA</strong></td><td style="text-align:right"><strong>${fmtMoney(e.suggestedPriceWithTax)}</strong></td></tr>
+    </table>
+
+    <h2>Puntos fuertes</h2>
+    ${strengths.length ? `<ul>${strengths.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : `<p>${escapeHtml(reviewError || 'Sin puntos destacados detectados.')}</p>`}
+
+    <h2>Posibles partidas olvidadas</h2>
+    ${missing.length ? `
+      <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">
+        <tr><th>Partida</th><th>Cantidad</th><th>Precio orientativo</th></tr>
+        ${missingRows}
+      </table>` : `<p>${escapeHtml(reviewError || 'No se han detectado huecos relevantes.')}</p>`}
+
+    <h2>Avisos</h2>
+    ${warnings.length ? `<ul>${warnings.map((w) => `<li>${escapeHtml(w)}</li>`).join('')}</ul>` : '<p>Sin avisos.</p>'}
+
+    <h2>Comparativa con el mercado</h2>
+    ${market ? `
+      <p>Tu PVP: <strong>${fmtMoney(bench.pvpPerM2)}/m²</strong> — <strong>${verdictLabel}</strong></p>
+      <p>Rango de mercado: ${fmtMoney(market.low)} – ${fmtMoney(market.typical)} (típico) – ${fmtMoney(market.high)} €/m²</p>
+      <p>${escapeHtml(market.analysis || '')}</p>
+    ` : `<p>${escapeHtml(benchError)}</p>`}
+
+    <h2>Partidas del presupuesto</h2>
+    <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">
+      <tr><th>Concepto</th><th>Cantidad</th><th>Precio ud.</th><th>Total</th></tr>
+      ${itemsRows || '<tr><td colspan="4">Sin partidas</td></tr>'}
+    </table>
+  `;
+}
+
+function mostrarInforme(bodyHtml) {
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `
+    <div class="modal" style="max-width:760px;max-height:85vh;overflow:auto">
+      <div class="modal-head"><div class="t">Informe de revisión y recomendación</div><div class="s">Revisa el contenido antes de descargarlo — combina "Revisar" y "Comparar con mercado"</div></div>
+      <div class="modal-body">
+        <div id="informeBody" style="font-size:12.5px;line-height:1.6">${bodyHtml}</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-sec" id="informeClose">Cerrar</button>
+        <button class="btn btn-pri" id="informeWord">Descargar Word</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener('click', (ev) => { if (ev.target === wrap) wrap.remove(); });
+  wrap.querySelector('#informeClose').addEventListener('click', () => wrap.remove());
+  wrap.querySelector('#informeWord').addEventListener('click', () => descargarInformeWord(bodyHtml));
+}
+
+// Mismo truco "HTML como .doc" que usa propuesta-reforma/plantilla.html
+// (guardarWord): Word abre un Blob application/msword con HTML dentro
+// como si fuera un documento real. No es OOXML, pero se abre y edita
+// perfectamente en Word/LibreOffice, sin depender de librerías backend.
+function descargarInformeWord(bodyHtml) {
+  const doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Informe</title></head>' +
+    '<body style="font-family:Calibri,Arial,sans-serif;font-size:11pt">' + bodyHtml + '</body></html>';
+  const blob = new Blob([doc], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'informe-' + (project.ref || project.id || 'presupuesto') + '.doc';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 // ── Bootstrap ────────────────────────────────────────────────────────────
 window.BT.initAuth(load);

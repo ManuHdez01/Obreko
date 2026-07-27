@@ -9,7 +9,8 @@
 // Respuesta:
 //   { verdict: "completo"|"faltan-partidas",
 //     missing: [{ name, reason, unit, unitPrice, quantity }],
-//     warnings: ["..."] }
+//     warnings: ["..."],
+//     strengths: ["..."] }
 
 import { verifySession } from './_auth.js';
 
@@ -45,8 +46,13 @@ const REVIEW_TOOL = {
         items: { type: 'string' },
         description: 'Avisos sobre partidas existentes: cantidades que no cuadran con los m², precios fuera de rango, duplicados...',
       },
+      strengths: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Aspectos positivos concretos del presupuesto tal como está (partidas bien dimensionadas, precios coherentes con la región, buena cobertura de capítulos...). Vacío si no hay nada destacable.',
+      },
     },
-    required: ['verdict', 'missing', 'warnings'],
+    required: ['verdict', 'missing', 'warnings', 'strengths'],
     additionalProperties: false,
   },
 };
@@ -85,6 +91,7 @@ ${itemsTxt}
 Detecta:
 1. Partidas que FALTAN y casi siempre hacen falta en este tipo de obra (ej.: demolición/retirada previa, gestión de escombros y tasas de vertedero, ayudas de albañilería a instalaciones, protecciones de zonas no afectadas, limpieza final de obra, medios auxiliares, legalizaciones/boletines, pequeño material). Solo las relevantes para ESTE proyecto, con precio orientativo para la región.
 2. Avisos sobre lo existente: cantidades incoherentes con los m², precios claramente fuera de mercado, posibles duplicados.
+3. Puntos fuertes: qué está bien planteado tal como está (partidas bien dimensionadas, precios coherentes, buena cobertura de capítulos). No inventes elogios genéricos, solo lo que observes de verdad en las partidas.
 
 Sé concreto y no infles: si el presupuesto está razonablemente completo, dilo (verdict "completo"). Usa return_review.`;
 
@@ -125,6 +132,7 @@ Sé concreto y no infles: si el presupuesto está razonablemente completo, dilo 
     verdict: input.verdict === 'completo' ? 'completo' : 'faltan-partidas',
     missing: Array.isArray(input.missing) ? input.missing : [],
     warnings: Array.isArray(input.warnings) ? input.warnings : [],
+    strengths: Array.isArray(input.strengths) ? input.strengths : [],
   });
 }
 
