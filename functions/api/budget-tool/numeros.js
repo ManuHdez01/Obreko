@@ -1,25 +1,39 @@
 // GET /api/budget-tool/numeros?months=6
 //
-// Panel de control financiero "Números": trae y agrega toda la contabilidad
-// disponible en Holded (Pronexo Hábitat) — ventas, compras/gastos por grupo
-// contable, tesorería, cobros y pagos pendientes — y calcula los ratios
-// principales del negocio.
+// Panel de control financiero "Números": ingresos y gastos calculados a
+// partir de los ASIENTOS CONTABLES de Holded (accounting/ledger-entries)
+// — es decir, la misma fuente de la que sale el informe de Pérdidas y
+// Ganancias en Holded, no una reconstrucción a partir de documentos de
+// compra/venta sueltos.
 //
-// Aviso importante (transparencia): las nóminas (grupo contable 64) NO están
-// incluidas. Holded las gestiona por el módulo de RRHH, no por "Compras", y
-// ese módulo no está expuesto en la API pública de la misma forma. Los
-// ratios de margen/runway están marcados como "aproximados" por este motivo.
+// Por qué el cambio: los documentos de "Compras" en Holded no siempre
+// llevan cuenta contable asignada en el día a día (eso lo categoriza la
+// gestoría al contabilizar), así que intentar clasificar gastos a partir
+// de esos documentos dejaba una parte grande sin clasificar. El libro
+// mayor sí refleja la contabilidad definitiva: cada línea ya tiene su
+// cuenta correcta.
+//
+// Criterio contable: grupo 6x (60-69) = gastos, crecen por el DEBE.
+// Grupo 7x (70-79) = ingresos, crecen por el HABER. Documentos (facturas/
+// compras) solo se usan aparte para pendientes de cobro/pago y rankings
+// de cliente/proveedor — datos que no viven en el libro mayor.
+//
+// Aviso importante (transparencia): las nóminas (grupo contable 64) solo
+// aparecerán aquí si están contabilizadas por asiento; si Holded las
+// gestiona únicamente desde el módulo de RRHH sin asiento contable
+// espejo, no se reflejarán y el resultado será optimista en esa medida.
 
 import { verifySession } from './_auth.js';
 
 const HOLDED_BASE = 'https://api.holded.com/api/v2';
 
-// Grupos del plan general contable español relevantes en "Compras"/gastos.
 const GROUP_LABELS = {
   60: 'Compras (materiales)',
   61: 'Variación de existencias',
   62: 'Servicios exteriores',
+  64: 'Gastos de personal',
   65: 'Otras pérdidas de gestión',
+  66: 'Gastos financieros',
   67: 'Gastos excepcionales',
   68: 'Amortizaciones',
   69: 'Deterioros y provisiones',
@@ -38,119 +52,104 @@ export async function onRequestGet({ request, env }) {
 
   const now = new Date();
   const from = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+  const startDate = from.toISOString().slice(0, 10);
+  const endDate = now.toISOString().slice(0, 10);
 
-  let accounts, purchases, invoices, treasury;
+  let ledgerEntries, accounts, invoices, purchases, treasury;
   try {
-    [accounts, purchases, invoices, treasury] = await Promise.all([
+    [ledgerEntries, accounts, invoices, purchases, treasury] = await Promise.all([
+      holdedFetchAll(env, 'accounting/ledger-entries', { start_date: startDate, end_date: endDate, limit: '200' }),
       holdedFetchAll(env, 'expenses-accounts'),
-      holdedFetchAll(env, 'purchases'),
       holdedFetchAll(env, 'invoices'),
+      holdedFetchAll(env, 'purchases'),
       holdedFetchAll(env, 'treasury/accounts'),
     ]);
   } catch (e) {
     return json({ error: 'Error consultando la API de Holded: ' + e.message }, 502);
   }
 
-  const accountMap = new Map(accounts.map((a) => [a.id, a]));
+  const accountNameByNum = new Map(accounts.map((a) => [a.account_num, a.name]));
   const monthKeys = buildMonthKeys(from, now);
 
-  // ---------- Ingresos ----------
+  // ---------- Pérdidas y Ganancias (libro mayor) ----------
   const revenueByMonth = new Map(monthKeys.map((m) => [m, 0]));
-  const revenueByClient = new Map();
+  const expensesByMonth = new Map(monthKeys.map((m) => [m, 0]));
+  const expensesByGroup = new Map();
+  const indirectByMonth = new Map(monthKeys.map((m) => [m, 0]));
+  const indirectByAccount = new Map();
+
   let revenueTotal = 0;
+  let expensesTotal = 0;
+  let indirectTotal = 0;
+  let entriesScanned = 0;
+
+  for (const e of ledgerEntries) {
+    const d = e.date ? new Date(e.date) : null;
+    if (!d || isNaN(d)) continue;
+    entriesScanned++;
+    const key = monthKey(d);
+    // Ojo: a diferencia de facturas/compras (formato español "1.234,56"),
+    // el libro mayor usa formato estándar con punto decimal ("100.00").
+    const debit = parseNum(e.debit);
+    const credit = parseNum(e.credit);
+    const group = String(e.account).slice(0, 2);
+
+    if (group >= '70' && group <= '79') {
+      const net = credit - debit;
+      revenueTotal += net;
+      revenueByMonth.set(key, (revenueByMonth.get(key) || 0) + net);
+    } else if (group >= '60' && group <= '69') {
+      const net = debit - credit;
+      expensesTotal += net;
+      expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + net);
+
+      const gCur = expensesByGroup.get(group) || { group, label: GROUP_LABELS[group] || `Grupo ${group}`, total: 0 };
+      gCur.total += net;
+      expensesByGroup.set(group, gCur);
+
+      if (group === '62') {
+        indirectByMonth.set(key, (indirectByMonth.get(key) || 0) + net);
+        indirectTotal += net;
+        const cur = indirectByAccount.get(e.account) || { account_num: e.account, name: accountNameByNum.get(e.account) || null, total: 0 };
+        cur.total += net;
+        indirectByAccount.set(e.account, cur);
+      }
+    }
+  }
+
+  // ---------- Documentos: solo pendientes de cobro/pago y rankings ----------
+  // Las cifras "oficiales" de ingresos/gastos son las del libro mayor de
+  // arriba. Esto es complementario — cliente/proveedor y lo pendiente de
+  // cobrar/pagar no viven en el libro mayor, solo en las facturas/compras.
   let invoiceCount = 0;
   let pendingCollection = 0;
-
+  const revenueByClient = new Map();
   for (const doc of invoices) {
     const d = doc.date ? new Date(doc.date) : null;
     if (!d || isNaN(d) || d < from || d > now) continue;
     invoiceCount++;
-    const key = monthKey(d);
-    const amount = parseEsNum(doc.subtotal);
-
-    revenueByMonth.set(key, (revenueByMonth.get(key) || 0) + amount);
-    revenueTotal += amount;
     pendingCollection += parseEsNum(doc.payments_pending);
-
     const clientName = doc.contact_name || '(sin nombre)';
-    revenueByClient.set(clientName, (revenueByClient.get(clientName) || 0) + amount);
+    revenueByClient.set(clientName, (revenueByClient.get(clientName) || 0) + parseEsNum(doc.subtotal));
   }
 
-  // ---------- Gastos ----------
-  // "Gastos" = ÚNICAMENTE el grupo contable 62 (servicios exteriores).
-  // Se probó a clasificar "todo lo comprado menos materiales", pero en la
-  // práctica la mayoría de compras del día a día (materiales, proveedores
-  // puntuales) se registran en Holded SIN cuenta contable asignada — eso
-  // lo categoriza la gestoría a posteriori — así que ese gasto sin
-  // clasificar acababa contándose igualmente como "estructural" sin
-  // ninguna garantía de que lo fuera. El grupo 62 es la única categoría
-  // que sí se registra de forma consistente (gastos recurrentes: alquiler,
-  // seguros, profesionales, suministros...), así que es la única base
-  // fiable para "gastos estructurales" / margen / runway.
-  //
-  // expensesByGroup se conserva como desglose informativo de TODO lo
-  // comprado (incluidos materiales y líneas sin cuenta), para quien quiera
-  // ver el panorama completo — pero no entra en el KPI principal.
-  const expensesByGroup = new Map();
-  const expensesBySupplier = new Map();
-  const indirectByMonth = new Map(monthKeys.map((m) => [m, 0]));
-  const indirectByAccount = new Map();
-
-  let indirectTotal = 0;
   let documentsScanned = 0;
-  let linesUnmatched = 0;
   let pendingPayment = 0;
-
+  const expensesBySupplier = new Map();
   for (const doc of purchases) {
     const d = doc.date ? new Date(doc.date) : null;
     if (!d || isNaN(d) || d < from || d > now) continue;
     documentsScanned++;
-    const key = monthKey(d);
     pendingPayment += parseEsNum(doc.payments_pending);
-
     let docTotal = 0;
     for (const line of doc.lines || []) {
-      const acc = accountMap.get(line.account);
-      const amount = parseEsNum(line.price) * parseEsNum(line.units != null ? line.units : 1) * (1 - parseEsNum(line.discount) / 100);
-      docTotal += amount;
-
-      if (!acc) {
-        // Sin cuenta reconocida: no cuenta para ningún grupo (ni para
-        // "estructural") — solo se registra en linesUnmatched para que
-        // se pueda revisar cuánto gasto queda sin categorizar en Holded.
-        linesUnmatched++;
-        continue;
-      }
-
-      const group = String(acc.account_num).slice(0, 2);
-
-      const gCur = expensesByGroup.get(group) || { group, label: GROUP_LABELS[group] || `Grupo ${group}`, total: 0 };
-      gCur.total += amount;
-      expensesByGroup.set(group, gCur);
-
-      if (group === '62') {
-        indirectByMonth.set(key, (indirectByMonth.get(key) || 0) + amount);
-        indirectTotal += amount;
-        const cur = indirectByAccount.get(acc.account_num) || { account_num: acc.account_num, name: acc.name, total: 0 };
-        cur.total += amount;
-        indirectByAccount.set(acc.account_num, cur);
-      }
+      docTotal += parseEsNum(line.price) * parseEsNum(line.units != null ? line.units : 1) * (1 - parseEsNum(line.discount) / 100);
     }
-
-    // El ranking "por proveedor" sí refleja el gasto real total pagado a
-    // cada uno (todos los grupos, incluso sin cuenta) — útil para negociar
-    // volumen, independientemente de qué cuente como "estructural".
     const supplierName = doc.contact_name || '(sin nombre)';
     expensesBySupplier.set(supplierName, (expensesBySupplier.get(supplierName) || 0) + docTotal);
   }
 
-  // "Gastos" del resto de la función = grupo 62 (ver nota arriba).
-  const expensesTotal = indirectTotal;
-  const expensesByMonth = indirectByMonth;
-
   // ---------- Tesorería ----------
-  // El saldo de tesorería viene en formato estándar (punto decimal), a
-  // diferencia de los importes de facturas/compras (formato español).
   const cashAccounts = (treasury || []).map((t) => ({
     name: t.name,
     balance: round2(Number(t.balance) || 0),
@@ -160,7 +159,6 @@ export async function onRequestGet({ request, env }) {
   // ---------- Ratios principales ----------
   const avgMonthlyExpenses = months > 0 ? expensesTotal / months : 0;
   const topClient = topOf(revenueByClient);
-  const topSupplier = topOf(expensesBySupplier);
 
   const ratios = {
     grossMarginPct: revenueTotal > 0 ? round2(((revenueTotal - expensesTotal) / revenueTotal) * 100) : null,
@@ -178,7 +176,7 @@ export async function onRequestGet({ request, env }) {
       .slice(0, limit || 8);
 
   return json({
-    period: { from: from.toISOString().slice(0, 10), to: now.toISOString().slice(0, 10), months },
+    period: { from: startDate, to: endDate, months },
     revenue: {
       total: round2(revenueTotal),
       invoiceCount,
@@ -205,9 +203,9 @@ export async function onRequestGet({ request, env }) {
     },
     cash: { total: cashTotal, byAccount: cashAccounts },
     ratios,
-    note: 'Los ratios de margen y runway son aproximados: excluyen nóminas (grupo contable 64), que Holded gestiona por RRHH y no está disponible vía la API de Compras. "Gastos" equivale únicamente al grupo contable 62 (servicios exteriores): es la única categoría de compras que se registra con cuenta contable de forma consistente en Holded — el resto (materiales, proveedores puntuales) suele anotarse sin cuenta asignada, así que no se puede clasificar de forma fiable y se deja fuera del KPI. "Resultado aprox." tampoco descuenta esas compras sin categorizar, así que no equivale al beneficio neto real. El desglose "por grupo contable" sí muestra todo lo comprado que tenga cuenta asignada, solo a título informativo.',
+    note: 'Ingresos y gastos calculados a partir de los asientos contables de Holded (Pérdidas y Ganancias): grupo 7x = ingresos, grupo 6x = gastos — la contabilidad definitiva, no una reconstrucción a partir de documentos sueltos. Puede haber un pequeño desfase si algún documento reciente aún no se ha contabilizado. Las nóminas (grupo 64) solo aparecen si están contabilizadas por asiento contable; si Holded las gestiona solo desde RRHH sin asiento espejo, no se reflejan aquí.',
+    entriesScanned,
     documentsScanned,
-    linesUnmatched,
     generatedAt: new Date().toISOString(),
   });
 }
@@ -220,11 +218,13 @@ function topOf(map) {
   return best;
 }
 
-async function holdedFetchAll(env, path) {
+async function holdedFetchAll(env, path, extraParams) {
   let items = [];
   let cursor = null;
   for (let i = 0; i < 20; i++) {
-    const qs = cursor ? `?cursor=${encodeURIComponent(cursor)}` : '';
+    const params = new URLSearchParams(extraParams || {});
+    if (cursor) params.set('cursor', cursor);
+    const qs = params.toString() ? '?' + params.toString() : '';
     const r = await fetch(`${HOLDED_BASE}/${path}${qs}`, {
       headers: { Authorization: `Bearer ${env.HOLDED_API_KEY}`, Accept: 'application/json' },
     });
@@ -251,12 +251,18 @@ function monthKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-// Los importes de Holded vienen en formato español: "1.234,56"
+// Facturas/compras vienen en formato español: "1.234,56"
 function parseEsNum(v) {
   if (v == null) return 0;
   const s = String(v).trim();
   if (!s) return 0;
   const n = Number(s.replace(/\./g, '').replace(',', '.'));
+  return isFinite(n) ? n : 0;
+}
+
+// El libro mayor (debit/credit) viene en formato estándar: "100.00"
+function parseNum(v) {
+  const n = Number(v);
   return isFinite(n) ? n : 0;
 }
 

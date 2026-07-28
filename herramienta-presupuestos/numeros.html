@@ -242,8 +242,8 @@ async function loadNumeros() {
 
     $('kpiRow').innerHTML = `
       <div class="summary-card"><div class="summary-label">Ingresos (${d.period.months} meses)</div><div class="summary-value">${fmtMoney(d.revenue.total)}</div><div class="summary-extra">${d.revenue.invoiceCount} facturas</div></div>
-      <div class="summary-card"><div class="summary-label">Gastos estructurales</div><div class="summary-value">${fmtMoney(d.expenses.total)}</div><div class="summary-extra">${d.expenses.documentCount} documentos · solo grupo 62</div></div>
-      <div class="summary-card"><div class="summary-label">Resultado aprox.</div><div class="summary-value" style="color:${resultado >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtMoney(resultado)}</div><div class="summary-extra">margen ${fmtRatio(d.ratios.grossMarginPct, ' %')} · sin descontar compras sin categorizar</div></div>
+      <div class="summary-card"><div class="summary-label">Gastos</div><div class="summary-value">${fmtMoney(d.expenses.total)}</div><div class="summary-extra">según libro mayor (Pérdidas y Ganancias)</div></div>
+      <div class="summary-card"><div class="summary-label">Resultado aprox.</div><div class="summary-value" style="color:${resultado >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtMoney(resultado)}</div><div class="summary-extra">margen ${fmtRatio(d.ratios.grossMarginPct, ' %')}</div></div>
       <div class="summary-card"><div class="summary-label">Saldo en bancos</div><div class="summary-value">${fmtMoney(d.cash.total)}</div><div class="summary-extra">${d.cash.byAccount.map((a) => escapeHtml(a.name)).join(', ') || '—'}</div></div>
       <div class="summary-card"><div class="summary-label">Runway de caja</div><div class="summary-value">${fmtRatio(d.ratios.cashRunwayMonths, ' meses')}</div><div class="summary-extra">al ritmo de gasto actual</div></div>
       <div class="summary-card"><div class="summary-label">Ticket medio</div><div class="summary-value">${fmtMoney(d.ratios.avgInvoiceTicket || 0)}</div><div class="summary-extra">por factura</div></div>
@@ -255,13 +255,13 @@ async function loadNumeros() {
     body.innerHTML = '';
 
     addCard(body, 'Ingresos por mes').appendChild(renderLineChart(d.revenue.byMonth, '#5C7CD9'));
-    addCard(body, 'Gastos estructurales por mes', 'Grupo contable 62 (servicios exteriores) — la única categoría de compras que se registra con cuenta asignada de forma consistente en Holded. No incluye nóminas.').appendChild(renderLineChart(d.expenses.byMonth, '#1A2236'));
-    addCard(body, 'Resultado por mes', 'Ingresos − gastos estructurales (grupo 62). Aproximado: no incluye nóminas ni compras sin categorizar.').appendChild(renderDivergingChart(d.revenue.byMonth.map((r, i) => ({ month: r.month, total: r.total - (d.expenses.byMonth[i] ? d.expenses.byMonth[i].total : 0) }))));
+    addCard(body, 'Gastos por mes', 'Grupo contable 6x (compras y gastos) según el libro mayor de Holded — la contabilidad definitiva, igual que en Pérdidas y Ganancias. Incluye materiales cuando la gestoría los ha contabilizado.').appendChild(renderLineChart(d.expenses.byMonth, '#1A2236'));
+    addCard(body, 'Resultado por mes', 'Ingresos (grupo 7x) − gastos (grupo 6x), según el libro mayor.').appendChild(renderDivergingChart(d.revenue.byMonth.map((r, i) => ({ month: r.month, total: r.total - (d.expenses.byMonth[i] ? d.expenses.byMonth[i].total : 0) }))));
 
-    addCard(body, 'Gastos por grupo contable', 'Todo lo comprado en Holded que tiene cuenta contable asignada, agrupado por partida del plan contable — solo informativo, no entra en "Gastos estructurales" de arriba salvo el grupo 62.')
+    addCard(body, 'Gastos por grupo contable', 'Desglose del gasto total (grupo 6x) por partida del plan contable, según el libro mayor.')
       .appendChild(renderRankedBars(d.expenses.byGroup.map((g) => ({ name: g.label, total: g.total, sub: 'grupo ' + g.group })), { emptyMsg: 'Sin gastos en este periodo.', noFold: true }));
 
-    addCard(body, 'Gastos indirectos por mes', 'Servicios exteriores (grupo 62): alquiler, seguros, profesionales, suministros, publicidad… No incluye materiales de proyecto ni nóminas.').appendChild(renderLineChart(d.indirectExpenses.byMonth, '#5C7CD9'));
+    addCard(body, 'Gastos indirectos por mes', 'Servicios exteriores (grupo 62): alquiler, seguros, profesionales, suministros, publicidad…').appendChild(renderLineChart(d.indirectExpenses.byMonth, '#5C7CD9'));
     addCard(body, 'Desglose de gastos indirectos por cuenta').appendChild(renderRankedBars(d.indirectExpenses.byAccount, { emptyMsg: 'Sin gastos indirectos en este periodo.' }));
 
     addCard(body, 'Principales clientes', 'Por facturación en el periodo.').appendChild(renderRankedBars(d.revenue.byClient, { emptyMsg: 'Sin facturas en este periodo.', maxRows: 8, noFold: true }));
@@ -269,7 +269,7 @@ async function loadNumeros() {
 
     const noteCard = document.createElement('div');
     noteCard.className = 'note';
-    noteCard.textContent = `${d.note} · ${d.documentsScanned} documentos de compra y ${d.revenue.invoiceCount} facturas de venta analizados en el periodo${d.linesUnmatched ? `, ${d.linesUnmatched} línea(s) de gasto sin cuenta reconocida` : ''}.`;
+    noteCard.textContent = `${d.note} · ${d.entriesScanned} apuntes contables, ${d.documentsScanned} documentos de compra y ${d.revenue.invoiceCount} facturas de venta analizados en el periodo.`;
     body.appendChild(noteCard);
   } catch (e) {
     $('numerosBody').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
