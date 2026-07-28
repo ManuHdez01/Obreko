@@ -83,9 +83,20 @@ export async function onRequestGet({ request, env }) {
   let indirectTotal = 0;
   let entriesScanned = 0;
 
+  // Deduplicar por (entry_number, line): protección por si la paginación
+  // cursor repitiera alguna página (algunas APIs devuelven de nuevo el
+  // último elemento de la página anterior al pedir la siguiente).
+  const seenLines = new Set();
+
   for (const e of ledgerEntries) {
+    const lineKey = e.entry_number + ':' + e.line;
+    if (seenLines.has(lineKey)) continue;
+    seenLines.add(lineKey);
+
     const d = e.date ? new Date(e.date) : null;
-    if (!d || isNaN(d)) continue;
+    // Filtro de fecha por si acaso start_date/end_date no lo hiciera bien
+    // en el servidor (red de seguridad, igual que en facturas/compras).
+    if (!d || isNaN(d) || d < from || d > now) continue;
     entriesScanned++;
     const key = monthKey(d);
     // Ojo: a diferencia de facturas/compras (formato español "1.234,56"),
@@ -205,6 +216,7 @@ export async function onRequestGet({ request, env }) {
     ratios,
     note: 'Ingresos y gastos calculados a partir de los asientos contables de Holded (Pérdidas y Ganancias): grupo 7x = ingresos, grupo 6x = gastos — la contabilidad definitiva, no una reconstrucción a partir de documentos sueltos. Puede haber un pequeño desfase si algún documento reciente aún no se ha contabilizado. Las nóminas (grupo 64) solo aparecen si están contabilizadas por asiento contable; si Holded las gestiona solo desde RRHH sin asiento espejo, no se reflejan aquí.',
     entriesScanned,
+    entriesFetched: ledgerEntries.length, // diagnóstico: si es mucho mayor que entriesScanned, hay duplicados o fuga de fechas
     documentsScanned,
     generatedAt: new Date().toISOString(),
   });
