@@ -250,6 +250,40 @@ function ratioRow(label, value, suffix) {
   return `<div class="pnl-row"><span>${escapeHtml(label)}</span><span>${fmtRatio(value, suffix)}</span></div>`;
 }
 
+// Desglose por "tipo" de ingreso/gasto: las líneas numeradas de nivel 0 del
+// PyG (1. Importe neto..., 6. Gastos de personal..., 7. Otros gastos...) tal
+// cual las trae Holded, sin desglosar por mes (el Excel no trae eso).
+function computePygBreakdown(rows) {
+  const ingresos = [], gastos = [];
+  rows.forEach((r) => {
+    if (r.level !== 0 || !/^\d{1,2}\.\s/.test(r.label)) return;
+    const item = { name: r.label.replace(/^\d{1,2}\.\s*/, ''), total: Math.abs(r.total) };
+    (r.total >= 0 ? ingresos : gastos).push(item);
+  });
+  ingresos.sort((a, b) => b.total - a.total);
+  gastos.sort((a, b) => b.total - a.total);
+  return { ingresos, gastos };
+}
+
+function renderBars(items, color) {
+  const wrap = document.createElement('div');
+  if (!items.length) {
+    wrap.innerHTML = '<div class="state">Sin datos.</div>';
+    return wrap;
+  }
+  const max = Math.max(...items.map((r) => r.total), 1);
+  items.forEach((r) => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="lbl" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (r.total / max) * 100)}%;background:${color}"></div></div>
+      <div class="val">${fmtMoney(r.total)}</div>`;
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
 async function loadManualNumeros() {
   const body = $('manualBody');
   const kpiRow = $('manualKpiRow');
@@ -292,6 +326,12 @@ async function loadManualNumeros() {
       wrap.className = 'pnl-table';
       wrap.innerHTML = ratioRows.join('');
       card.appendChild(wrap);
+    }
+
+    if (pygK) {
+      const breakdown = computePygBreakdown(d.pyg.rows);
+      addCard(body, 'Ingresos por tipo', 'Líneas del PyG con importe positivo.').appendChild(renderBars(breakdown.ingresos, '#5C7CD9'));
+      addCard(body, 'Gastos por tipo', 'Líneas del PyG con importe negativo.').appendChild(renderBars(breakdown.gastos, '#C62828'));
     }
 
     if (d.pyg) {
