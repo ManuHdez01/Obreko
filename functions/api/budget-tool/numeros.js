@@ -55,18 +55,17 @@ export async function onRequestGet({ request, env }) {
   const startDate = from.toISOString().slice(0, 10);
   const endDate = now.toISOString().slice(0, 10);
 
-  let ledgerEntries, accounts, invoices, purchases, treasury;
+  // Todo el resto de la función va en un único try/catch — cualquier fallo
+  // (de red, de forma de datos inesperada, lo que sea) debe volver como un
+  // JSON con mensaje claro, nunca como un 502 en blanco sin explicación.
   try {
-    [ledgerEntries, accounts, invoices, purchases, treasury] = await Promise.all([
-      holdedFetchAll(env, 'accounting/ledger-entries', { start_date: startDate, end_date: endDate, limit: '200' }),
-      holdedFetchAll(env, 'expenses-accounts'),
-      holdedFetchAll(env, 'invoices'),
-      holdedFetchAll(env, 'purchases'),
-      holdedFetchAll(env, 'treasury/accounts'),
-    ]);
-  } catch (e) {
-    return json({ error: 'Error consultando la API de Holded: ' + e.message }, 502);
-  }
+  const [ledgerEntries, accounts, invoices, purchases, treasury] = await Promise.all([
+    holdedFetchAll(env, 'ledger-entries', { start_date: startDate, end_date: endDate, limit: '200' }),
+    holdedFetchAll(env, 'expenses-accounts'),
+    holdedFetchAll(env, 'invoices'),
+    holdedFetchAll(env, 'purchases'),
+    holdedFetchAll(env, 'treasury/accounts'),
+  ]);
 
   const accountNameByNum = new Map(accounts.map((a) => [a.account_num, a.name]));
   const monthKeys = buildMonthKeys(from, now);
@@ -220,6 +219,9 @@ export async function onRequestGet({ request, env }) {
     documentsScanned,
     generatedAt: new Date().toISOString(),
   });
+  } catch (e) {
+    return json({ error: 'Error consultando la API de Holded: ' + e.message }, 502);
+  }
 }
 
 function topOf(map) {
