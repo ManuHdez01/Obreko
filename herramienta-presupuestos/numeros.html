@@ -309,7 +309,7 @@ async function loadNumeros() {
 
     const noteCard = document.createElement('div');
     noteCard.className = 'note';
-    noteCard.textContent = `${d.note} · ${d.entriesScanned} apuntes contables, ${d.documentsScanned} documentos de compra y ${d.revenue.invoiceCount} facturas de venta analizados en el periodo.`;
+    noteCard.textContent = `${d.note} · ${d.entriesScanned} apuntes contables usados (de ${d.entriesFetched} recibidos de Holded), ${d.documentsScanned} documentos de compra y ${d.revenue.invoiceCount} facturas de venta analizados en el periodo.`;
     body.appendChild(noteCard);
   } catch (e) {
     $('numerosBody').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';

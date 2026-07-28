@@ -110,15 +110,7 @@ export async function onRequestGet({ request, env }) {
     let expensesTotal = 0;
     let entriesScanned = 0;
 
-    // Deduplicar por (entry_number, line): protección por si la paginación
-    // cursor repitiera alguna página.
-    const seenLines = new Set();
-
     for (const e of ledgerEntries) {
-      const lineKey = e.entry_number + ':' + e.line;
-      if (seenLines.has(lineKey)) continue;
-      seenLines.add(lineKey);
-
       const d = e.date ? new Date(e.date) : null;
       // Filtro de fecha por si acaso start_date/end_date no lo hiciera bien
       // en el servidor (red de seguridad, igual que en facturas/compras).
