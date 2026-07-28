@@ -103,134 +103,6 @@
 <script>
 const { $, escapeHtml, fmtMoney, api } = window.BT;
 
-const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-function fmtMonth(key) {
-  const [y, m] = key.split('-');
-  return MESES[Number(m) - 1] + ' ' + y.slice(2);
-}
-
-const CAT_COLORS = ['#5C7CD9', '#1a8c4a', '#8896B3', '#3d4868', '#B98900', '#7A5AC9'];
-
-function svgEl(tag, attrs) {
-  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (const k in attrs) el.setAttribute(k, attrs[k]);
-  return el;
-}
-
-// Gráfica de línea simple, un único valor por mes.
-function renderLineChart(points, color) {
-  const W = Math.max(480, points.length * 90);
-  const H = 160;
-  const padL = 54, padR = 16, padT = 16, padB = 30;
-  const plotW = W - padL - padR, plotH = H - padT - padB;
-
-  const max = Math.max(1, ...points.map((p) => p.total));
-  const x = (i) => padL + (points.length > 1 ? (i / (points.length - 1)) * plotW : plotW / 2);
-  const y = (v) => padT + plotH - (v / max) * plotH;
-
-  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: 'img' });
-
-  // Gridlines horizontales (4 franjas)
-  for (let i = 0; i <= 3; i++) {
-    const gy = padT + (plotH / 3) * i;
-    svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: gy, y2: gy, stroke: 'var(--chart-grid)', 'stroke-width': 1 }));
-    const val = max - (max / 3) * i;
-    const t = svgEl('text', { x: padL - 8, y: gy + 3, 'text-anchor': 'end', 'font-size': 9.5, fill: 'var(--chart-ink-muted)', 'font-family': 'var(--sans)' });
-    t.textContent = val >= 1000 ? Math.round(val / 1000) + 'k' : Math.round(val);
-    svg.appendChild(t);
-  }
-  // Eje base
-  svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: padT + plotH, y2: padT + plotH, stroke: 'var(--chart-axis)', 'stroke-width': 1 }));
-
-  // Área suave bajo la línea
-  const areaPath = ['M', x(0), padT + plotH].concat(points.flatMap((p, i) => ['L', x(i), y(p.total)])).concat(['L', x(points.length - 1), padT + plotH, 'Z']).join(' ');
-  svg.appendChild(svgEl('path', { d: areaPath, fill: color, opacity: 0.08 }));
-
-  // Línea
-  const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + ' ' + x(i) + ' ' + y(p.total)).join(' ');
-  svg.appendChild(svgEl('path', { d: linePath, fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
-
-  // Puntos + etiquetas de mes + tooltip nativo
-  points.forEach((p, i) => {
-    const c = svgEl('circle', { class: 'chart-pt', cx: x(i), cy: y(p.total), r: 4, fill: color });
-    c.appendChild(svgEl('title')).textContent = `${fmtMonth(p.month)}: ${fmtMoney(p.total)}`;
-    svg.appendChild(c);
-    const lbl = svgEl('text', { x: x(i), y: H - 6, 'text-anchor': 'middle', 'font-size': 9.5, fill: 'var(--chart-ink-muted)', 'font-family': 'var(--sans)' });
-    lbl.textContent = fmtMonth(p.month);
-    svg.appendChild(lbl);
-  });
-
-  const wrap = document.createElement('div');
-  wrap.className = 'chart-wrap';
-  wrap.appendChild(svg);
-  return wrap;
-}
-
-// Barras horizontales rankeadas — sirve para cuentas, clientes, proveedores
-// o grupos contables (items: [{name, total, sub?}]).
-function renderRankedBars(items, opts) {
-  opts = opts || {};
-  const wrap = document.createElement('div');
-  if (!items.length) {
-    wrap.innerHTML = `<div class="state">${opts.emptyMsg || 'Sin datos en este periodo.'}</div>`;
-    return wrap;
-  }
-  const MAX_ROWS = opts.maxRows || 6;
-  const top = items.slice(0, MAX_ROWS);
-  const rest = items.slice(MAX_ROWS);
-  const restTotal = rest.reduce((s, r) => s + r.total, 0);
-  const rows = restTotal > 0 && !opts.noFold ? top.concat([{ name: 'Otros', total: restTotal }]) : top;
-  const max = Math.max(...rows.map((r) => r.total), 1);
-
-  rows.forEach((r, i) => {
-    const row = document.createElement('div');
-    row.className = 'bar-row';
-    const color = CAT_COLORS[i % CAT_COLORS.length];
-    row.innerHTML = `
-      <div class="lbl" title="${escapeHtml(r.name)}${r.sub ? ' · ' + escapeHtml(r.sub) : ''}">${escapeHtml(r.name)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (r.total / max) * 100)}%;background:${color}"></div></div>
-      <div class="val">${fmtMoney(r.total)}</div>`;
-    wrap.appendChild(row);
-  });
-  return wrap;
-}
-
-// Gráfica de barras divergente: ingresos − gastos por mes, verde si es
-// positivo, rojo si es negativo, con línea base en cero.
-function renderDivergingChart(points) {
-  const W = Math.max(480, points.length * 90);
-  const H = 170;
-  const padL = 54, padR = 16, padT = 16, padB = 30;
-  const plotW = W - padL - padR, plotH = H - padT - padB;
-
-  const maxAbs = Math.max(1, ...points.map((p) => Math.abs(p.total)));
-  const zeroY = padT + plotH / 2;
-  const x = (i) => padL + (points.length > 1 ? (i / (points.length - 1)) * plotW : plotW / 2);
-  const barW = Math.min(34, (plotW / points.length) * 0.5);
-  const scale = (plotH / 2) / maxAbs;
-
-  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: 'img' });
-  svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: zeroY, y2: zeroY, stroke: 'var(--chart-axis)', 'stroke-width': 1 }));
-
-  points.forEach((p, i) => {
-    const h = Math.abs(p.total) * scale;
-    const positive = p.total >= 0;
-    const y = positive ? zeroY - h : zeroY;
-    const color = positive ? '#1a8c4a' : '#C62828';
-    const rect = svgEl('rect', { x: x(i) - barW / 2, y, width: barW, height: Math.max(1, h), rx: 3, fill: color });
-    rect.appendChild(svgEl('title')).textContent = `${fmtMonth(p.month)}: ${fmtMoney(p.total)}`;
-    svg.appendChild(rect);
-    const lbl = svgEl('text', { x: x(i), y: H - 6, 'text-anchor': 'middle', 'font-size': 9.5, fill: 'var(--chart-ink-muted)', 'font-family': 'var(--sans)' });
-    lbl.textContent = fmtMonth(p.month);
-    svg.appendChild(lbl);
-  });
-
-  const wrap = document.createElement('div');
-  wrap.className = 'chart-wrap';
-  wrap.appendChild(svg);
-  return wrap;
-}
-
 function fmtRatio(v, suffix) {
   return v == null ? '—' : v.toLocaleString('es-ES', { maximumFractionDigits: 1 }) + (suffix || '');
 }
@@ -239,26 +111,6 @@ function fmtRatio(v, suffix) {
 // informe de Pérdidas y Ganancias de Holded (modelo abreviado).
 function pnlRow(label, total, cls) {
   return `<div class="pnl-row ${cls}"><span>${escapeHtml(String(label))}</span><span class="${total < 0 ? 'neg' : ''}">${fmtMoney(total)}</span></div>`;
-}
-function renderPnL(d) {
-  const wrap = document.createElement('div');
-  wrap.className = 'pnl-table';
-  const rows = [];
-  (d.pnl || []).forEach((l) => {
-    rows.push(pnlRow(l.label, l.total, 'pnl-line'));
-    (l.subs || []).forEach((s) => {
-      if (s.label !== l.label) rows.push(pnlRow(s.label, s.total, 'pnl-sub'));
-      (s.accounts || []).forEach((a) => {
-        rows.push(pnlRow(`${a.account_num} - ${a.name || 'Sin nombre'}`, a.total, 'pnl-acc'));
-      });
-    });
-  });
-  rows.push(pnlRow('Resultado de explotación', d.resultadoExplotacion, 'pnl-subtotal'));
-  rows.push(pnlRow('Resultado financiero', d.resultadoFinanciero, 'pnl-subtotal'));
-  rows.push(pnlRow('Resultado antes de impuestos', d.resultadoAntesImpuestos, 'pnl-subtotal'));
-  rows.push(pnlRow('Resultado del ejercicio', d.resultadoEjercicio, 'pnl-total'));
-  wrap.innerHTML = rows.join('');
-  return wrap;
 }
 
 // ── Subida manual de Excel de Holded (Pérdidas y ganancias / Balance) ────
@@ -329,10 +181,20 @@ async function onManualFileSelected(input, type) {
 }
 window.onManualFileSelected = onManualFileSelected;
 
-// A partir de las filas tal cual las exporta Holded, calcula KPIs sin
-// reinterpretar nada: suma las líneas numeradas de nivel 0 (que son las
+function findRowTotal(rows, patterns) {
+  for (const p of patterns) {
+    const hit = rows.find((r) => p.test(r.label.trim()));
+    if (hit) return hit.total;
+  }
+  return null;
+}
+
+// A partir de las filas tal cual las exporta Holded, calcula KPIs y ratios
+// sin reinterpretar nada: suma las líneas numeradas de nivel 0 (que son las
 // líneas "reales" del PyG, no subtotales) — positivas como ingresos,
-// negativas como gastos — y usa "Resultado del ejercicio" si aparece.
+// negativas como gastos — y busca subtotales conocidos (Resultado del
+// ejercicio, Resultado de explotación, Gastos de personal...) tal cual los
+// etiqueta Holded para sacar los ratios.
 function computePygKPIs(rows) {
   let ingresos = 0, gastos = 0, resultado = null;
   rows.forEach((r) => {
@@ -346,27 +208,46 @@ function computePygKPIs(rows) {
   });
   if (resultado == null) resultado = ingresos - gastos;
   const margenPct = ingresos > 0 ? (resultado / ingresos) * 100 : null;
-  return { ingresos, gastos, resultado, margenPct };
+
+  const resultadoExplotacion = findRowTotal(rows, [/^resultado de explotaci/i]);
+  const gastosPersonal = findRowTotal(rows, [/^\d{1,2}\.\s*gastos de personal/i, /^gastos de personal$/i]);
+  const gastosExternos = findRowTotal(rows, [/^servicios exteriores$/i]);
+
+  return {
+    ingresos, gastos, resultado, margenPct,
+    margenExplotacionPct: resultadoExplotacion != null && ingresos > 0 ? (resultadoExplotacion / ingresos) * 100 : null,
+    pesoPersonalPct: gastosPersonal != null && ingresos > 0 ? (Math.abs(gastosPersonal) / ingresos) * 100 : null,
+    pesoExternosPct: gastosExternos != null && ingresos > 0 ? (Math.abs(gastosExternos) / ingresos) * 100 : null,
+  };
 }
 
-function findRowTotal(rows, patterns) {
-  for (const p of patterns) {
-    const hit = rows.find((r) => p.test(r.label.trim()));
-    if (hit) return hit.total;
-  }
-  return null;
-}
 function computeBalanceKPIs(rows) {
+  const totalActivo = findRowTotal(rows, [/^total\s*activo/i, /^total\s*general\s*activo/i]);
+  const totalPasivoYPN = findRowTotal(rows, [/^total\s*patrimonio\s*neto\s*y\s*pasivo/i]);
+  const patrimonioNeto = findRowTotal(rows, [/^total\s*patrimonio\s*neto$/i, /^a\)\s*patrimonio\s*neto/i]);
+  const activoCorriente = findRowTotal(rows, [/^total\s*activo\s*corriente/i, /^b\)\s*activo\s*corriente/i]);
+  const pasivoCorriente = findRowTotal(rows, [/^total\s*pasivo\s*corriente/i, /^c\)\s*pasivo\s*corriente/i]);
+  const totalPasivo = totalPasivoYPN != null && patrimonioNeto != null
+    ? totalPasivoYPN - patrimonioNeto
+    : findRowTotal(rows, [/^total\s*pasivo$/i]);
+
   return {
-    totalActivo: findRowTotal(rows, [/^total\s*activo/i, /^total\s*general\s*activo/i]),
-    totalPasivo: findRowTotal(rows, [/^total\s*patrimonio\s*neto\s*y\s*pasivo/i, /^total\s*pasivo/i]),
+    totalActivo,
+    totalPasivo: totalPasivoYPN != null ? totalPasivoYPN : totalActivo,
+    patrimonioNeto,
     tesoreria: findRowTotal(rows, [/^efectivo.*equivalentes/i, /^tesorer/i]),
+    liquidezRatio: activoCorriente != null && pasivoCorriente ? activoCorriente / pasivoCorriente : null,
+    fondoManiobra: activoCorriente != null && pasivoCorriente != null ? activoCorriente - pasivoCorriente : null,
+    endeudamientoRatio: totalPasivo != null && patrimonioNeto ? totalPasivo / patrimonioNeto : null,
   };
 }
 
 function kpiCard(label, value, extra, colorByValue) {
   const color = colorByValue ? (value >= 0 ? 'var(--green)' : 'var(--red)') : null;
   return `<div class="summary-card"><div class="summary-label">${escapeHtml(label)}</div><div class="summary-value"${color ? ` style="color:${color}"` : ''}>${fmtMoney(value)}</div>${extra ? `<div class="summary-extra">${extra}</div>` : ''}</div>`;
+}
+function ratioRow(label, value, suffix) {
+  return `<div class="pnl-row"><span>${escapeHtml(label)}</span><span>${fmtRatio(value, suffix)}</span></div>`;
 }
 
 async function loadManualNumeros() {
@@ -377,19 +258,41 @@ async function loadManualNumeros() {
     body.innerHTML = '';
 
     const kpis = [];
-    if (d.pyg) {
-      const k = computePygKPIs(d.pyg.rows);
-      kpis.push(kpiCard('Ingresos', k.ingresos, escapeHtml(d.pyg.period || '')));
-      kpis.push(kpiCard('Gastos', k.gastos));
-      kpis.push(kpiCard('Resultado', k.resultado, 'margen ' + fmtRatio(k.margenPct, ' %'), true));
+    const pygK = d.pyg ? computePygKPIs(d.pyg.rows) : null;
+    const balK = d.balance ? computeBalanceKPIs(d.balance.rows) : null;
+    if (pygK) {
+      kpis.push(kpiCard('Ingresos', pygK.ingresos, escapeHtml(d.pyg.period || '')));
+      kpis.push(kpiCard('Gastos', pygK.gastos));
+      kpis.push(kpiCard('Resultado', pygK.resultado, 'margen ' + fmtRatio(pygK.margenPct, ' %'), true));
     }
-    if (d.balance) {
-      const b = computeBalanceKPIs(d.balance.rows);
-      if (b.totalActivo != null) kpis.push(kpiCard('Total Activo', b.totalActivo, escapeHtml(d.balance.period || '')));
-      if (b.totalPasivo != null) kpis.push(kpiCard('Total Patrimonio Neto y Pasivo', b.totalPasivo));
-      if (b.tesoreria != null) kpis.push(kpiCard('Tesorería', b.tesoreria));
+    if (balK) {
+      if (balK.totalActivo != null) kpis.push(kpiCard('Total Activo', balK.totalActivo, escapeHtml(d.balance.period || '')));
+      if (balK.totalPasivo != null) kpis.push(kpiCard('Total Patrimonio Neto y Pasivo', balK.totalPasivo));
+      if (balK.tesoreria != null) kpis.push(kpiCard('Tesorería', balK.tesoreria));
     }
     kpiRow.innerHTML = kpis.join('');
+
+    const ratioRows = [];
+    if (pygK) {
+      if (pygK.margenExplotacionPct != null) ratioRows.push(ratioRow('Margen de explotación', pygK.margenExplotacionPct, ' %'));
+      if (pygK.pesoPersonalPct != null) ratioRows.push(ratioRow('Gastos de personal / Ingresos', pygK.pesoPersonalPct, ' %'));
+      if (pygK.pesoExternosPct != null) ratioRows.push(ratioRow('Servicios exteriores / Ingresos', pygK.pesoExternosPct, ' %'));
+    }
+    if (balK) {
+      if (balK.liquidezRatio != null) ratioRows.push(ratioRow('Liquidez (activo corriente / pasivo corriente)', balK.liquidezRatio, 'x'));
+      if (balK.fondoManiobra != null) ratioRows.push(pnlRow('Fondo de maniobra', balK.fondoManiobra, ''));
+      if (balK.endeudamientoRatio != null) ratioRows.push(ratioRow('Endeudamiento (pasivo / patrimonio neto)', balK.endeudamientoRatio, 'x'));
+    }
+    if (pygK && balK && balK.patrimonioNeto) {
+      ratioRows.push(ratioRow('ROE (resultado / patrimonio neto)', (pygK.resultado / balK.patrimonioNeto) * 100, ' %'));
+    }
+    if (ratioRows.length) {
+      const card = addCard(body, 'Ratios financieros', 'Calculados a partir del PyG y el Balance subidos — no aparecen si Holded no incluye la línea necesaria en el Excel exportado.');
+      const wrap = document.createElement('div');
+      wrap.className = 'pnl-table';
+      wrap.innerHTML = ratioRows.join('');
+      card.appendChild(wrap);
+    }
 
     if (d.pyg) {
       const card = addCard(body, 'Pérdidas y Ganancias (Holded)', `Subido: ${new Date(d.pyg.uploadedAt).toLocaleString('es-ES')} — ${escapeHtml(d.pyg.period || '')}`);
