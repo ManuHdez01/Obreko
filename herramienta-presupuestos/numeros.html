@@ -94,29 +94,9 @@
     <div id="manualUploadStatus" style="margin-top:8px;font-size:11.5px;color:var(--slate)"></div>
   </div>
 
+  <div class="summary" id="manualKpiRow"></div>
+
   <div id="manualBody"></div>
-
-  <div class="main-head" style="margin-top:24px">
-    <div>
-      <h2 class="main-h1" style="font-size:22px">Vista en <em>vivo</em> (API Holded, experimental)</h2>
-      <div class="main-sub">Reconstrucción automática desde los asientos contables — puede no coincidir todavía con los datos reales, en verificación.</div>
-    </div>
-  </div>
-
-  <div class="period-bar">
-    <label for="periodSel">Periodo</label>
-    <select id="periodSel" onchange="loadNumeros()">
-      <option value="3">Últimos 3 meses</option>
-      <option value="6" selected>Últimos 6 meses</option>
-      <option value="12">Últimos 12 meses</option>
-    </select>
-  </div>
-
-  <div class="summary" id="kpiRow"></div>
-
-  <div id="numerosBody">
-    <div class="state">Cargando datos de Holded…</div>
-  </div>
 </div>
 
 <script src="_common.js"></script>
@@ -349,11 +329,68 @@ async function onManualFileSelected(input, type) {
 }
 window.onManualFileSelected = onManualFileSelected;
 
+// A partir de las filas tal cual las exporta Holded, calcula KPIs sin
+// reinterpretar nada: suma las líneas numeradas de nivel 0 (que son las
+// líneas "reales" del PyG, no subtotales) — positivas como ingresos,
+// negativas como gastos — y usa "Resultado del ejercicio" si aparece.
+function computePygKPIs(rows) {
+  let ingresos = 0, gastos = 0, resultado = null;
+  rows.forEach((r) => {
+    if (r.level !== 0) return;
+    if (/^\d{1,2}\.\s/.test(r.label)) {
+      if (r.total >= 0) ingresos += r.total;
+      else gastos += Math.abs(r.total);
+    } else if (/^resultado del ejercicio$/i.test(r.label.trim())) {
+      resultado = r.total;
+    }
+  });
+  if (resultado == null) resultado = ingresos - gastos;
+  const margenPct = ingresos > 0 ? (resultado / ingresos) * 100 : null;
+  return { ingresos, gastos, resultado, margenPct };
+}
+
+function findRowTotal(rows, patterns) {
+  for (const p of patterns) {
+    const hit = rows.find((r) => p.test(r.label.trim()));
+    if (hit) return hit.total;
+  }
+  return null;
+}
+function computeBalanceKPIs(rows) {
+  return {
+    totalActivo: findRowTotal(rows, [/^total\s*activo/i, /^total\s*general\s*activo/i]),
+    totalPasivo: findRowTotal(rows, [/^total\s*patrimonio\s*neto\s*y\s*pasivo/i, /^total\s*pasivo/i]),
+    tesoreria: findRowTotal(rows, [/^efectivo.*equivalentes/i, /^tesorer/i]),
+  };
+}
+
+function kpiCard(label, value, extra, colorByValue) {
+  const color = colorByValue ? (value >= 0 ? 'var(--green)' : 'var(--red)') : null;
+  return `<div class="summary-card"><div class="summary-label">${escapeHtml(label)}</div><div class="summary-value"${color ? ` style="color:${color}"` : ''}>${fmtMoney(value)}</div>${extra ? `<div class="summary-extra">${extra}</div>` : ''}</div>`;
+}
+
 async function loadManualNumeros() {
   const body = $('manualBody');
+  const kpiRow = $('manualKpiRow');
   try {
     const d = await api('numeros-manual');
     body.innerHTML = '';
+
+    const kpis = [];
+    if (d.pyg) {
+      const k = computePygKPIs(d.pyg.rows);
+      kpis.push(kpiCard('Ingresos', k.ingresos, escapeHtml(d.pyg.period || '')));
+      kpis.push(kpiCard('Gastos', k.gastos));
+      kpis.push(kpiCard('Resultado', k.resultado, 'margen ' + fmtRatio(k.margenPct, ' %'), true));
+    }
+    if (d.balance) {
+      const b = computeBalanceKPIs(d.balance.rows);
+      if (b.totalActivo != null) kpis.push(kpiCard('Total Activo', b.totalActivo, escapeHtml(d.balance.period || '')));
+      if (b.totalPasivo != null) kpis.push(kpiCard('Total Patrimonio Neto y Pasivo', b.totalPasivo));
+      if (b.tesoreria != null) kpis.push(kpiCard('Tesorería', b.tesoreria));
+    }
+    kpiRow.innerHTML = kpis.join('');
+
     if (d.pyg) {
       const card = addCard(body, 'Pérdidas y Ganancias (Holded)', `Subido: ${new Date(d.pyg.uploadedAt).toLocaleString('es-ES')} — ${escapeHtml(d.pyg.period || '')}`);
       const wrap = document.createElement('div');
@@ -384,58 +421,8 @@ function addCard(body, title, hint) {
   return card;
 }
 
-async function loadNumeros() {
-  const months = $('periodSel').value;
-  $('numerosBody').innerHTML = '<div class="state">Cargando datos de Holded…</div>';
-  try {
-    const d = await api('numeros?months=' + months);
-    const resultado = d.revenue.total - d.expenses.total;
-
-    $('kpiRow').innerHTML = `
-      <div class="summary-card"><div class="summary-label">Ingresos (${d.period.months} meses)</div><div class="summary-value">${fmtMoney(d.revenue.total)}</div><div class="summary-extra">${d.revenue.invoiceCount} facturas</div></div>
-      <div class="summary-card"><div class="summary-label">Gastos</div><div class="summary-value">${fmtMoney(d.expenses.total)}</div><div class="summary-extra">según libro mayor (Pérdidas y Ganancias)</div></div>
-      <div class="summary-card"><div class="summary-label">Resultado aprox.</div><div class="summary-value" style="color:${resultado >= 0 ? 'var(--green)' : 'var(--red)'}">${fmtMoney(resultado)}</div><div class="summary-extra">margen ${fmtRatio(d.ratios.grossMarginPct, ' %')}</div></div>
-      <div class="summary-card"><div class="summary-label">Saldo en bancos</div><div class="summary-value">${fmtMoney(d.cash.total)}</div><div class="summary-extra">${d.cash.byAccount.map((a) => escapeHtml(a.name)).join(', ') || '—'}</div></div>
-      <div class="summary-card"><div class="summary-label">Runway de caja</div><div class="summary-value">${fmtRatio(d.ratios.cashRunwayMonths, ' meses')}</div><div class="summary-extra">al ritmo de gasto actual</div></div>
-      <div class="summary-card"><div class="summary-label">Ticket medio</div><div class="summary-value">${fmtMoney(d.ratios.avgInvoiceTicket || 0)}</div><div class="summary-extra">por factura</div></div>
-      <div class="summary-card"><div class="summary-label">Pendiente de cobro</div><div class="summary-value">${fmtMoney(d.revenue.pendingCollection)}</div></div>
-      <div class="summary-card"><div class="summary-label">Pendiente de pago</div><div class="summary-value">${fmtMoney(d.expenses.pendingPayment)}</div></div>
-      <div class="summary-card" style="border:2px solid var(--blue)"><div class="summary-label">🔍 Diagnóstico</div><div class="summary-value" style="font-size:16px">${d.entriesFetched} recibidos</div><div class="summary-extra">${d.entriesScanned} usados en el PyG</div></div>
-    `;
-
-    const body = $('numerosBody');
-    body.innerHTML = '';
-
-    if (d.scopeWarning) {
-      const warn = document.createElement('div');
-      warn.className = 'notice';
-      warn.style.cssText = 'border-left-color:var(--red);margin-bottom:16px;font-size:13px';
-      warn.innerHTML = '⚠️ ' + escapeHtml(d.scopeWarning);
-      body.appendChild(warn);
-    }
-
-    addCard(body, 'Ingresos por mes').appendChild(renderLineChart(d.revenue.byMonth, '#5C7CD9'));
-    addCard(body, 'Gastos por mes', 'Grupo contable 6x (compras y gastos) según el libro mayor de Holded — la contabilidad definitiva, igual que en Pérdidas y Ganancias. Incluye materiales cuando la gestoría los ha contabilizado.').appendChild(renderLineChart(d.expenses.byMonth, '#1A2236'));
-    addCard(body, 'Resultado por mes', 'Ingresos (grupo 7x) − gastos (grupo 6x), según el libro mayor.').appendChild(renderDivergingChart(d.revenue.byMonth.map((r, i) => ({ month: r.month, total: r.total - (d.expenses.byMonth[i] ? d.expenses.byMonth[i].total : 0) }))));
-
-    addCard(body, 'Pérdidas y Ganancias', 'Mismo desglose que el informe de Holded — línea, apartado y cuenta contable, con su importe.')
-      .appendChild(renderPnL(d));
-
-    addCard(body, 'Principales clientes', 'Por facturación en el periodo.').appendChild(renderRankedBars(d.revenue.byClient, { emptyMsg: 'Sin facturas en este periodo.', maxRows: 8, noFold: true }));
-    addCard(body, 'Principales proveedores', 'Por gasto en el periodo.').appendChild(renderRankedBars(d.expenses.bySupplier, { emptyMsg: 'Sin compras en este periodo.', maxRows: 8, noFold: true }));
-
-    const noteCard = document.createElement('div');
-    noteCard.className = 'note';
-    noteCard.textContent = `${d.note} · ${d.entriesScanned} apuntes contables usados (de ${d.entriesFetched} recibidos de Holded), ${d.documentsScanned} documentos de compra y ${d.revenue.invoiceCount} facturas de venta analizados en el periodo.`;
-    body.appendChild(noteCard);
-  } catch (e) {
-    $('numerosBody').innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
-  }
-}
-window.loadNumeros = loadNumeros;
-
 window.BT.initAuth(async () => {
-  await Promise.all([loadManualNumeros(), loadNumeros()]);
+  await loadManualNumeros();
   window.BT.mountAssistant('Números', () => ({
     pantalla: 'Control financiero (Holded): ingresos, gastos indirectos y tesorería de los últimos meses.',
   }));
