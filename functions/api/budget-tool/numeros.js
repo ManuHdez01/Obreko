@@ -77,23 +77,25 @@ export async function onRequestGet({ request, env }) {
   }
 
   // ---------- Gastos ----------
-  // "Gastos totales" (expensesTotal) excluye a propósito los grupos 60/61
-  // (materiales y variación de existencias): ese coste ya se imputa dentro
-  // de cada presupuesto de obra (ver materialsCost en projects.js), así que
-  // sumarlo aquí también inflaba la cifra a cientos de miles de euros sin
-  // representar un gasto estructural de la empresa. Los materiales se
-  // siguen mostrando aparte (materialsTotal) y en el desglose por grupo
-  // contable, para no perder visibilidad — solo se sacan del total/ratios.
-  const MATERIALS_GROUPS = new Set(['60', '61']);
-
-  const expensesByMonth = new Map(monthKeys.map((m) => [m, 0]));
+  // "Gastos" = ÚNICAMENTE el grupo contable 62 (servicios exteriores).
+  // Se probó a clasificar "todo lo comprado menos materiales", pero en la
+  // práctica la mayoría de compras del día a día (materiales, proveedores
+  // puntuales) se registran en Holded SIN cuenta contable asignada — eso
+  // lo categoriza la gestoría a posteriori — así que ese gasto sin
+  // clasificar acababa contándose igualmente como "estructural" sin
+  // ninguna garantía de que lo fuera. El grupo 62 es la única categoría
+  // que sí se registra de forma consistente (gastos recurrentes: alquiler,
+  // seguros, profesionales, suministros...), así que es la única base
+  // fiable para "gastos estructurales" / margen / runway.
+  //
+  // expensesByGroup se conserva como desglose informativo de TODO lo
+  // comprado (incluidos materiales y líneas sin cuenta), para quien quiera
+  // ver el panorama completo — pero no entra en el KPI principal.
   const expensesByGroup = new Map();
   const expensesBySupplier = new Map();
   const indirectByMonth = new Map(monthKeys.map((m) => [m, 0]));
   const indirectByAccount = new Map();
 
-  let expensesTotal = 0;
-  let materialsTotal = 0;
   let indirectTotal = 0;
   let documentsScanned = 0;
   let linesUnmatched = 0;
@@ -113,28 +115,18 @@ export async function onRequestGet({ request, env }) {
       docTotal += amount;
 
       if (!acc) {
-        // Sin cuenta reconocida: no podemos saber si es material o
-        // estructural, así que se cuenta como estructural (comportamiento
-        // previo) pero queda registrado en linesUnmatched para revisión.
+        // Sin cuenta reconocida: no cuenta para ningún grupo (ni para
+        // "estructural") — solo se registra en linesUnmatched para que
+        // se pueda revisar cuánto gasto queda sin categorizar en Holded.
         linesUnmatched++;
-        expensesTotal += amount;
-        expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
         continue;
       }
 
       const group = String(acc.account_num).slice(0, 2);
-      const isMaterials = MATERIALS_GROUPS.has(group);
 
       const gCur = expensesByGroup.get(group) || { group, label: GROUP_LABELS[group] || `Grupo ${group}`, total: 0 };
       gCur.total += amount;
       expensesByGroup.set(group, gCur);
-
-      if (isMaterials) {
-        materialsTotal += amount;
-      } else {
-        expensesTotal += amount;
-        expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
-      }
 
       if (group === '62') {
         indirectByMonth.set(key, (indirectByMonth.get(key) || 0) + amount);
@@ -146,11 +138,15 @@ export async function onRequestGet({ request, env }) {
     }
 
     // El ranking "por proveedor" sí refleja el gasto real total pagado a
-    // cada uno (incluidos materiales) — es útil para negociar volumen,
-    // independientemente de que los materiales no cuenten en el KPI.
+    // cada uno (todos los grupos, incluso sin cuenta) — útil para negociar
+    // volumen, independientemente de qué cuente como "estructural".
     const supplierName = doc.contact_name || '(sin nombre)';
     expensesBySupplier.set(supplierName, (expensesBySupplier.get(supplierName) || 0) + docTotal);
   }
+
+  // "Gastos" del resto de la función = grupo 62 (ver nota arriba).
+  const expensesTotal = indirectTotal;
+  const expensesByMonth = indirectByMonth;
 
   // ---------- Tesorería ----------
   // El saldo de tesorería viene en formato estándar (punto decimal), a
@@ -192,7 +188,6 @@ export async function onRequestGet({ request, env }) {
     },
     expenses: {
       total: round2(expensesTotal),
-      materialsTotal: round2(materialsTotal),
       documentCount: documentsScanned,
       pendingPayment: round2(pendingPayment),
       byMonth: monthKeys.map((m) => ({ month: m, total: round2(expensesByMonth.get(m) || 0) })),
@@ -210,7 +205,7 @@ export async function onRequestGet({ request, env }) {
     },
     cash: { total: cashTotal, byAccount: cashAccounts },
     ratios,
-    note: 'Los ratios de margen y runway son aproximados: excluyen nóminas (grupo contable 64), que Holded gestiona por RRHH y no está disponible vía la API de Compras. "Gastos totales" y "Gastos indirectos" excluyen a propósito los grupos 60/61 (materiales), que se imputan dentro de cada presupuesto de obra, no como gasto estructural de la empresa — por eso "Resultado aprox." tampoco los resta y no equivale al beneficio neto real. Los materiales comprados en el periodo se muestran aparte en expenses.materialsTotal y en el desglose por grupo contable.',
+    note: 'Los ratios de margen y runway son aproximados: excluyen nóminas (grupo contable 64), que Holded gestiona por RRHH y no está disponible vía la API de Compras. "Gastos" equivale únicamente al grupo contable 62 (servicios exteriores): es la única categoría de compras que se registra con cuenta contable de forma consistente en Holded — el resto (materiales, proveedores puntuales) suele anotarse sin cuenta asignada, así que no se puede clasificar de forma fiable y se deja fuera del KPI. "Resultado aprox." tampoco descuenta esas compras sin categorizar, así que no equivale al beneficio neto real. El desglose "por grupo contable" sí muestra todo lo comprado que tenga cuenta asignada, solo a título informativo.',
     documentsScanned,
     linesUnmatched,
     generatedAt: new Date().toISOString(),
