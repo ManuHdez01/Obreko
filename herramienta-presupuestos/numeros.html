@@ -289,6 +289,14 @@ async function loadNumeros() {
     const body = $('numerosBody');
     body.innerHTML = '';
 
+    if (d.scopeWarning) {
+      const warn = document.createElement('div');
+      warn.className = 'notice';
+      warn.style.cssText = 'border-left-color:var(--red);margin-bottom:16px;font-size:13px';
+      warn.innerHTML = '⚠️ ' + escapeHtml(d.scopeWarning);
+      body.appendChild(warn);
+    }
+
     addCard(body, 'Ingresos por mes').appendChild(renderLineChart(d.revenue.byMonth, '#5C7CD9'));
     addCard(body, 'Gastos por mes', 'Grupo contable 6x (compras y gastos) según el libro mayor de Holded — la contabilidad definitiva, igual que en Pérdidas y Ganancias. Incluye materiales cuando la gestoría los ha contabilizado.').appendChild(renderLineChart(d.expenses.byMonth, '#1A2236'));
     addCard(body, 'Resultado por mes', 'Ingresos (grupo 7x) − gastos (grupo 6x), según el libro mayor.').appendChild(renderDivergingChart(d.revenue.byMonth.map((r, i) => ({ month: r.month, total: r.total - (d.expenses.byMonth[i] ? d.expenses.byMonth[i].total : 0) }))));

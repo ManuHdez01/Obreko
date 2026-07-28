@@ -236,8 +236,17 @@ export async function onRequestGet({ request, env }) {
         .sort((a, b) => b.total - a.total)
         .slice(0, limit || 8);
 
+    // Si no se ha encontrado ni un solo asiento del PyG, casi seguro que la
+    // clave de API no tiene el scope accounting:daily-ledger.read (Holded
+    // puede devolver una lista vacía en vez de un error 401/403 cuando falta
+    // el permiso, así que no se detecta como fallo de red).
+    const scopeWarning = entriesScanned === 0
+      ? 'No se ha encontrado ningún asiento contable en el periodo. Lo más probable es que a la clave de API de Holded (HOLDED_API_KEY) le falte el permiso "accounting:daily-ledger.read" (y/o "accounting:chart-of-accounts.read") — revísalo en Holded, en la configuración de la clave de API, y añade esos scopes si no están.'
+      : null;
+
     return json({
       period: { from: startDate, to: endDate, months },
+      scopeWarning,
       revenue: {
         total: round2(revenueTotal),
         invoiceCount,
