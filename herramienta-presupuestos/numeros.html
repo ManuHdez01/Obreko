@@ -284,6 +284,7 @@ async function loadNumeros() {
       <div class="summary-card"><div class="summary-label">Ticket medio</div><div class="summary-value">${fmtMoney(d.ratios.avgInvoiceTicket || 0)}</div><div class="summary-extra">por factura</div></div>
       <div class="summary-card"><div class="summary-label">Pendiente de cobro</div><div class="summary-value">${fmtMoney(d.revenue.pendingCollection)}</div></div>
       <div class="summary-card"><div class="summary-label">Pendiente de pago</div><div class="summary-value">${fmtMoney(d.expenses.pendingPayment)}</div></div>
+      <div class="summary-card" style="border:2px solid var(--blue)"><div class="summary-label">🔍 Diagnóstico</div><div class="summary-value" style="font-size:16px">${d.entriesFetched} recibidos</div><div class="summary-extra">${d.entriesScanned} usados en el PyG</div></div>
     `;
 
     const body = $('numerosBody');
