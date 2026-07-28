@@ -199,15 +199,22 @@
       </div>
       <div id="reviewResult"></div>
       <datalist id="itemNameSuggestions"></datalist>
+      <datalist id="estanciaSuggestions">
+        <option value="Cocina"><option value="Baño"><option value="Salón"><option value="Dormitorio">
+        <option value="Terraza"><option value="Zonas comunes"><option value="General">
+      </datalist>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Total</th><th></th></tr></thead>
-          <tbody id="itemsBody"><tr><td colspan="6" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
+          <thead><tr><th>Estancia</th><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
+          <tbody id="itemsBody"><tr><td colspan="9" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
         </table>
       </div>
       <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
         <button class="btn btn-sm btn-sec" onclick="addItemManual()">+ Añadir a mano</button>
-        <div style="font-size:13.5px"><span style="color:var(--slate)">Coste materiales:</span> <strong id="itemsTotal">0,00 €</strong></div>
+        <div style="font-size:13.5px;text-align:right">
+          <div><span style="color:var(--slate)">Coste materiales (presupuestado):</span> <strong id="itemsTotal">0,00 €</strong></div>
+          <div id="itemsRealTotalRow" style="display:none"><span style="color:var(--slate)">Gasto real cargado:</span> <strong id="itemsRealTotal">0,00 €</strong></div>
+        </div>
       </div>
     </div>
   </div>

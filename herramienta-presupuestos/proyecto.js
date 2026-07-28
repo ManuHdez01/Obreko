@@ -352,37 +352,83 @@ window.recomendarIA = recomendarIA;
 
 // ── Tabla de materiales ──────────────────────────────────────────────────
 
+// Agrupa por estancia (Cocina, Baño...) manteniendo el índice real de
+// project.items en cada fila, para que los onchange/onclick sigan
+// apuntando a la posición correcta dentro del array. "Sin estancia
+// asignada" agrupa las partidas sin ese campo (import antiguos, IA, etc.)
+// y siempre va al final.
 function renderItems() {
   const items = project.items || [];
   const body = $('itemsBody');
   if (!items.length) {
-    body.innerHTML = '<tr><td colspan="6" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr>';
-  } else {
-    body.innerHTML = items.map((it, i) => `
-      <tr>
-        <td>
-          <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
-          ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
-        </td>
-        <td>${escapeHtml(it.supplier || '—')}</td>
-        <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
-        <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
-        <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
-        <td class="r" style="white-space:nowrap">
-          <button class="btn btn-sm btn-sec" title="Guardar en la biblioteca de partidas" onclick="guardarEnBiblioteca(${i}, this)">★</button>
-          <button class="btn btn-sm btn-danger" onclick="delItem(${i})">×</button>
-        </td>
-      </tr>`).join('');
+    body.innerHTML = '<tr><td colspan="9" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr>';
+    $('itemsTotal').textContent = fmtMoney(0);
+    $('itemsRealTotalRow').style.display = 'none';
+    renderRfqItems();
+    return;
   }
+
+  const groups = new Map();
+  items.forEach((it, i) => {
+    const key = (it.estancia || '').trim() || 'Sin estancia asignada';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(i);
+  });
+  const keys = Array.from(groups.keys()).sort((a, b) => {
+    if (a === 'Sin estancia asignada') return 1;
+    if (b === 'Sin estancia asignada') return -1;
+    return a.localeCompare(b, 'es');
+  });
+
+  body.innerHTML = keys.map((key) => {
+    const idxs = groups.get(key);
+    const groupBudget = idxs.reduce((s, i) => s + (Number(items[i].totalPrice) || 0), 0);
+    const groupReal = idxs.reduce((s, i) => s + (Number(items[i].realCost) || 0), 0);
+    const rows = idxs.map((i) => {
+      const it = items[i];
+      const dev = it.realCost ? (Number(it.realCost) || 0) - (Number(it.totalPrice) || 0) : null;
+      const devColor = dev == null ? 'var(--slate)' : dev > 0 ? 'var(--red)' : 'var(--green)';
+      return `
+        <tr>
+          <td><input type="text" style="width:100%" list="estanciaSuggestions" value="${escapeHtml(it.estancia || '')}" placeholder="Cocina, Baño…" onchange="updItem(${i},'estancia',this.value)"></td>
+          <td>
+            <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
+            ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
+          </td>
+          <td>${escapeHtml(it.supplier || '—')}</td>
+          <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
+          <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
+          <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoney(dev)}</td>
+          <td class="r" style="white-space:nowrap">
+            <button class="btn btn-sm btn-sec" title="Guardar en la biblioteca de partidas" onclick="guardarEnBiblioteca(${i}, this)">★</button>
+            <button class="btn btn-sm btn-danger" onclick="delItem(${i})">×</button>
+          </td>
+        </tr>`;
+    }).join('');
+    return `
+      <tr style="background:var(--sand-lt)">
+        <td colspan="5" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
+        <td class="r" style="font-weight:700">${fmtMoney(groupBudget)}</td>
+        <td class="r" style="font-weight:700">${groupReal ? fmtMoney(groupReal) : '—'}</td>
+        <td colspan="2"></td>
+      </tr>
+      ${rows}`;
+  }).join('');
+
   const total = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const realTotal = items.reduce((s, it) => s + (Number(it.realCost) || 0), 0);
   $('itemsTotal').textContent = fmtMoney(total);
+  $('itemsRealTotal').textContent = fmtMoney(realTotal);
+  $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
   renderRfqItems();
 }
 
 function updItem(i, field, value) {
   const it = project.items[i];
   if (!it) return;
-  if (field === 'name') it.name = value;
+  if (field === 'name' || field === 'estancia') it[field] = value;
   else it[field] = Number(value) || 0;
   it.totalPrice = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
   renderItems();
@@ -399,7 +445,7 @@ window.delItem = delItem;
 
 function addItemManual() {
   project.items = project.items || [];
-  project.items.push({ name: '', supplier: '', unit: 'ud', unitPrice: 0, quantity: 1, totalPrice: 0, reasoning: '' });
+  project.items.push({ name: '', estancia: '', supplier: '', unit: 'ud', unitPrice: 0, quantity: 1, totalPrice: 0, realCost: 0, reasoning: '' });
   renderItems();
 }
 window.addItemManual = addItemManual;
