@@ -82,6 +82,27 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-h">Subir datos de Holded</div>
+    <div class="card-hint">Exporta desde Holded (Contabilidad → Pérdidas y ganancias / Balance de situación → Excel) y súbelo aquí. Se muestran tal cual los calcula Holded, sin recalcular nada — sustituye a la reconstrucción en vivo por API mientras la afinamos.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-sm btn-pri" onclick="document.getElementById('pygFileInput').click()">📊 Subir Pérdidas y Ganancias</button>
+      <input type="file" id="pygFileInput" accept=".xlsx,.xls" style="display:none" onchange="onManualFileSelected(this,'pyg')">
+      <button class="btn btn-sm btn-sec" onclick="document.getElementById('balanceFileInput').click()">📊 Subir Balance de situación</button>
+      <input type="file" id="balanceFileInput" accept=".xlsx,.xls" style="display:none" onchange="onManualFileSelected(this,'balance')">
+    </div>
+    <div id="manualUploadStatus" style="margin-top:8px;font-size:11.5px;color:var(--slate)"></div>
+  </div>
+
+  <div id="manualBody"></div>
+
+  <div class="main-head" style="margin-top:24px">
+    <div>
+      <h2 class="main-h1" style="font-size:22px">Vista en <em>vivo</em> (API Holded, experimental)</h2>
+      <div class="main-sub">Reconstrucción automática desde los asientos contables — puede no coincidir todavía con los datos reales, en verificación.</div>
+    </div>
+  </div>
+
   <div class="period-bar">
     <label for="periodSel">Periodo</label>
     <select id="periodSel" onchange="loadNumeros()">
@@ -260,6 +281,101 @@ function renderPnL(d) {
   return wrap;
 }
 
+// ── Subida manual de Excel de Holded (Pérdidas y ganancias / Balance) ────
+// No se recalcula nada: se leen los pares "Concepto | Total" tal cual los
+// exporta Holded, y solo se detecta el nivel de sangría (línea principal /
+// apartado a)/b).../ cuenta contable) para pintarlo igual que el informe
+// oficial. Los importes son los que ya trae el Excel.
+
+let sheetJsLoadPromise = null;
+function loadSheetJs() {
+  if (window.XLSX) return Promise.resolve();
+  if (sheetJsLoadPromise) return sheetJsLoadPromise;
+  sheetJsLoadPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('No se pudo cargar el lector de Excel'));
+    document.head.appendChild(s);
+  });
+  return sheetJsLoadPromise;
+}
+
+function detectRowLevel(label) {
+  if (/^\d{1,2}\.\s/.test(label)) return 0;      // "1. Importe neto..."
+  if (/^[A-Z]\)\s/.test(label)) return 0;        // "A) ACTIVO NO CORRIENTE"
+  if (/^[a-z]\)\s/.test(label)) return 1;        // "a) Servicios exteriores"
+  if (/^[IVX]+\.\s/.test(label)) return 1;       // "I. Capital"
+  if (/^\d{4,}\s*-\s/.test(label)) return 2;     // "62300000 - Nombre"
+  return 0;                                      // subtotales/títulos ("Resultado de explotación", "TOTAL ACTIVO"...)
+}
+
+function parseHoldedExportSheet(wb) {
+  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const rows = window.XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false });
+  const out = [];
+  for (const r of rows) {
+    const label = r[0] != null ? String(r[0]).trim() : '';
+    const total = r[1];
+    if (!label || typeof total !== 'number') continue; // salta títulos/cabeceras sin importe
+    out.push({ label, total, level: detectRowLevel(label) });
+  }
+  return out;
+}
+
+async function onManualFileSelected(input, type) {
+  const file = input.files && input.files[0];
+  input.value = '';
+  if (!file) return;
+  const statusEl = $('manualUploadStatus');
+  statusEl.textContent = 'Leyendo ' + file.name + '…';
+  try {
+    await loadSheetJs();
+    const buf = await file.arrayBuffer();
+    const wb = window.XLSX.read(buf, { type: 'array' });
+    const rows = parseHoldedExportSheet(wb);
+    if (!rows.length) throw new Error('No se han encontrado filas con importe en el Excel.');
+
+    await api('numeros-manual', {
+      method: 'POST',
+      body: { type, rows, period: file.name },
+    });
+    statusEl.textContent = `✓ ${type === 'balance' ? 'Balance' : 'Pérdidas y Ganancias'} actualizado (${rows.length} filas) — ${new Date().toLocaleString('es-ES')}`;
+    await loadManualNumeros();
+  } catch (e) {
+    statusEl.textContent = '';
+    toast('Error: ' + e.message, 'error');
+  }
+}
+window.onManualFileSelected = onManualFileSelected;
+
+async function loadManualNumeros() {
+  const body = $('manualBody');
+  try {
+    const d = await api('numeros-manual');
+    body.innerHTML = '';
+    if (d.pyg) {
+      const card = addCard(body, 'Pérdidas y Ganancias (Holded)', `Subido: ${new Date(d.pyg.uploadedAt).toLocaleString('es-ES')} — ${escapeHtml(d.pyg.period || '')}`);
+      const wrap = document.createElement('div');
+      wrap.className = 'pnl-table';
+      wrap.innerHTML = d.pyg.rows.map((r) => pnlRow(r.label, r.total, r.level === 2 ? 'pnl-acc' : r.level === 1 ? 'pnl-sub' : 'pnl-line')).join('');
+      card.appendChild(wrap);
+    }
+    if (d.balance) {
+      const card = addCard(body, 'Balance de situación (Holded)', `Subido: ${new Date(d.balance.uploadedAt).toLocaleString('es-ES')} — ${escapeHtml(d.balance.period || '')}`);
+      const wrap = document.createElement('div');
+      wrap.className = 'pnl-table';
+      wrap.innerHTML = d.balance.rows.map((r) => pnlRow(r.label, r.total, r.level === 2 ? 'pnl-acc' : r.level === 1 ? 'pnl-sub' : 'pnl-line')).join('');
+      card.appendChild(wrap);
+    }
+    if (!d.pyg && !d.balance) {
+      body.innerHTML = '<div class="state">Todavía no se ha subido ningún Excel de Holded.</div>';
+    }
+  } catch (e) {
+    body.innerHTML = '<div class="state error">Error: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
 function addCard(body, title, hint) {
   const card = document.createElement('div');
   card.className = 'card';
@@ -319,7 +435,7 @@ async function loadNumeros() {
 window.loadNumeros = loadNumeros;
 
 window.BT.initAuth(async () => {
-  await loadNumeros();
+  await Promise.all([loadManualNumeros(), loadNumeros()]);
   window.BT.mountAssistant('Números', () => ({
     pantalla: 'Control financiero (Holded): ingresos, gastos indirectos y tesorería de los últimos meses.',
   }));
