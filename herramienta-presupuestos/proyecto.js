@@ -1061,7 +1061,95 @@ window.borrarDeBiblioteca = borrarDeBiblioteca;
 
 // ── Montar desde texto ───────────────────────────────────────────────────
 
-function abrirMontarTexto() {
+// ── Subir Excel (.xlsx) ──────────────────────────────────────────────────
+// No hay parser propio de columnas: se extrae el texto de las hojas con
+// SheetJS (cargado desde jsdelivr, ya permitido en la CSP del sitio para
+// EmailJS) y se pasa por el mismo flujo de "Montar desde texto" — la IA de
+// compose.js ya sabe interpretar un Excel pegado como texto.
+
+const EXCEL_TEXT_LIMIT = 9000; // compose.js acepta hasta 10000 caracteres
+
+let sheetJsLoadPromise = null;
+function loadSheetJs() {
+  if (window.XLSX) return Promise.resolve();
+  if (sheetJsLoadPromise) return sheetJsLoadPromise;
+  sheetJsLoadPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('No se pudo cargar el lector de Excel'));
+    document.head.appendChild(s);
+  });
+  return sheetJsLoadPromise;
+}
+
+function abrirSubirExcel() {
+  $('excelFileInput').click();
+}
+window.abrirSubirExcel = abrirSubirExcel;
+
+async function onExcelFileSelected(input) {
+  const file = input.files && input.files[0];
+  input.value = ''; // permite volver a elegir el mismo archivo después
+  if (!file) return;
+  toast('Leyendo ' + file.name + '…');
+  try {
+    await loadSheetJs();
+    const buf = await file.arrayBuffer();
+    const wb = window.XLSX.read(buf, { type: 'array' });
+    const sheetNames = wb.SheetNames || [];
+    if (!sheetNames.length) throw new Error('El archivo no tiene hojas legibles.');
+
+    if (sheetNames.length === 1) {
+      abrirMontarTexto(sheetToText(wb, sheetNames[0]));
+    } else {
+      abrirSeleccionHojas(wb, sheetNames);
+    }
+  } catch (e) {
+    toast('Error leyendo el Excel: ' + e.message, 'error');
+  }
+}
+window.onExcelFileSelected = onExcelFileSelected;
+
+function sheetToText(wb, name) {
+  const csv = window.XLSX.utils.sheet_to_csv(wb.Sheets[name], { blankrows: false });
+  return `== ${name} ==\n${csv}`;
+}
+
+function abrirSeleccionHojas(wb, sheetNames) {
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `
+    <div class="modal" style="max-width:480px">
+      <div class="modal-head"><div class="t">¿Qué hojas quieres usar?</div><div class="s">El Excel tiene ${sheetNames.length} hojas — elige las que tengan partidas de presupuesto (las de resumen o notas solo añaden ruido).</div></div>
+      <div class="modal-body">
+        ${sheetNames.map((n, i) => `
+          <label class="check-row">
+            <input type="checkbox" class="sheet-check" value="${i}" ${/presupuesto|detall|partida/i.test(n) ? 'checked' : ''}>
+            <span>${escapeHtml(n)}</span>
+          </label>`).join('')}
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-sec" id="sheetsCancel">Cancelar</button>
+        <button class="btn btn-pri" id="sheetsGo">Continuar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
+  wrap.querySelector('#sheetsCancel').addEventListener('click', () => wrap.remove());
+  wrap.querySelector('#sheetsGo').addEventListener('click', () => {
+    const idxs = Array.from(wrap.querySelectorAll('.sheet-check:checked')).map((c) => Number(c.value));
+    if (!idxs.length) { toast('Selecciona al menos una hoja', 'error'); return; }
+    const text = idxs.map((i) => sheetToText(wb, sheetNames[i])).join('\n\n');
+    wrap.remove();
+    abrirMontarTexto(text);
+  });
+}
+
+// prefillText opcional: lo usa onExcelFileSelected() para precargar el
+// texto extraído de un Excel, reutilizando el mismo flujo/IA que "Montar
+// desde texto" en vez de tener un parser de partidas específico por Excel.
+function abrirMontarTexto(prefillText) {
   const wrap = document.createElement('div');
   wrap.className = 'modal-wrap';
   wrap.innerHTML = `
@@ -1077,9 +1165,15 @@ function abrirMontarTexto() {
       </div>
     </div>`;
   document.body.appendChild(wrap);
+  const textarea = wrap.querySelector('#composeText');
+  if (prefillText) {
+    textarea.value = prefillText.length > EXCEL_TEXT_LIMIT
+      ? prefillText.slice(0, EXCEL_TEXT_LIMIT) + '\n… (contenido recortado, el archivo era muy largo — revisa que no falte nada relevante)'
+      : prefillText;
+  }
   wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
   wrap.querySelector('#composeCancel').addEventListener('click', () => wrap.remove());
-  wrap.querySelector('#composeText').focus();
+  textarea.focus();
 
   wrap.querySelector('#composeGo').addEventListener('click', async () => {
     const text = wrap.querySelector('#composeText').value.trim();
