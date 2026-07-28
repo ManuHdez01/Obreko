@@ -76,7 +76,16 @@ export async function onRequestGet({ request, env }) {
     revenueByClient.set(clientName, (revenueByClient.get(clientName) || 0) + amount);
   }
 
-  // ---------- Gastos (todos los grupos) ----------
+  // ---------- Gastos ----------
+  // "Gastos totales" (expensesTotal) excluye a propósito los grupos 60/61
+  // (materiales y variación de existencias): ese coste ya se imputa dentro
+  // de cada presupuesto de obra (ver materialsCost en projects.js), así que
+  // sumarlo aquí también inflaba la cifra a cientos de miles de euros sin
+  // representar un gasto estructural de la empresa. Los materiales se
+  // siguen mostrando aparte (materialsTotal) y en el desglose por grupo
+  // contable, para no perder visibilidad — solo se sacan del total/ratios.
+  const MATERIALS_GROUPS = new Set(['60', '61']);
+
   const expensesByMonth = new Map(monthKeys.map((m) => [m, 0]));
   const expensesByGroup = new Map();
   const expensesBySupplier = new Map();
@@ -84,6 +93,7 @@ export async function onRequestGet({ request, env }) {
   const indirectByAccount = new Map();
 
   let expensesTotal = 0;
+  let materialsTotal = 0;
   let indirectTotal = 0;
   let documentsScanned = 0;
   let linesUnmatched = 0;
@@ -100,24 +110,31 @@ export async function onRequestGet({ request, env }) {
     for (const line of doc.lines || []) {
       const acc = accountMap.get(line.account);
       const amount = parseEsNum(line.price) * parseEsNum(line.units != null ? line.units : 1) * (1 - parseEsNum(line.discount) / 100);
+      docTotal += amount;
 
       if (!acc) {
+        // Sin cuenta reconocida: no podemos saber si es material o
+        // estructural, así que se cuenta como estructural (comportamiento
+        // previo) pero queda registrado en linesUnmatched para revisión.
         linesUnmatched++;
         expensesTotal += amount;
         expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
-        docTotal += amount;
         continue;
       }
 
       const group = String(acc.account_num).slice(0, 2);
-
-      expensesTotal += amount;
-      expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
-      docTotal += amount;
+      const isMaterials = MATERIALS_GROUPS.has(group);
 
       const gCur = expensesByGroup.get(group) || { group, label: GROUP_LABELS[group] || `Grupo ${group}`, total: 0 };
       gCur.total += amount;
       expensesByGroup.set(group, gCur);
+
+      if (isMaterials) {
+        materialsTotal += amount;
+      } else {
+        expensesTotal += amount;
+        expensesByMonth.set(key, (expensesByMonth.get(key) || 0) + amount);
+      }
 
       if (group === '62') {
         indirectByMonth.set(key, (indirectByMonth.get(key) || 0) + amount);
@@ -128,6 +145,9 @@ export async function onRequestGet({ request, env }) {
       }
     }
 
+    // El ranking "por proveedor" sí refleja el gasto real total pagado a
+    // cada uno (incluidos materiales) — es útil para negociar volumen,
+    // independientemente de que los materiales no cuenten en el KPI.
     const supplierName = doc.contact_name || '(sin nombre)';
     expensesBySupplier.set(supplierName, (expensesBySupplier.get(supplierName) || 0) + docTotal);
   }
@@ -172,6 +192,7 @@ export async function onRequestGet({ request, env }) {
     },
     expenses: {
       total: round2(expensesTotal),
+      materialsTotal: round2(materialsTotal),
       documentCount: documentsScanned,
       pendingPayment: round2(pendingPayment),
       byMonth: monthKeys.map((m) => ({ month: m, total: round2(expensesByMonth.get(m) || 0) })),
@@ -189,7 +210,7 @@ export async function onRequestGet({ request, env }) {
     },
     cash: { total: cashTotal, byAccount: cashAccounts },
     ratios,
-    note: 'Los ratios de margen y runway son aproximados: excluyen nóminas (grupo contable 64), que Holded gestiona por RRHH y no está disponible vía la API de Compras. "Gastos indirectos" (grupo 62) excluye a propósito el grupo 60 (materiales), que se imputa dentro de cada partida de presupuesto.',
+    note: 'Los ratios de margen y runway son aproximados: excluyen nóminas (grupo contable 64), que Holded gestiona por RRHH y no está disponible vía la API de Compras. "Gastos totales" y "Gastos indirectos" excluyen a propósito los grupos 60/61 (materiales), que se imputan dentro de cada presupuesto de obra, no como gasto estructural de la empresa — por eso "Resultado aprox." tampoco los resta y no equivale al beneficio neto real. Los materiales comprados en el periodo se muestran aparte en expenses.materialsTotal y en el desglose por grupo contable.',
     documentsScanned,
     linesUnmatched,
     generatedAt: new Date().toISOString(),
