@@ -30,6 +30,15 @@
 .bar-fill{height:100%;border-radius:5px;min-width:3px;}
 .bar-row .val{font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--navy);}
 .note{font-size:11px;color:var(--slate);line-height:1.6;margin-top:6px;}
+.pnl-table{font-size:12.5px;}
+.pnl-row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px solid var(--sand-lt);}
+.pnl-row span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--green);}
+.pnl-row span.neg{color:var(--red)!important;}
+.pnl-line{font-weight:700;color:var(--navy);margin-top:8px;}
+.pnl-sub{padding-left:16px;color:var(--navy);font-style:italic;}
+.pnl-acc{padding-left:32px;color:var(--slate);font-size:11.5px;}
+.pnl-subtotal{font-weight:700;border-top:1px solid var(--navy);border-bottom:none;margin-top:6px;padding-top:8px;}
+.pnl-total{font-weight:700;font-size:14px;border-top:2px solid var(--navy);border-bottom:2px solid var(--navy);margin-top:10px;padding:10px 0;}
 </style>
 </head>
 <body>
@@ -69,7 +78,7 @@
     <div>
       <h1 class="main-h1">Control <em>financiero</em></h1>
       <div class="main-rule"></div>
-      <div class="main-sub">Datos reales de contabilidad (Holded): ingresos, gastos por grupo contable, tesorería, cobros/pagos pendientes y ratios principales del negocio. Los materiales de cada proyecto no se incluyen en el desglose indirecto — van dentro del propio presupuesto.</div>
+      <div class="main-sub">Datos reales de contabilidad (Holded): el mismo desglose que Pérdidas y Ganancias, línea a línea y cuenta a cuenta, más tesorería, cobros/pagos pendientes y ratios principales del negocio.</div>
     </div>
   </div>
 
@@ -225,6 +234,32 @@ function fmtRatio(v, suffix) {
   return v == null ? '—' : v.toLocaleString('es-ES', { maximumFractionDigits: 1 }) + (suffix || '');
 }
 
+// Reproduce el mismo desglose línea a línea / cuenta a cuenta que el
+// informe de Pérdidas y Ganancias de Holded (modelo abreviado).
+function pnlRow(label, total, cls) {
+  return `<div class="pnl-row ${cls}"><span>${escapeHtml(String(label))}</span><span class="${total < 0 ? 'neg' : ''}">${fmtMoney(total)}</span></div>`;
+}
+function renderPnL(d) {
+  const wrap = document.createElement('div');
+  wrap.className = 'pnl-table';
+  const rows = [];
+  (d.pnl || []).forEach((l) => {
+    rows.push(pnlRow(l.label, l.total, 'pnl-line'));
+    (l.subs || []).forEach((s) => {
+      if (s.label !== l.label) rows.push(pnlRow(s.label, s.total, 'pnl-sub'));
+      (s.accounts || []).forEach((a) => {
+        rows.push(pnlRow(`${a.account_num} - ${a.name || 'Sin nombre'}`, a.total, 'pnl-acc'));
+      });
+    });
+  });
+  rows.push(pnlRow('Resultado de explotación', d.resultadoExplotacion, 'pnl-subtotal'));
+  rows.push(pnlRow('Resultado financiero', d.resultadoFinanciero, 'pnl-subtotal'));
+  rows.push(pnlRow('Resultado antes de impuestos', d.resultadoAntesImpuestos, 'pnl-subtotal'));
+  rows.push(pnlRow('Resultado del ejercicio', d.resultadoEjercicio, 'pnl-total'));
+  wrap.innerHTML = rows.join('');
+  return wrap;
+}
+
 function addCard(body, title, hint) {
   const card = document.createElement('div');
   card.className = 'card';
@@ -258,11 +293,8 @@ async function loadNumeros() {
     addCard(body, 'Gastos por mes', 'Grupo contable 6x (compras y gastos) según el libro mayor de Holded — la contabilidad definitiva, igual que en Pérdidas y Ganancias. Incluye materiales cuando la gestoría los ha contabilizado.').appendChild(renderLineChart(d.expenses.byMonth, '#1A2236'));
     addCard(body, 'Resultado por mes', 'Ingresos (grupo 7x) − gastos (grupo 6x), según el libro mayor.').appendChild(renderDivergingChart(d.revenue.byMonth.map((r, i) => ({ month: r.month, total: r.total - (d.expenses.byMonth[i] ? d.expenses.byMonth[i].total : 0) }))));
 
-    addCard(body, 'Gastos por grupo contable', 'Desglose del gasto total (grupo 6x) por partida del plan contable, según el libro mayor.')
-      .appendChild(renderRankedBars(d.expenses.byGroup.map((g) => ({ name: g.label, total: g.total, sub: 'grupo ' + g.group })), { emptyMsg: 'Sin gastos en este periodo.', noFold: true }));
-
-    addCard(body, 'Gastos indirectos por mes', 'Servicios exteriores (grupo 62): alquiler, seguros, profesionales, suministros, publicidad…').appendChild(renderLineChart(d.indirectExpenses.byMonth, '#5C7CD9'));
-    addCard(body, 'Desglose de gastos indirectos por cuenta').appendChild(renderRankedBars(d.indirectExpenses.byAccount, { emptyMsg: 'Sin gastos indirectos en este periodo.' }));
+    addCard(body, 'Pérdidas y Ganancias', 'Mismo desglose que el informe de Holded — línea, apartado y cuenta contable, con su importe.')
+      .appendChild(renderPnL(d));
 
     addCard(body, 'Principales clientes', 'Por facturación en el periodo.').appendChild(renderRankedBars(d.revenue.byClient, { emptyMsg: 'Sin facturas en este periodo.', maxRows: 8, noFold: true }));
     addCard(body, 'Principales proveedores', 'Por gasto en el periodo.').appendChild(renderRankedBars(d.expenses.bySupplier, { emptyMsg: 'Sin compras en este periodo.', maxRows: 8, noFold: true }));
