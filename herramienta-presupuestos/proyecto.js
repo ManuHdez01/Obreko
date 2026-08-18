@@ -1133,6 +1133,31 @@ async function enviarAPropuesta() {
     return;
   }
 
+  // Si el proyecto no tiene todavía los textos adaptados, se piden aquí: al
+  // pulsar "Enviar a propuesta" tiene que ir todo, sin pasos previos.
+  if (!project.propuestaTextos) {
+    toast('Redactando los textos de la propuesta…');
+    try {
+      const textos = await api('propuesta-textos', {
+        method: 'POST',
+        body: { project: collectForm(), suppliers: (project.suppliers || []).slice(0, 30) },
+      });
+      project.propuestaTextos = {
+        intro: textos.intro || '',
+        enfoque: textos.enfoque || '',
+        objetivo: textos.objetivo || '',
+        trabajos: textos.trabajos || [],
+        condiciones: textos.condiciones || [],
+        transporteEstimado: textos.transporteEstimado || 0,
+      };
+      await saveProject(false);
+    } catch (err) {
+      // Sin textos también se puede enviar: se vuelcan las partidas y los
+      // datos de la ficha, y los párrafos se quedan como los de la plantilla.
+      toast('No se han podido redactar los textos (' + err.message + '). Se envían las partidas igualmente.', 'error');
+    }
+  }
+
   // El presupuesto detallado YA es precio de venta: se manda tal cual, sin
   // aplicarle ningún factor. Antes se trataba cada partida como coste y se le
   // recargaba el margen encima, así que a la propuesta llegaban importes
@@ -1145,7 +1170,7 @@ async function enviarAPropuesta() {
     const capitulo = String(it.capitulo || '').trim();
     return {
       concept: it.name,
-      desc: capitulo || (it.supplier ? 'Suministro e instalación · ' + it.supplier : 'Suministro e instalación'),
+      desc: capitulo || 'Suministro e instalación',
       mat: Math.round(Number(it.totalPrice) || 0),
       labor: 0,
     };
@@ -1156,6 +1181,15 @@ async function enviarAPropuesta() {
     createdAt: new Date().toISOString(),
     ref: project.ref || '',
     clientName: project.clientName || '',
+    // Datos de la ficha para la portada y la ficha técnica de la propuesta.
+    // Aquí NO va nada interno: ni costes, ni márgenes, ni proveedores de
+    // compra, ni el reparto material / mano de obra.
+    address: project.address || '',
+    tipo: project.tipo || '',
+    region: project.region || 'tenerife',
+    m2: project.m2 || 0,
+    estancias: project.estancias || null,
+    fecha: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
     rows,
     // Ejecución material: el beneficio industrial y el impuesto los calcula la
     // propia plantilla de la propuesta.

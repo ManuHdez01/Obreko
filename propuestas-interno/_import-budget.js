@@ -96,10 +96,54 @@
     var refEl = document.querySelector('.cover-meta-ref, .cover-ref');
     if (refEl && payload.ref) refEl.textContent = payload.ref;
 
+    // Portada: referencia, fecha y dirección del inmueble
+    var meta = document.querySelectorAll('.p1-meta [contenteditable]');
+    if (meta.length && payload.ref) meta[0].textContent = payload.ref;
+    if (meta.length > 1 && payload.fecha) meta[1].textContent = payload.fecha;
+    var addrEl = document.querySelector('.p1-client-addr');
+    if (addrEl && payload.address) addrEl.textContent = payload.address;
+
+    rellenarFichaTecnica(payload);
+
+    // Contexto de la obra para la varita de redacción: sobrevive al borrado
+    // del payload de importación.
+    try {
+      localStorage.setItem('obreko_proposal_ctx', JSON.stringify({
+        tipo: payload.tipo || '', m2: payload.m2 || 0, address: payload.address || '',
+        region: payload.region || 'tenerife', clientName: payload.clientName || '',
+        capitulos: (payload.rows || []).map(function (r) { return r.desc; })
+          .filter(function (d, idx, arr) { return d && arr.indexOf(d) === idx; }).slice(0, 20),
+      }));
+    } catch (e) {}
+
     aplicarTextos(payload.textos);
 
     if (typeof window.calcBudget === 'function') window.calcBudget();
+    // Los bloques recién creados también tienen que llevar su varita.
+    if (typeof window.montarVaritasIA === 'function') window.montarVaritasIA();
     return true;
+  }
+
+  // Ficha técnica: los campos se localizan por su etiqueta, que es lo único
+  // estable entre plantillas.
+  function rellenarFichaTecnica(payload) {
+    var campos = document.querySelectorAll('.p4-field');
+    if (!campos.length) return;
+    var est = payload.estancias || {};
+    var estancias = (Number(est.cocinas) || 0) + (Number(est.banos) || 0) + (Number(est.dormitorios) || 0);
+    var valores = {
+      'tipo de inmueble': payload.tipo || '',
+      'dirección completa': payload.address || '',
+      'superficie total': payload.m2 ? String(payload.m2).replace('.', ',') + ' m²' : '',
+      'nº de estancias': estancias ? String(estancias) : '',
+    };
+    Array.prototype.forEach.call(campos, function (campo) {
+      var etiqueta = campo.querySelector('.p4-field-label');
+      var valor = campo.querySelector('.p4-field-val');
+      if (!etiqueta || !valor) return;
+      var clave = etiqueta.textContent.trim().toLowerCase();
+      if (valores[clave]) valor.textContent = valores[clave];
+    });
   }
 
   // Textos adaptados por la IA a esta obra y esta zona. Cada hueco se rellena
@@ -122,8 +166,13 @@
       extra.className = objetivo.className;
       extra.contentEditable = 'true';
       extra.style.marginTop = '3mm';
+      extra.setAttribute('data-ai-wand', 'enfoque');
       extra.textContent = textos.enfoque;
-      objetivo.parentNode.insertBefore(extra, objetivo.nextSibling);
+      // Si el objetivo ya tiene su varita al lado, el párrafo va detrás de ella:
+      // así cada varita queda pegada al texto que le corresponde.
+      var refe = objetivo.nextElementSibling;
+      var punto = (refe && refe.classList && refe.classList.contains('ai-wand')) ? refe.nextSibling : objetivo.nextSibling;
+      objetivo.parentNode.insertBefore(extra, punto);
     }
 
     // Trabajos incluidos: se rehace la lista con los del presupuesto.
@@ -135,6 +184,7 @@
         var span = document.createElement('span');
         span.className = 'p6-trabajo-text';
         span.contentEditable = 'true';
+        span.setAttribute('data-ai-wand', 'trabajo');
         span.textContent = t;
         li.appendChild(span);
         var btn = document.createElement('button');
@@ -164,6 +214,7 @@
       var texto = document.createElement('div');
       texto.contentEditable = 'true';
       texto.style.cssText = "font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif";
+      texto.setAttribute('data-ai-wand', 'condicion');
       texto.textContent = c.texto;
       bloque.appendChild(titulo);
       bloque.appendChild(texto);
