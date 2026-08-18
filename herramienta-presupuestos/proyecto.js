@@ -368,8 +368,8 @@ function renderItems() {
   seleccionItems = new Set(Array.from(seleccionItems).filter((i) => i < items.length));
   if (!items.length) {
     seleccionItems.clear();
-    body.innerHTML = '<tr><td colspan="10" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr>';
-    $('itemsTotal').textContent = fmtMoney(0);
+    body.innerHTML = '<tr><td colspan="11" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr>';
+    pintarTotales(0, 0, 0);
     $('itemsRealTotalRow').style.display = 'none';
     actualizarBarraSeleccion();
     renderRfqItems();
@@ -412,6 +412,12 @@ function renderItems() {
             <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
             ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
           </td>
+          <td>
+            <select style="font-size:11.5px" onchange="updItem(${i},'tipo',this.value)">
+              <option value="material"${esManoDeObra(it) ? '' : ' selected'}>Material</option>
+              <option value="obra"${esManoDeObra(it) ? ' selected' : ''}>Mano de obra</option>
+            </select>
+          </td>
           <td>${escapeHtml(it.supplier || '—')}</td>
           <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
@@ -428,7 +434,7 @@ function renderItems() {
     return `
       <tr style="background:var(--sand-lt)">
         <td><input type="checkbox" ${todoElGrupo ? 'checked' : ''} title="Seleccionar todo el grupo" onchange="toggleSeleccionGrupo([${idxs.join(',')}], this.checked)"></td>
-        <td colspan="5" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
+        <td colspan="6" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
         <td class="r" style="font-weight:700">${fmtMoney(groupBudget)}</td>
         <td class="r" style="font-weight:700">${groupReal ? fmtMoney(groupReal) : '—'}</td>
         <td colspan="2"></td>
@@ -436,11 +442,11 @@ function renderItems() {
       ${rows}`;
   }).join('');
 
-  const total = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const totalMateriales = items.filter((it) => !esManoDeObra(it)).reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const totalObra = items.filter(esManoDeObra).reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
   const realTotal = items.reduce((s, it) => s + (Number(it.realCost) || 0), 0);
-  $('itemsTotal').textContent = fmtMoney(total);
+  pintarTotales(totalMateriales, totalObra, realTotal);
   $('itemsRealTotal').textContent = fmtMoney(realTotal);
-  $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
   actualizarBarraSeleccion();
   renderRfqItems();
 }
@@ -454,10 +460,31 @@ function capituloCorto(capitulo) {
   return m ? 'CAP.' + m[1] : texto.slice(0, 12);
 }
 
+// Una partida es mano de obra solo si está marcada como tal: lo que no se
+// marca cuenta como material, que es lo que había antes del desglose.
+function esManoDeObra(it) {
+  return String((it || {}).tipo || '') === 'obra';
+}
+
+// Pie del presupuesto: materiales, mano de obra, base, IGIC y total. El
+// porcentaje sale del campo IGIC/IVA de la pestaña Costes & Margen.
+function pintarTotales(totalMateriales, totalObra, realTotal) {
+  const base = totalMateriales + totalObra;
+  const taxPct = Number(($('fTaxPct') || {}).value) || 0;
+  const impuesto = base * (taxPct / 100);
+  $('itemsMatTotal').textContent = fmtMoney(totalMateriales);
+  $('itemsObraTotal').textContent = fmtMoney(totalObra);
+  $('itemsTotal').textContent = fmtMoney(base);
+  $('itemsTaxPct').textContent = String(taxPct);
+  $('itemsTaxAmount').textContent = fmtMoney(impuesto);
+  $('itemsTotalConIgic').textContent = fmtMoney(base + impuesto);
+  $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
+}
+
 function updItem(i, field, value) {
   const it = project.items[i];
   if (!it) return;
-  if (field === 'name' || field === 'estancia') it[field] = value;
+  if (field === 'name' || field === 'estancia' || field === 'tipo') it[field] = value;
   else it[field] = Number(value) || 0;
   it.totalPrice = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
   renderItems();
@@ -535,7 +562,7 @@ window.borrarTodasLasPartidas = borrarTodasLasPartidas;
 
 function addItemManual() {
   project.items = project.items || [];
-  project.items.push({ name: '', estancia: '', supplier: '', unit: 'ud', unitPrice: 0, quantity: 1, totalPrice: 0, realCost: 0, reasoning: '' });
+  project.items.push({ name: '', capitulo: '', tipo: 'material', supplier: '', unit: 'ud', unitPrice: 0, quantity: 1, totalPrice: 0, realCost: 0, reasoning: '' });
   renderItems();
 }
 window.addItemManual = addItemManual;
@@ -1064,7 +1091,7 @@ function applyAssistantAction(action) {
       const price = Number(it.unitPrice) || 0;
       project.items.push({
         name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
-        capitulo: String(it.capitulo || ''),
+        capitulo: String(it.capitulo || ''), tipo: it.tipo === 'obra' ? 'obra' : 'material',
         unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
         totalPrice: +(qty * price).toFixed(2), reasoning: String(it.reasoning || ''),
       });

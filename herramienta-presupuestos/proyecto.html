@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>obreko — Proyecto</title>
-<link rel="stylesheet" href="_styles.css?v=20260818b">
+<link rel="stylesheet" href="_styles.css?v=20260818c">
 <style>
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
 .tab{padding:9px 16px;border-radius:7px;border:1px solid rgba(26,34,54,.14);background:#fff;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);}
@@ -70,7 +70,7 @@
 
   <div class="tabs">
     <button class="tab on" data-tab="datos" onclick="showTab('datos')">Datos & Análisis</button>
-    <button class="tab" data-tab="materiales" onclick="showTab('materiales')">Materiales</button>
+    <button class="tab" data-tab="materiales" onclick="showTab('materiales')">Presupuesto detallado</button>
     <button class="tab" data-tab="costes" onclick="showTab('costes')">Costes & Margen</button>
     <button class="tab" data-tab="rfq" onclick="showTab('rfq')">Solicitudes (RFQ)</button>
     <button class="tab" data-tab="facturas" onclick="showTab('facturas')">Facturas</button>
@@ -190,7 +190,7 @@
 
     <div class="card">
       <div class="card-h">
-        <span>Materiales del proyecto</span>
+        <span>Presupuesto detallado</span>
         <span style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-sm btn-sec" onclick="abrirMontarTexto()">📋 Montar desde texto</button>
           <button class="btn btn-sm btn-sec" onclick="abrirSubirExcel()">📊 Subir Excel</button>
@@ -203,8 +203,8 @@
       <datalist id="itemNameSuggestions"></datalist>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
-          <tbody id="itemsBody"><tr><td colspan="10" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
+          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Concepto</th><th>Tipo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
+          <tbody id="itemsBody"><tr><td colspan="11" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr></tbody>
         </table>
       </div>
       <div id="itemsBulkBar" style="display:none;margin-top:10px;padding:8px 12px;background:var(--sand-lt);border-radius:8px;align-items:center;gap:10px;flex-wrap:wrap">
@@ -217,9 +217,13 @@
           <button class="btn btn-sm btn-sec" onclick="addItemManual()">+ Añadir a mano</button>
           <button class="btn btn-sm btn-danger" onclick="borrarTodasLasPartidas()">🗑 Borrar todo</button>
         </span>
-        <div style="font-size:13.5px;text-align:right">
-          <div><span style="color:var(--slate)">Coste materiales (presupuestado):</span> <strong id="itemsTotal">0,00 €</strong></div>
-          <div id="itemsRealTotalRow" style="display:none"><span style="color:var(--slate)">Gasto real cargado:</span> <strong id="itemsRealTotal">0,00 €</strong></div>
+        <div style="font-size:13.5px;text-align:right;min-width:280px">
+          <div><span style="color:var(--slate)">Materiales:</span> <strong id="itemsMatTotal">0,00 €</strong></div>
+          <div><span style="color:var(--slate)">Mano de obra:</span> <strong id="itemsObraTotal">0,00 €</strong></div>
+          <div style="border-top:1px solid rgba(26,34,54,.15);margin-top:4px;padding-top:4px"><span style="color:var(--slate)">Base imponible:</span> <strong id="itemsTotal">0,00 €</strong></div>
+          <div><span style="color:var(--slate)">IGIC (<span id="itemsTaxPct">0</span>%):</span> <strong id="itemsTaxAmount">0,00 €</strong></div>
+          <div style="font-size:15px;margin-top:2px"><span style="color:var(--slate)">Total con IGIC:</span> <strong id="itemsTotalConIgic">0,00 €</strong></div>
+          <div id="itemsRealTotalRow" style="display:none;margin-top:4px"><span style="color:var(--slate)">Gasto real cargado:</span> <strong id="itemsRealTotal">0,00 €</strong></div>
         </div>
       </div>
     </div>
@@ -248,7 +252,7 @@
         </div>
         <div class="field-group">
           <label>IGIC / IVA (%)</label>
-          <input type="number" id="fTaxPct" min="0" max="100" step="0.5" onchange="saveProject(false)">
+          <input type="number" id="fTaxPct" min="0" max="100" step="0.5" onchange="saveProject(false); renderItems()">
         </div>
       </div>
       <div style="margin-top:10px">
@@ -279,7 +283,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
         <div>
           <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:6px">Artículos</div>
-          <div id="rfqItems"><div class="state">Añade materiales en la pestaña Materiales.</div></div>
+          <div id="rfqItems"><div class="state">Añade partidas en la pestaña Presupuesto detallado.</div></div>
         </div>
         <div>
           <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:6px">Proveedores</div>
@@ -424,7 +428,7 @@
 .ai-input button:disabled{background:rgba(26,34,54,.15);color:var(--slate);cursor:wait;}
 @media print{#aiFab,#aiPanel{display:none !important;}}
 </style>
-<script src="_common.js?v=20260818b"></script>
-<script src="proyecto.js?v=20260818b"></script>
+<script src="_common.js?v=20260818c"></script>
+<script src="proyecto.js?v=20260818c"></script>
 </body>
 </html>
