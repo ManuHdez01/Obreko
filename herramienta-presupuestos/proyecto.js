@@ -64,7 +64,6 @@ function renderAll() {
     fAddress: 'address', fRef: 'ref', fRegion: 'region', fMode: 'mode', fTipo: 'tipo',
     fM2: 'm2', fCalidad: 'calidad',
     fLaborHours: 'laborHours', fLaborRate: 'laborRate', fIndirectPct: 'indirectPct', fMarginPct: 'marginPct',
-    fTaxPct: 'taxPct',
   };
   for (const [el, key] of Object.entries(map)) $(el).value = project[key] != null ? project[key] : '';
   // Pie del presupuesto: si el proyecto no trae impuesto, se pone el de su
@@ -73,7 +72,6 @@ function renderAll() {
   $('fGiPct').value = project.giPct != null && project.giPct !== '' ? project.giPct : 10;
   $('fTaxLabel').value = project.taxLabel || (canarias ? 'IGIC' : 'IVA');
   $('fTaxPctPie').value = project.taxPct ? project.taxPct : (canarias ? 7 : 21);
-  $('fTaxPct').value = $('fTaxPctPie').value;
 
   const est = project.estancias || {};
   $('fCocinas').value = est.cocinas != null ? est.cocinas : 1;
@@ -117,7 +115,7 @@ function collectForm() {
     laborRate: Number($('fLaborRate').value) || 0,
     indirectPct: Number($('fIndirectPct').value) || 0,
     marginPct: Number($('fMarginPct').value) || 0,
-    taxPct: Number($('fTaxPct').value) || 0,
+    taxPct: Number($('fTaxPctPie').value) || 0,
     taxLabel: $('fTaxLabel').value || 'IGIC',
     giPct: Number($('fGiPct').value) || 0,
     items: project.items || [],
@@ -533,10 +531,9 @@ function impuestoSegunDireccion() {
 }
 window.impuestoSegunDireccion = impuestoSegunDireccion;
 
-// El porcentaje vive en un único sitio (project.taxPct), pero se puede tocar
-// desde el pie del presupuesto o desde Costes & Margen: se sincronizan.
+// El impuesto se elige solo en el pie del presupuesto: en Costes & Margen se
+// trabaja siempre sin impuestos.
 function onImpuestoChange() {
-  $('fTaxPct').value = $('fTaxPctPie').value;
   renderItems();
   saveProject(false);
 }
@@ -759,23 +756,30 @@ function renderEconomics() {
     </tr>`;
   };
   const margenTotal = e.ventaTotal - e.costeTotal;
+  // El total va dentro de la tabla, con cada cifra bajo su columna y la misma
+  // tipografía que el resto de números.
   $('costBreakdown').innerHTML = `
-    <table class="tbl" style="font-size:12.5px">
+    <table class="tbl eco-tbl">
       <thead><tr><th></th><th class="r">Venta (presupuesto)</th><th class="r">Coste (real)</th><th class="r">Margen</th></tr></thead>
       <tbody>
         ${fila('Materiales', e.ventaMateriales, e.costeMateriales, e.costeFacturasMateriales ? 'facturas de proveedor' : 'sin facturas todavía')}
         ${fila('Mano de obra', e.ventaObra, e.costeObra, e.costeObraManual ? 'incluye ' + fmtMoney(e.costeObraManual) + ' de horas × tarifa' : 'facturas y horas × tarifa')}
         ${fila('Costes indirectos', 0, e.costeIndirecto, 'facturas indirectas y % de la ficha')}
-        ${e.costeSinClasificar ? fila('Facturas sin clasificar', 0, e.costeSinClasificar, 'regístralas con su concepto de coste') : ''}
+        ${Math.abs(e.costeSinClasificar) >= 1 ? fila('Facturas sin clasificar', 0, e.costeSinClasificar, 'regístralas con su concepto de coste') : ''}
+        ${Math.abs(e.ventaSinRepartir) >= 1 ? `<tr><td style="color:var(--red)">Venta sin repartir<div style="font-size:10.5px">partidas sin desglose de material y mano de obra</div></td><td class="r" style="color:var(--red)">${fmtMoney(e.ventaSinRepartir)}</td><td class="r">—</td><td class="r">—</td></tr>` : ''}
       </tbody>
+      <tfoot>
+        <tr class="eco-total">
+          <td>TOTAL</td>
+          <td class="r">${fmtMoney(e.ventaTotal)}</td>
+          <td class="r">${fmtMoney(e.costeTotal)}</td>
+          <td class="r">${fmtMoney(margenTotal)}</td>
+        </tr>
+      </tfoot>
     </table>
-    ${e.ventaSinRepartir ? `<div class="totals-row"><span style="color:var(--red)">Venta sin repartir entre material y mano de obra</span><span class="val" style="color:var(--red)">${fmtMoney(e.ventaSinRepartir)}</span></div>` : ''}
-    <div class="totals-row grand"><span>Total</span><span class="val">${fmtMoney(e.ventaTotal)} venta · ${fmtMoney(e.costeTotal)} coste · ${fmtMoney(margenTotal)} margen</span></div>
     <div class="totals-row" style="margin-top:10px"><span>Coste interno previsto (materiales + horas + indirectos)</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
     <div class="totals-row"><span>Margen objetivo (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
     <div class="totals-row grand"><span>PVP sugerido (sin impuestos)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
-    <div class="totals-row"><span>IGIC/IVA (${fmtPct(e.taxPct)})</span><span class="val">${fmtMoney(e.taxAmount)}</span></div>
-    <div class="totals-row grand"><span>PVP con IGIC/IVA</span><span class="val">${fmtMoney(e.suggestedPriceWithTax)}</span></div>
   `;
   $('realBreakdown').innerHTML = `
     <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
