@@ -771,8 +771,11 @@ function renderEconomics() {
     </table>
     ${e.ventaSinRepartir ? `<div class="totals-row"><span style="color:var(--red)">Venta sin repartir entre material y mano de obra</span><span class="val" style="color:var(--red)">${fmtMoney(e.ventaSinRepartir)}</span></div>` : ''}
     <div class="totals-row grand"><span>Total</span><span class="val">${fmtMoney(e.ventaTotal)} venta · ${fmtMoney(e.costeTotal)} coste · ${fmtMoney(margenTotal)} margen</span></div>
-    <div class="totals-row"><span>Margen objetivo de la ficha (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
-    <div class="totals-row"><span>IGIC/IVA (${fmtPct(e.taxPct)}) sobre la venta</span><span class="val">${fmtMoney(e.ventaTotal * (Number(e.taxPct) || 0) / 100)}</span></div>
+    <div class="totals-row" style="margin-top:10px"><span>Coste interno previsto (materiales + horas + indirectos)</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
+    <div class="totals-row"><span>Margen objetivo (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
+    <div class="totals-row grand"><span>PVP sugerido (sin impuestos)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
+    <div class="totals-row"><span>IGIC/IVA (${fmtPct(e.taxPct)})</span><span class="val">${fmtMoney(e.taxAmount)}</span></div>
+    <div class="totals-row grand"><span>PVP con IGIC/IVA</span><span class="val">${fmtMoney(e.suggestedPriceWithTax)}</span></div>
   `;
   $('realBreakdown').innerHTML = `
     <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
