@@ -677,11 +677,41 @@ window.addItemManual = addItemManual;
 // orientativa y que el transporte se factura aparte según coste real.
 const CAP_TRANSPORTE = 'CAP.0  COSTES GENERALES DE OBRA';
 
+function partidaDeTransporteExistente() {
+  return (project.items || []).find((it) => (it.capitulo || '') === CAP_TRANSPORTE && /transporte/i.test(it.name || ''));
+}
+
+// Añade o actualiza la partida de transporte con un importe ya estimado
+// (por el endpoint dedicado o por propuesta-textos). No guarda ni repinta
+// por sí sola: lo hace quien la llama, para poder agrupar varios cambios en
+// un único guardado.
+function agregarOActualizarTransporte(estimado, justificacion) {
+  const existente = partidaDeTransporteExistente();
+  const razon = 'Estimación: ' + (justificacion || '') + ' Se factura aparte según coste real.';
+  if (existente) {
+    existente.unitPrice = estimado;
+    existente.totalPrice = estimado;
+    existente.reasoning = razon;
+  } else {
+    project.items = project.items || [];
+    project.items.push({
+      name: 'Transporte, portes y desplazamientos (estimado)',
+      capitulo: CAP_TRANSPORTE,
+      supplier: 'estimación',
+      unit: 'pa', quantity: 1,
+      unitPrice: estimado, totalPrice: estimado,
+      material: 0, manoObra: 0,
+      realCost: 0,
+      reasoning: razon,
+    });
+  }
+}
+
 async function anadirTransporteEstimado() {
   const items = project.items || [];
   if (!items.length) { toast('El presupuesto no tiene partidas todavía', 'error'); return; }
 
-  const existente = items.find((it) => (it.capitulo || '') === CAP_TRANSPORTE && /transporte/i.test(it.name || ''));
+  const existente = partidaDeTransporteExistente();
   if (existente && !confirm('Ya hay una partida de transporte estimado (' + fmtMoney(existente.totalPrice) + '). ¿Volver a estimarla?')) return;
 
   const btn = $('btnTransporteEstimado');
@@ -689,22 +719,7 @@ async function anadirTransporteEstimado() {
   btn.disabled = true; btn.textContent = 'Estimando…';
   try {
     const data = await api('transporte-estimado', { method: 'POST', body: { project: collectForm() } });
-    if (existente) {
-      existente.unitPrice = data.estimado;
-      existente.totalPrice = data.estimado;
-      existente.reasoning = 'Estimación: ' + (data.justificacion || '') + ' Se factura aparte según coste real.';
-    } else {
-      project.items.push({
-        name: 'Transporte, portes y desplazamientos (estimado)',
-        capitulo: CAP_TRANSPORTE,
-        supplier: 'estimación',
-        unit: 'pa', quantity: 1,
-        unitPrice: data.estimado, totalPrice: data.estimado,
-        material: 0, manoObra: 0,
-        realCost: 0,
-        reasoning: 'Estimación: ' + (data.justificacion || '') + ' Se factura aparte según coste real.',
-      });
-    }
+    agregarOActualizarTransporte(data.estimado, data.justificacion);
     seleccionItems.clear();
     renderItems();
     saveProject(false);
@@ -1190,6 +1205,8 @@ async function enviarAPropuesta() {
   // Si el proyecto no tiene todavía los textos adaptados, o los tiene de una
   // versión anterior (p.ej. sin calendario), se piden aquí: al pulsar
   // "Enviar a propuesta" tiene que ir todo, sin pasos previos.
+  let transporteEstimado = (project.propuestaTextos || {}).transporteEstimado || 0;
+  let transporteJustificacion = '';
   if (!project.propuestaTextos || project.propuestaTextos.version !== TEXTOS_PROPUESTA_VERSION) {
     toast('Redactando los textos de la propuesta…');
     try {
@@ -1207,12 +1224,24 @@ async function enviarAPropuesta() {
         condiciones: textos.condiciones || [],
         transporteEstimado: textos.transporteEstimado || 0,
       };
+      transporteEstimado = textos.transporteEstimado || 0;
+      transporteJustificacion = textos.transporteJustificacion || '';
       await saveProject(false);
     } catch (err) {
       // Sin textos también se puede enviar: se vuelcan las partidas y los
       // datos de la ficha, y los párrafos se quedan como los de la plantilla.
       toast('No se han podido redactar los textos (' + err.message + '). Se envían las partidas igualmente.', 'error');
     }
+  }
+
+  // El transporte siempre va como partida del presupuesto, no solo como dato
+  // de la propuesta: si ya la teníamos (de un envío anterior, o de la
+  // estimación recién pedida) y todavía no se ha añadido al presupuesto, se
+  // añade aquí — así no depende de que alguien pulse el botón aparte.
+  if (transporteEstimado > 0 && !partidaDeTransporteExistente()) {
+    agregarOActualizarTransporte(transporteEstimado, transporteJustificacion);
+    renderItems();
+    await saveProject(false);
   }
 
   // El presupuesto detallado YA es precio de venta: se manda tal cual, sin
@@ -1225,7 +1254,7 @@ async function enviarAPropuesta() {
   // material y mano de obra es información interna y no sale del despacho.
   // "Concepto" es el capítulo (agrupa varias filas bajo el mismo epígrafe,
   // como en el Excel de origen); "Descripción" es la partida en sí.
-  const rows = items.map((it) => {
+  const rows = (project.items || []).map((it) => {
     const capitulo = String(it.capitulo || '').trim();
     return {
       concept: capitulo || 'Otros trabajos',

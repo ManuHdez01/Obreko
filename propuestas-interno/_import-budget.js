@@ -94,7 +94,7 @@
       var cab = document.createElement('tr');
       cab.className = 'cat-row';
       var celda = document.createElement('td');
-      celda.colSpan = 4;
+      celda.colSpan = 3;
       celda.textContent = grupo.capitulo;
       cab.appendChild(celda);
       tbody.insertBefore(cab, referencia);
@@ -102,8 +102,6 @@
       grupo.items.forEach(function (item) {
         var fila = plantilla.cloneNode(true);
         setCell(conceptCell(fila), item.desc || '');
-        var descEl = fila.querySelector('td.desc');
-        if (descEl) setCell(descEl, '');
         var mat = fila.querySelector('[data-type="mat"]');
         setCell(mat, item.mat > 0 ? fmtMoney(item.mat) : '—');
         var labor = fila.querySelector('[data-type="labor"]');
