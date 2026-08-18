@@ -1168,11 +1168,13 @@ async function enviarAPropuesta() {
   // el importe entero va como material, que es como se venía haciendo.
   // Al cliente le llega un único importe por partida: el desglose entre
   // material y mano de obra es información interna y no sale del despacho.
+  // "Concepto" es el capítulo (agrupa varias filas bajo el mismo epígrafe,
+  // como en el Excel de origen); "Descripción" es la partida en sí.
   const rows = items.map((it) => {
     const capitulo = String(it.capitulo || '').trim();
     return {
-      concept: it.name,
-      desc: capitulo || 'Suministro e instalación',
+      concept: capitulo || 'Otros trabajos',
+      desc: it.name,
       mat: Math.round(Number(it.totalPrice) || 0),
       labor: 0,
     };

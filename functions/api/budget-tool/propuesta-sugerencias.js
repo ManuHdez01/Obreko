@@ -62,19 +62,26 @@ export async function onRequestPost({ request, env }) {
 
 Estás reescribiendo ${BLOQUES[bloque]} de una propuesta concreta.
 
-LA OBRA
+LA OBRA (úsala entera, no solo el texto actual: es lo que tienes para escribir algo mejor, no una plantilla a rellenar)
 ${ctx.tipo ? 'Tipo: ' + ctx.tipo : ''}${ctx.m2 ? ' · ' + ctx.m2 + ' m²' : ''}
 ${ctx.address ? 'Dirección: ' + ctx.address : ''}
-${capitulos.length ? 'Capítulos del presupuesto:\n' + capitulos.map((c) => '- ' + c).join('\n') : ''}
+${capitulos.length ? 'Capítulos del presupuesto (de qué trata la obra realmente):\n' + capitulos.map((c) => '- ' + c).join('\n') : ''}
 
-TEXTO ACTUAL
+IDENTIDAD DE obreko (para que el texto suene a la marca, no genérico)
+Transparencia: presupuestos claros, sin costes ocultos ni sorpresas al finalizar.
+Compromiso: lo que se firma se cumple, en plazos, calidad y materiales.
+Cercanía: empresa local, conoce la zona, responde rápido, sin intermediarios.
+
+TEXTO ACTUAL (punto de partida, no el techo — mejóralo, no lo repitas con otras palabras)
 """
 ${textoActual || '(el bloque está vacío)'}
 """
 
-Escribe TRES alternativas para ese bloque: una más breve, una más detallada y una con otro enfoque. Todas tienen que hablar de esta obra, no de una reforma genérica.
+Escribe TRES alternativas para ese bloque: una más breve, una más detallada y una con otro enfoque. Las tres tienen que ser mejores que el texto actual, no solo distintas: más concretas sobre ESTA obra (usa los capítulos y los datos de arriba, no te quedes solo con lo que ya estaba escrito) y con más capacidad de convencer a quien lo lea. No te limites a parafrasear o acortar/alargar el texto actual — parte de los datos reales de la obra y redacta desde ahí.
 
-Reglas: nunca menciones precios de compra, costes internos, márgenes ni proveedores con los que compramos. Nada de superlativos vacíos ("máxima calidad", "excelencia"). Mantén el mismo registro que el texto actual: si es una condición legal, tono sobrio; si es la presentación, cercano y claro.${canarias ? ' Si viene a cuento, aprovecha lo que condiciona trabajar en la isla (suministro por barco, plazos de pedidos especiales, gestión del vertedero).' : ''}
+Cómo sonar mejor sin mentir ni prometer de más: en vez de listar hechos sueltos, dales una razón que le importe al cliente (no "se instalará fontanería nueva" sino qué gana con eso: menos averías, más presión de agua, sin ruidos). Usa cifras y datos concretos de la obra (m², capítulos, zona) en vez de adjetivos genéricos. Que se note el criterio de un profesional que ya ha visto la vivienda, no un texto que serviría para cualquier reforma.
+
+Reglas: nunca menciones precios de compra, costes internos, márgenes ni proveedores con los que compramos. Nada de superlativos vacíos ni sin respaldo ("máxima calidad", "excelencia", "los mejores"): todo lo que digas tiene que apoyarse en un hecho concreto de esta obra o en la identidad de obreko de arriba. Mantén el registro que le toca al bloque: si es una condición legal, tono sobrio y preciso; si es la presentación o el objetivo, cercano, seguro de sí mismo y directo — nunca hueco.${canarias ? ' Si viene a cuento, aprovecha lo que condiciona trabajar en la isla (suministro por barco, plazos de pedidos especiales, gestión del vertedero) como argumento de que la obra está bien planificada, no como excusa.' : ''}
 
 Usa return_alternativas.`;
 
