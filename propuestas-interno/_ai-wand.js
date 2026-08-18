@@ -137,6 +137,10 @@
   function tipoDeBloque(el) {
     if (el.getAttribute('data-ai-wand')) return el.getAttribute('data-ai-wand');
     if (el.classList.contains('p6-trabajo-text')) return 'trabajo';
+    // Ficha técnica del inmueble (estado, instalaciones afectadas,
+    // observaciones): aquí toca describir, no vender — la IA lo redacta con
+    // vocabulario técnico en vez de comercial.
+    if (el.classList.contains('p4-field-val')) return 'inmueble';
     if (el.closest('#condicionesExtra') || el.closest('.p7-cond, .conditions')) return 'condicion';
     return 'libre';
   }

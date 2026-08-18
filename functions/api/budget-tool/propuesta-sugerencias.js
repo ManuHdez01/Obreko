@@ -18,12 +18,18 @@ const CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
 
 const BLOQUES = {
   intro: 'la presentación de la portada interior: dos o tres frases dirigidas al cliente',
-  objetivo: 'el objetivo de la intervención: tres o cuatro frases sobre qué se va a hacer en la vivienda',
+  objetivo: 'el objetivo de la intervención: tres o cuatro frases describiendo técnicamente qué se va a hacer en la vivienda',
   enfoque: 'el enfoque de la obra: cómo se organiza el trabajo, el suministro y la logística de la zona',
   condicion: 'una condición particular del contrato, en tono legal sobrio, de dos o tres frases',
   trabajo: 'una línea de la lista de trabajos incluidos: una frase corta, sin punto final',
+  inmueble: 'un campo de la ficha técnica del inmueble (estado de conservación, instalaciones afectadas, observaciones): descripción técnica y precisa del estado del inmueble o de la obra',
   libre: 'un párrafo de la propuesta',
 };
+
+// Bloques donde se está describiendo la obra o el inmueble en sí: ahí toca
+// vocabulario técnico de construcción, no el tono comercial del resto de la
+// propuesta.
+const BLOQUES_TECNICOS = ['objetivo', 'inmueble'];
 
 const SUGERENCIAS_TOOL = {
   name: 'return_alternativas',
@@ -81,7 +87,8 @@ Escribe TRES alternativas para ese bloque: una más breve, una más detallada y 
 
 Cómo sonar mejor sin mentir ni prometer de más: en vez de listar hechos sueltos, dales una razón que le importe al cliente (no "se instalará fontanería nueva" sino qué gana con eso: menos averías, más presión de agua, sin ruidos). Usa cifras y datos concretos de la obra (m², capítulos, zona) en vez de adjetivos genéricos. Que se note el criterio de un profesional que ya ha visto la vivienda, no un texto que serviría para cualquier reforma.
 
-Reglas: nunca menciones precios de compra, costes internos, márgenes ni proveedores con los que compramos. Nada de superlativos vacíos ni sin respaldo ("máxima calidad", "excelencia", "los mejores"): todo lo que digas tiene que apoyarse en un hecho concreto de esta obra o en la identidad de obreko de arriba. Nunca digas que el presupuesto es "cerrado" ni "fijo": es una estimación, y si el bloque habla de precio, di que cualquier desviación se comunica al cliente de inmediato, antes de ejecutar el cambio. Mantén el registro que le toca al bloque: si es una condición legal, tono sobrio y preciso; si es la presentación o el objetivo, cercano, seguro de sí mismo y directo — nunca hueco.${canarias ? ' Si viene a cuento, aprovecha lo que condiciona trabajar en la isla (suministro por barco, plazos de pedidos especiales, gestión del vertedero) como argumento de que la obra está bien planificada, no como excusa.' : ''}
+Reglas: nunca menciones precios de compra, costes internos, márgenes ni proveedores con los que compramos. Nada de superlativos vacíos ni sin respaldo ("máxima calidad", "excelencia", "los mejores"): todo lo que digas tiene que apoyarse en un hecho concreto de esta obra o en la identidad de obreko de arriba. Nunca digas que el presupuesto es "cerrado" ni "fijo": es una estimación, y si el bloque habla de precio, di que cualquier desviación se comunica al cliente de inmediato, antes de ejecutar el cambio. Mantén el registro que le toca al bloque: si es una condición legal, tono sobrio y preciso; si es la presentación, cercano, seguro de sí mismo y directo — nunca hueco.${canarias ? ' Si viene a cuento, aprovecha lo que condiciona trabajar en la isla (suministro por barco, plazos de pedidos especiales, gestión del vertedero) como argumento de que la obra está bien planificada, no como excusa.' : ''}
+${BLOQUES_TECNICOS.includes(bloque) ? '\nEste bloque describe la obra o el inmueble en sí, no vende: usa vocabulario técnico de construcción (superficies, sistemas — fontanería, electricidad, saneamiento, ACS —, materiales, estado de conservación, patologías si las hay) en vez de adjetivos comerciales ("precioso", "moderno", "acogedor"). Precisión de profesional que ha visto la obra, sin dejar de ser comprensible para el cliente.' : ''}
 
 Usa return_alternativas.`;
 
