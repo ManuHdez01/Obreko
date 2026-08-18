@@ -138,7 +138,8 @@ export async function onRequestDelete({ request, env }) {
 export function computeEconomics(p) {
   // Todas las partidas del presupuesto detallado suman igual, sin distinguir
   // entre material y mano de obra.
-  const materialsCost = (p.items || []).reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const items = p.items || [];
+  const materialsCost = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
   const laborCost = (Number(p.laborHours) || 0) * (Number(p.laborRate) || 0);
   const indirectPct = Number(p.indirectPct) || 0;
   const indirectCost = (materialsCost + laborCost) * (indirectPct / 100);
@@ -165,11 +166,44 @@ export function computeEconomics(p) {
   const collectedTotal = issued.filter((i) => i.estado === 'cobrada').reduce((s, i) => s + (Number(i.total) || 0), 0);
   const realCost = received.reduce((s, i) => s + (Number(i.total) || 0), 0);
   const paidCost = received.filter((i) => i.estado === 'pagada').reduce((s, i) => s + (Number(i.total) || 0), 0);
+  // ── Venta: sale del presupuesto detallado ──────────────────────────────
+  // Materiales y mano de obra son el desglose interno de cada partida; lo que
+  // no esté repartido se queda aparte para que se vea que falta.
+  const ventaMateriales = items.reduce((s, it) => s + (Number(it.material) || 0), 0);
+  const ventaObra = items.reduce((s, it) => s + (Number(it.manoObra) || 0), 0);
+  const ventaTotal = materialsCost; // suma de las partidas (ejecución material)
+  const ventaSinRepartir = ventaTotal - (ventaMateriales + ventaObra);
+
+  // ── Coste: sale de las facturas recibidas y de lo que se mete a mano ────
+  // Cada factura de proveedor se clasifica al registrarla; las antiguas, sin
+  // clasificar, se agrupan en "otros" en vez de colarse en una categoría.
+  const porCategoria = (cat) => received
+    .filter((i) => (i.categoria || '') === cat)
+    .reduce((s, i) => s + (Number(i.total) || 0), 0);
+  const costeFacturasMateriales = porCategoria('material');
+  const costeFacturasObra = porCategoria('obra');
+  const costeFacturasIndirecto = porCategoria('indirecto');
+  const costeSinClasificar = realCost - (costeFacturasMateriales + costeFacturasObra + costeFacturasIndirecto);
+
+  const costeObraManual = laborCost; // horas × tarifa de la ficha
+  const costeMateriales = costeFacturasMateriales;
+  const costeObra = costeFacturasObra + costeObraManual;
+  const costeIndirecto = costeFacturasIndirecto + indirectCost;
+  const costeTotal = costeMateriales + costeObra + costeIndirecto + costeSinClasificar;
+
+  const margenObra = ventaObra - costeObra;
+  const margenMateriales = ventaMateriales - costeMateriales;
+
   const realMargin = invoicedTotal - realCost;
   const realMarginPct = invoicedTotal > 0 ? (realMargin / invoicedTotal) * 100 : null;
 
   return {
     materialsCost, laborCost, indirectCost, internalCost,
+    ventaMateriales, ventaObra, ventaTotal, ventaSinRepartir,
+    costeMateriales, costeObra, costeIndirecto, costeTotal,
+    costeObraManual, costeFacturasMateriales, costeFacturasObra,
+    costeFacturasIndirecto, costeSinClasificar,
+    margenMateriales, margenObra,
     marginPct, suggestedPrice, marginAmount,
     taxPct, taxAmount, suggestedPriceWithTax,
     invoicedTotal, collectedTotal, realCost, paidCost, realMargin, realMarginPct,

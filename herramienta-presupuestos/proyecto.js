@@ -745,15 +745,34 @@ function renderEconomics() {
     <div class="summary-card"><div class="summary-label">Facturado</div><div class="summary-value">${fmtMoney(e.invoicedTotal)}</div><div class="summary-extra">cobrado ${fmtMoney(e.collectedTotal)}</div></div>
     <div class="summary-card"><div class="summary-label">Margen real</div><div class="summary-value">${e.realMarginPct == null ? '—' : fmtMoney(e.realMargin)}</div><div class="summary-extra">${e.realMarginPct == null ? 'sin facturas emitidas' : fmtPct(e.realMarginPct)}</div></div>
   `;
+  // Venta (lo que presupuestas) frente a coste (lo que llevas pagado). La
+  // venta sale del desglose material/mano de obra de cada partida; el coste,
+  // de las facturas de proveedor clasificadas y de las horas de la ficha.
+  const fila = (concepto, venta, coste, nota) => {
+    const margen = venta - coste;
+    const color = coste > venta && venta > 0 ? 'var(--red)' : 'var(--slate)';
+    return `<tr>
+      <td>${concepto}${nota ? `<div style="font-size:10.5px;color:var(--slate)">${nota}</div>` : ''}</td>
+      <td class="r">${fmtMoney(venta)}</td>
+      <td class="r">${fmtMoney(coste)}</td>
+      <td class="r" style="color:${color}">${venta || coste ? fmtMoney(margen) : '—'}</td>
+    </tr>`;
+  };
+  const margenTotal = e.ventaTotal - e.costeTotal;
   $('costBreakdown').innerHTML = `
-    <div class="totals-row"><span>Materiales</span><span class="val">${fmtMoney(e.materialsCost)}</span></div>
-    <div class="totals-row"><span>Mano de obra</span><span class="val">${fmtMoney(e.laborCost)}</span></div>
-    <div class="totals-row"><span>Coste indirecto</span><span class="val">${fmtMoney(e.indirectCost)}</span></div>
-    <div class="totals-row grand"><span>Coste interno total</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
-    <div class="totals-row"><span>Margen objetivo (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
-    <div class="totals-row grand"><span>PVP sugerido (sin impuestos)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
-    <div class="totals-row"><span>IGIC/IVA (${fmtPct(e.taxPct)})</span><span class="val">${fmtMoney(e.taxAmount)}</span></div>
-    <div class="totals-row grand"><span>PVP con IGIC/IVA</span><span class="val">${fmtMoney(e.suggestedPriceWithTax)}</span></div>
+    <table class="tbl" style="font-size:12.5px">
+      <thead><tr><th></th><th class="r">Venta (presupuesto)</th><th class="r">Coste (real)</th><th class="r">Margen</th></tr></thead>
+      <tbody>
+        ${fila('Materiales', e.ventaMateriales, e.costeMateriales, e.costeFacturasMateriales ? 'facturas de proveedor' : 'sin facturas todavía')}
+        ${fila('Mano de obra', e.ventaObra, e.costeObra, e.costeObraManual ? 'incluye ' + fmtMoney(e.costeObraManual) + ' de horas × tarifa' : 'facturas y horas × tarifa')}
+        ${fila('Costes indirectos', 0, e.costeIndirecto, 'facturas indirectas y % de la ficha')}
+        ${e.costeSinClasificar ? fila('Facturas sin clasificar', 0, e.costeSinClasificar, 'regístralas con su concepto de coste') : ''}
+      </tbody>
+    </table>
+    ${e.ventaSinRepartir ? `<div class="totals-row"><span style="color:var(--red)">Venta sin repartir entre material y mano de obra</span><span class="val" style="color:var(--red)">${fmtMoney(e.ventaSinRepartir)}</span></div>` : ''}
+    <div class="totals-row grand"><span>Total</span><span class="val">${fmtMoney(e.ventaTotal)} venta · ${fmtMoney(e.costeTotal)} coste · ${fmtMoney(margenTotal)} margen</span></div>
+    <div class="totals-row"><span>Margen objetivo de la ficha (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
+    <div class="totals-row"><span>IGIC/IVA (${fmtPct(e.taxPct)}) sobre la venta</span><span class="val">${fmtMoney(e.ventaTotal * (Number(e.taxPct) || 0) / 100)}</span></div>
   `;
   $('realBreakdown').innerHTML = `
     <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
@@ -935,6 +954,8 @@ function addInvoice() {
   project.invoices.push({
     id: 'f' + Date.now().toString(36),
     tipo: $('invTipo').value,
+    // Solo tiene sentido en las de proveedor: es donde se reparte el coste.
+    categoria: $('invTipo').value === 'recibida' ? $('invCategoria').value : '',
     contraparte: $('invContraparte').value.trim(),
     numero: $('invNumero').value.trim(),
     fecha: $('invFecha').value || new Date().toISOString().slice(0, 10),

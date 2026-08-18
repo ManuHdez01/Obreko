@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>obreko — Proyecto</title>
-<link rel="stylesheet" href="_styles.css?v=20260818j">
+<link rel="stylesheet" href="_styles.css?v=20260818k">
 <style>
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
 .tab{padding:9px 16px;border-radius:7px;border:1px solid rgba(26,34,54,.14);background:#fff;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);}
@@ -342,6 +342,14 @@
           </select>
         </div>
         <div class="field-group">
+          <label>Concepto de coste</label>
+          <select id="invCategoria" title="Para el desglose interno: en qué se ha ido el dinero">
+            <option value="material">Material</option>
+            <option value="obra">Mano de obra</option>
+            <option value="indirecto">Coste indirecto</option>
+          </select>
+        </div>
+        <div class="field-group">
           <label>Contraparte</label>
           <input type="text" id="invContraparte" placeholder="Cliente / proveedor">
         </div>
@@ -443,7 +451,7 @@
 .ai-input button:disabled{background:rgba(26,34,54,.15);color:var(--slate);cursor:wait;}
 @media print{#aiFab,#aiPanel{display:none !important;}}
 </style>
-<script src="_common.js?v=20260818j"></script>
-<script src="proyecto.js?v=20260818j"></script>
+<script src="_common.js?v=20260818k"></script>
+<script src="proyecto.js?v=20260818k"></script>
 </body>
 </html>
