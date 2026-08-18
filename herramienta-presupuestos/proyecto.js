@@ -671,6 +671,52 @@ function addItemManual() {
 }
 window.addItemManual = addItemManual;
 
+// Añade (o vuelve a estimar) la partida de transporte, portes y
+// desplazamientos. Vive en su propio capítulo de costes generales, para que
+// no se mezcle con los capítulos del Excel; el aviso deja claro que es
+// orientativa y que el transporte se factura aparte según coste real.
+const CAP_TRANSPORTE = 'CAP.0  COSTES GENERALES DE OBRA';
+
+async function anadirTransporteEstimado() {
+  const items = project.items || [];
+  if (!items.length) { toast('El presupuesto no tiene partidas todavía', 'error'); return; }
+
+  const existente = items.find((it) => (it.capitulo || '') === CAP_TRANSPORTE && /transporte/i.test(it.name || ''));
+  if (existente && !confirm('Ya hay una partida de transporte estimado (' + fmtMoney(existente.totalPrice) + '). ¿Volver a estimarla?')) return;
+
+  const btn = $('btnTransporteEstimado');
+  const antes = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Estimando…';
+  try {
+    const data = await api('transporte-estimado', { method: 'POST', body: { project: collectForm() } });
+    if (existente) {
+      existente.unitPrice = data.estimado;
+      existente.totalPrice = data.estimado;
+      existente.reasoning = 'Estimación: ' + (data.justificacion || '') + ' Se factura aparte según coste real.';
+    } else {
+      project.items.push({
+        name: 'Transporte, portes y desplazamientos (estimado)',
+        capitulo: CAP_TRANSPORTE,
+        supplier: 'estimación',
+        unit: 'pa', quantity: 1,
+        unitPrice: data.estimado, totalPrice: data.estimado,
+        material: 0, manoObra: 0,
+        realCost: 0,
+        reasoning: 'Estimación: ' + (data.justificacion || '') + ' Se factura aparte según coste real.',
+      });
+    }
+    seleccionItems.clear();
+    renderItems();
+    saveProject(false);
+    toast('Transporte estimado en ' + fmtMoney(data.estimado), 'success');
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = antes;
+  }
+}
+window.anadirTransporteEstimado = anadirTransporteEstimado;
+
 // ── Autocompletar precio al escribir una partida a mano ──────────────────
 // Reutiliza la biblioteca de precios (GET /api/budget-tool/library?q=)
 // para sugerir nombre/precio mientras el usuario teclea en la fila.
