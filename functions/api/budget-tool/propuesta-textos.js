@@ -35,6 +35,15 @@ const TEXTOS_TOOL = {
         type: 'string',
         description: 'Un párrafo (4-6 frases) sobre cómo se va a abordar ESTA obra: los trabajos principales, cómo se organiza en la zona, proveedores y suministro cercanos, y lo que condiciona el trabajo en esa localización. Concreto, sin promesas vacías.',
       },
+      objetivo: {
+        type: 'string',
+        description: 'Objetivo de la intervención: 3-4 frases describiendo qué se va a hacer en la vivienda, a partir de los capítulos reales del presupuesto. Es el bloque "Objetivo de la intervención" de la propuesta.',
+      },
+      trabajos: {
+        type: 'array',
+        description: 'Lista de trabajos incluidos, uno por capítulo o grupo de partidas, en el orden del presupuesto. Entre 5 y 12, cada uno en una línea corta como "Demolición selectiva y retirada de escombros".',
+        items: { type: 'string' },
+      },
       condiciones: {
         type: 'array',
         description: 'Condiciones particulares de esta obra, además de las generales de la plantilla. Entre 3 y 5.',
@@ -56,7 +65,7 @@ const TEXTOS_TOOL = {
         description: 'Una frase explicando de dónde sale esa estimación (volumen de material, distancia, número de portes).',
       },
     },
-    required: ['intro', 'enfoque', 'condiciones', 'transporteEstimado', 'transporteJustificacion'],
+    required: ['intro', 'enfoque', 'objetivo', 'trabajos', 'condiciones', 'transporteEstimado', 'transporteJustificacion'],
   },
 };
 
@@ -120,6 +129,9 @@ CÓMO ESCRIBIR
 - Menciona proveedores solo por el beneficio para el cliente (plazo, disponibilidad, servicio). Nunca precios de compra, márgenes ni costes internos.
 - Nada de superlativos vacíos ("máxima calidad", "excelencia"). Frases que un cliente pueda comprobar.
 
+OBJETIVO Y TRABAJOS
+Escribe el "objetivo de la intervención" de esta obra y la lista de "trabajos incluidos", sacándolos de los capítulos y partidas reales, no de una plantilla. Si el presupuesto no toca un oficio, no lo menciones.
+
 CONDICIONES PARTICULARES
 Redacta entre 3 y 5, específicas de esta obra (por ejemplo: acceso y acopio de material, gestión de residuos y vertedero, suministro de material con plazo largo, trabajos condicionados por elementos ocultos).
 
@@ -163,6 +175,8 @@ Usa return_textos.`;
   const out = bloque.input;
   return json({
     intro: String(out.intro || ''),
+    objetivo: String(out.objetivo || ''),
+    trabajos: (Array.isArray(out.trabajos) ? out.trabajos : []).map((t) => String(t)).filter(Boolean).slice(0, 14),
     enfoque: String(out.enfoque || ''),
     condiciones: (Array.isArray(out.condiciones) ? out.condiciones : [])
       .map((c) => ({ titulo: String(c.titulo || ''), texto: String(c.texto || '') }))

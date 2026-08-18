@@ -1103,6 +1103,8 @@ function mostrarTextosPropuesta(data) {
     project.propuestaTextos = {
       intro: data.intro || '',
       enfoque: data.enfoque || '',
+      objetivo: data.objetivo || '',
+      trabajos: data.trabajos || [],
       condiciones: data.condiciones || [],
       transporteEstimado: data.transporteEstimado || 0,
     };
@@ -1137,17 +1139,15 @@ async function enviarAPropuesta() {
   // inflados que no cuadraban con el presupuesto.
   // De cada partida sale su reparto material / mano de obra; si no lo tiene,
   // el importe entero va como material, que es como se venía haciendo.
+  // Al cliente le llega un único importe por partida: el desglose entre
+  // material y mano de obra es información interna y no sale del despacho.
   const rows = items.map((it) => {
-    const total = Math.round(Number(it.totalPrice) || 0);
-    const mat = Math.round(Number(it.material) || 0);
-    const labor = Math.round(Number(it.manoObra) || 0);
-    const conReparto = mat + labor > 0;
     const capitulo = String(it.capitulo || '').trim();
     return {
       concept: it.name,
       desc: capitulo || (it.supplier ? 'Suministro e instalación · ' + it.supplier : 'Suministro e instalación'),
-      mat: conReparto ? mat : total,
-      labor: conReparto ? labor : 0,
+      mat: Math.round(Number(it.totalPrice) || 0),
+      labor: 0,
     };
   });
 

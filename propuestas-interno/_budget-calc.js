@@ -32,11 +32,27 @@
     if (el) el.textContent = value;
   }
 
+  // El selector IVA/IGIC manda: si está activo, su tipo es el bueno. El campo
+  // #ivaRate solo existe en algunas plantillas antiguas, y quedarse con él hacía
+  // que una propuesta canaria saliera con el 21%.
   function getIvaRate() {
+    if (typeof window.getTaxRate === 'function') {
+      var r = window.getTaxRate();
+      if (isFinite(r)) return r;
+    }
     var el = document.getElementById('ivaRate');
     if (!el) return 0.21;
     var n = parseFloat((el.value || '21').replace(',', '.'));
     return isFinite(n) ? n / 100 : 0.21;
+  }
+
+  // Etiqueta del impuesto en la fila de totales ("IVA 21%" / "IGIC 7%").
+  function pintarEtiquetaImpuesto() {
+    if (typeof window.getTaxLabel !== 'function') return;
+    var etiqueta = window.getTaxLabel();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tax-label]'), function (el) {
+      el.textContent = etiqueta;
+    });
   }
 
   function customCellsInRow(tr) {
@@ -44,6 +60,7 @@
   }
 
   function calcBudget() {
+    pintarEtiquetaImpuesto();
     var rows = document.querySelectorAll('#budgetBody tr');
     var subMat = 0, subLab = 0;
     var customSums = Object.create(null);

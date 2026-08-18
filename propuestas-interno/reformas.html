@@ -678,7 +678,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
     <div class="p6-header-tag">Alcance</div>
     <div class="p6-heading">Objetivo de la intervención</div>
 
-    <div class="p6-desc" contenteditable="true" data-ai-slot="enfoque">Reforma integral de la vivienda indicada, con actuación sobre todas las estancias y sistemas existentes. El objetivo es adecuar el hogar a las necesidades actuales de sus ocupantes, mejorando tanto la habitabilidad como los acabados finales.</div>
+    <div class="p6-desc" contenteditable="true" data-ai-slot="objetivo">Reforma integral de la vivienda indicada, con actuación sobre todas las estancias y sistemas existentes. El objetivo es adecuar el hogar a las necesidades actuales de sus ocupantes, mejorando tanto la habitabilidad como los acabados finales.</div>
 
     <div>
       <div class="p6-works-label">Trabajos incluidos</div>
@@ -724,9 +724,8 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <th style="width:20px;">#</th>
           <th style="width:28%;" contenteditable="true">Concepto</th>
           <th style="width:34%;" contenteditable="true">Descripción</th>
-          <th class="right" style="width:12%;" contenteditable="true">Materiales €</th>
-          <th class="right" style="width:12%;" contenteditable="true">M. de obra €</th>
-          <th class="right" style="width:12%;" contenteditable="true">Total €</th>
+          <th class="right" style="width:18%;" contenteditable="true">Importe €</th>
+                    <th class="right" style="width:18%;" contenteditable="true">Total €</th>
           <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
         </tr>
       </thead>
@@ -736,7 +735,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Demolición y preparación</td>
           <td class="desc" contenteditable="true">Vaciado, picado y retirada de escombros</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="1">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="1">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="1">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -745,7 +743,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Albañilería</td>
           <td class="desc" contenteditable="true">Tabiquería, rozas, guarnecidos y enlucidos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="2">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="2">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="2">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -754,7 +751,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Fontanería</td>
           <td class="desc" contenteditable="true">Red de distribución y aparatos sanitarios</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="3">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="3">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="3">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -763,7 +759,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Electricidad</td>
           <td class="desc" contenteditable="true">Cuadro, circuitos y puntos de luz/enchufe</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="4">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="4">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="4">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -772,7 +767,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Solados y alicatados</td>
           <td class="desc" contenteditable="true">Pavimento y revestimientos cerámicos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="5">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="5">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="5">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -781,7 +775,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Carpintería</td>
           <td class="desc" contenteditable="true">Puertas, armarios y carpintería exterior</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="6">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="6">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="6">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -790,7 +783,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Pintura</td>
           <td class="desc" contenteditable="true">Paredes, techos y elementos metálicos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="7">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="7">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="7">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
@@ -799,23 +791,22 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Limpieza y entrega</td>
           <td class="desc" contenteditable="true">Limpieza final y gestión de residuos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="8">—</td>
-          <td class="money" contenteditable="true" data-type="labor" data-row="8">—</td>
           <td class="total-cell" data-type="rowtotal" data-row="8">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <!-- Subtotal -->
         <tr class="p7-sub-row" id="rowSubMat">
-          <td colspan="5" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
+          <td colspan="4" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
           <td style="text-align:right;font-weight:600;font-size:8pt;color:var(--navy);"><span id="subtotal">—</span>&nbsp;€</td>
         </tr>
         <!-- IVA -->
         <tr class="p7-iva-row" id="rowIva">
-          <td colspan="5" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> IVA 21%</td>
+          <td colspan="4" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
           <td style="text-align:right;color:var(--slate);"><span id="iva">—</span>&nbsp;€</td>
         </tr>
         <!-- Grand total -->
         <tr class="p7-total-row">
-          <td colspan="5" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
+          <td colspan="4" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
           <td style="text-align:right;"><span id="grand">—</span>&nbsp;€</td>
         </tr>
       </tbody>
@@ -1244,7 +1235,7 @@ function removePlanBox(e,btn){
 }
 
 // ── BUDGET CALCULATION ─────────────────────────────
-function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
+function parseNum(el){if(!el)return 0;return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
 function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €':'—';}
 function calcBudget(){
   var sub=0;
@@ -1252,7 +1243,7 @@ function calcBudget(){
     var mEl=tr.querySelector('[data-type="mat"]');
     var lEl=tr.querySelector('[data-type="labor"]');
     var tEl=tr.querySelector('[data-type="rowtotal"]');
-    if(!mEl||!lEl||!tEl)return;
+    if(!mEl||!tEl)return;   // la columna de mano de obra ya no existe en la propuesta
     var t=parseNum(mEl)+parseNum(lEl);
     tEl.textContent=fmtMoney(t);
     sub+=t;
@@ -1276,7 +1267,6 @@ function addBudgetRow(){
     '<td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;font-weight:600;color:#1A2236;font-size:8pt"></td>'+
     '<td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;color:#555;font-size:8pt"></td>'+
     '<td contenteditable="true" data-type="mat" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td>'+
-    '<td contenteditable="true" data-type="labor" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td>'+
     '<td data-type="rowtotal" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt;font-weight:600;color:#1A2236">—</td>'+
     extra+
     '<td style="padding:2mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';

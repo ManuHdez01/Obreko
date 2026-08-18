@@ -110,8 +110,41 @@
     var intro = document.querySelector('[data-ai-slot="intro"]');
     if (intro && textos.intro) intro.textContent = textos.intro;
 
-    var enfoque = document.querySelector('[data-ai-slot="enfoque"]');
-    if (enfoque && textos.enfoque) enfoque.textContent = textos.enfoque;
+    var objetivo = document.querySelector('[data-ai-slot="objetivo"]');
+    if (objetivo && textos.objetivo) objetivo.textContent = textos.objetivo;
+
+    // El enfoque va justo debajo del objetivo, como segundo párrafo.
+    if (objetivo && textos.enfoque) {
+      var previo = objetivo.parentNode.querySelector('[data-ai-enfoque]');
+      if (previo) previo.remove();
+      var extra = document.createElement('div');
+      extra.setAttribute('data-ai-enfoque', '1');
+      extra.className = objetivo.className;
+      extra.contentEditable = 'true';
+      extra.style.marginTop = '3mm';
+      extra.textContent = textos.enfoque;
+      objetivo.parentNode.insertBefore(extra, objetivo.nextSibling);
+    }
+
+    // Trabajos incluidos: se rehace la lista con los del presupuesto.
+    var lista = document.getElementById('worksList');
+    if (lista && Array.isArray(textos.trabajos) && textos.trabajos.length) {
+      lista.innerHTML = '';
+      textos.trabajos.forEach(function (t) {
+        var li = document.createElement('li');
+        var span = document.createElement('span');
+        span.className = 'p6-trabajo-text';
+        span.contentEditable = 'true';
+        span.textContent = t;
+        li.appendChild(span);
+        var btn = document.createElement('button');
+        btn.setAttribute('onclick', 'removeWorkItem(this)');
+        btn.style.cssText = 'background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:8px';
+        btn.textContent = '×';
+        li.appendChild(btn);
+        lista.appendChild(li);
+      });
+    }
 
     var caja = document.getElementById('condicionesExtra');
     if (!caja || !Array.isArray(textos.condiciones) || !textos.condiciones.length) return;

@@ -16,7 +16,11 @@
   const LS_KEY = 'obreko-tax-type'; // iva | igic — se persiste en navegador
 
   function getSlug() {
-    const m = location.pathname.match(/\/propuestas\/([^/]+?)(?:\.html)?\/?$/);
+    // Vale tanto para la propuesta publicada (/propuestas/reformas) como para el
+    // editor interno (/propuestas-interno/reformas.html), que es donde se
+    // prepara y se exporta el PDF: si aquí no se activaba, el documento salía
+    // con IVA 21% aunque la obra fuera canaria.
+    const m = location.pathname.match(/\/propuestas(?:-interno)?\/([^/]+?)(?:\.html)?\/?$/);
     return m ? m[1] : '';
   }
 
