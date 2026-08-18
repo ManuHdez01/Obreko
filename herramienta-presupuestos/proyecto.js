@@ -1147,6 +1147,7 @@ function mostrarTextosPropuesta(data) {
 
   wrap.querySelector('#textosUsar').addEventListener('click', () => {
     project.propuestaTextos = {
+      version: TEXTOS_PROPUESTA_VERSION,
       intro: data.intro || '',
       enfoque: data.enfoque || '',
       objetivo: data.objetivo || '',
@@ -1171,6 +1172,12 @@ const TEMPLATE_BY_TIPO = {
   'amueblar': 'reformas.html',
 };
 
+// Sube en 1 cada vez que se añade o cambia algo en la forma de los textos
+// generados (p.ej. al incorporar el calendario). Un proyecto cuyos textos se
+// guardaron con una versión anterior se regenera solo la próxima vez que se
+// envíe a propuesta, en vez de quedarse para siempre con el hueco vacío.
+const TEXTOS_PROPUESTA_VERSION = 2;
+
 async function enviarAPropuesta() {
   await saveProject(false);
   const e = economics || {};
@@ -1180,9 +1187,10 @@ async function enviarAPropuesta() {
     return;
   }
 
-  // Si el proyecto no tiene todavía los textos adaptados, se piden aquí: al
-  // pulsar "Enviar a propuesta" tiene que ir todo, sin pasos previos.
-  if (!project.propuestaTextos) {
+  // Si el proyecto no tiene todavía los textos adaptados, o los tiene de una
+  // versión anterior (p.ej. sin calendario), se piden aquí: al pulsar
+  // "Enviar a propuesta" tiene que ir todo, sin pasos previos.
+  if (!project.propuestaTextos || project.propuestaTextos.version !== TEXTOS_PROPUESTA_VERSION) {
     toast('Redactando los textos de la propuesta…');
     try {
       const textos = await api('propuesta-textos', {
@@ -1190,6 +1198,7 @@ async function enviarAPropuesta() {
         body: { project: collectForm(), suppliers: (project.suppliers || []).slice(0, 30) },
       });
       project.propuestaTextos = {
+        version: TEXTOS_PROPUESTA_VERSION,
         intro: textos.intro || '',
         enfoque: textos.enfoque || '',
         objetivo: textos.objetivo || '',

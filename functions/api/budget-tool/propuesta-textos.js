@@ -112,6 +112,7 @@ export async function onRequestPost({ request, env }) {
     .sort((a, b) => b[1] - a[1])
     .map(([cap, total]) => `- ${cap}: ${Math.round(total)} €`)
     .join('\n');
+  const totalPresupuesto = Math.round(items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0));
 
   const muestraPartidas = items.slice(0, 40).map((it) => `- ${it.name}`).join('\n');
   const listaProveedores = suppliers.length
@@ -127,7 +128,7 @@ Tipo: ${p.tipo || 'reforma'}${p.calidad ? ' · calidad ' + p.calidad : ''}${p.m2
 Dirección: ${p.address || '(sin dirección)'}
 Zona de trabajo: ${canarias ? 'Tenerife' : 'Madrid'}
 
-CAPÍTULOS DEL PRESUPUESTO (importe de venta)
+CAPÍTULOS DEL PRESUPUESTO (importe de venta, total ${totalPresupuesto} €)
 ${capitulos}
 
 ALGUNAS PARTIDAS
@@ -148,7 +149,7 @@ Escribe el "objetivo de la intervención" de esta obra: un párrafo adaptado a l
 La lista de "trabajos incluidos" es el resumen de los capítulos del presupuesto: UNA línea por capítulo, en el mismo orden, resumiendo lo que ese capítulo contiene. Si el presupuesto no toca un oficio, no lo menciones.
 
 CALENDARIO
-Planifica la obra por semanas, en el orden real de ejecución y con una duración creíble para el tamaño de este presupuesto. Cada tarea con su semana de inicio y de fin (de 1 a 8).
+Planifica la obra por semanas, en el orden real de ejecución (demoliciones primero, acabados y limpieza al final) y con una duración creíble para ${totalPresupuesto} € de presupuesto: una obra pequeña (pocos miles de euros, un par de capítulos) no debería ocupar las 8 semanas enteras, y una reforma integral grande sí puede llenarlas. El peso de cada capítulo en el presupuesto orienta cuánto debe durar su fase. Cada tarea con su semana de inicio y de fin (de 1 a 8), pueden solaparse dos fases consecutivas pero no todas a la vez.
 
 CONDICIONES PARTICULARES
 Redacta entre 3 y 5, específicas de esta obra (por ejemplo: acceso y acopio de material, gestión de residuos y vertedero, suministro de material con plazo largo, trabajos condicionados por elementos ocultos).
