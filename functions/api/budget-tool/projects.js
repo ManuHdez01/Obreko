@@ -229,7 +229,7 @@ function defaultProject() {
 const STR_FIELDS = ['ref', 'clientName', 'clientEmail', 'clientPhone', 'address', 'region', 'mode', 'tipo', 'calidad', 'taxLabel'];
 // giPct: beneficio industrial y gastos generales sobre la ejecución material.
 const NUM_FIELDS = ['m2', 'laborHours', 'laborRate', 'indirectPct', 'marginPct', 'taxPct', 'giPct'];
-const OBJ_FIELDS = ['estancias', 'analysis'];
+const OBJ_FIELDS = ['estancias', 'analysis', 'propuestaTextos'];
 const ARR_FIELDS = ['items', 'rfqs', 'invoices'];
 
 function sanitizeProject(payload) {

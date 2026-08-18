@@ -96,8 +96,46 @@
     var refEl = document.querySelector('.cover-meta-ref, .cover-ref');
     if (refEl && payload.ref) refEl.textContent = payload.ref;
 
+    aplicarTextos(payload.textos);
+
     if (typeof window.calcBudget === 'function') window.calcBudget();
     return true;
+  }
+
+  // Textos adaptados por la IA a esta obra y esta zona. Cada hueco se rellena
+  // solo si la plantilla lo tiene; las plantillas viejas siguen funcionando.
+  function aplicarTextos(textos) {
+    if (!textos) return;
+
+    var intro = document.querySelector('[data-ai-slot="intro"]');
+    if (intro && textos.intro) intro.textContent = textos.intro;
+
+    var enfoque = document.querySelector('[data-ai-slot="enfoque"]');
+    if (enfoque && textos.enfoque) enfoque.textContent = textos.enfoque;
+
+    var caja = document.getElementById('condicionesExtra');
+    if (!caja || !Array.isArray(textos.condiciones) || !textos.condiciones.length) return;
+
+    // Se quitan las de una importación anterior para no acumularlas.
+    Array.prototype.forEach.call(caja.querySelectorAll('[data-ai-condicion]'), function (el) { el.remove(); });
+
+    var numeroBase = caja.querySelectorAll('[data-condicion-num]').length + 5;
+    textos.condiciones.forEach(function (c, i) {
+      var bloque = document.createElement('div');
+      bloque.setAttribute('data-ai-condicion', '1');
+      bloque.style.cssText = 'padding:4mm 0;border-bottom:1px solid #F0EDE8';
+      var titulo = document.createElement('div');
+      titulo.contentEditable = 'true';
+      titulo.style.cssText = "font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif";
+      titulo.textContent = (numeroBase + i) + '. ' + c.titulo;
+      var texto = document.createElement('div');
+      texto.contentEditable = 'true';
+      texto.style.cssText = "font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif";
+      texto.textContent = c.texto;
+      bloque.appendChild(titulo);
+      bloque.appendChild(texto);
+      caja.appendChild(bloque);
+    });
   }
 
   function showBanner(payload) {
@@ -109,7 +147,9 @@
       '<div style="flex:1;font-size:12px;color:rgba(255,255,255,.75);min-width:200px;">' +
         'Hay un presupuesto preparado en la herramienta interna' +
         (payload.clientName ? ' para <strong>' + payload.clientName.replace(/</g, '&lt;') + '</strong>' : '') +
-        ' · ' + payload.rows.length + ' partidas · total ' + fmtMoney(payload.total) + ' €. ¿Volcarlo a esta propuesta?' +
+        ' · ' + payload.rows.length + ' partidas · total ' + fmtMoney(payload.total) + ' €' +
+        (payload.textos ? ' · con textos y condiciones adaptados por IA (revisa que la página de condiciones no se desborde)' : '') +
+        '. ¿Volcarlo a esta propuesta?' +
       '</div>' +
       '<button id="importBudgetYes" style="background:#FED544;color:#1A2236;border:none;padding:8px 16px;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:4px;">Importar</button>' +
       '<button id="importBudgetNo" style="background:rgba(255,255,255,.08);color:#fff;border:none;padding:8px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border-radius:4px;cursor:pointer;font-family:inherit;">Descartar</button>';

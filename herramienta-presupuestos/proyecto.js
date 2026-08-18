@@ -1017,6 +1017,101 @@ function delInvoice(i) {
 }
 window.delInvoice = delInvoice;
 
+// ── Textos de la propuesta adaptados por IA ──────────────────────────────
+// La plantilla de propuesta trae textos genéricos. Esto los reescribe para
+// esta obra concreta: qué se va a hacer, dónde, con qué proveedores cerca, y
+// las condiciones particulares que le tocan (entre ellas la de transporte,
+// que se factura aparte). Se guardan en el proyecto y viajan con "Enviar a
+// propuesta".
+async function generarTextosPropuesta() {
+  const btn = $('textosBtn');
+  const antes = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Redactando…';
+  try {
+    const data = await api('propuesta-textos', {
+      method: 'POST',
+      body: { project: collectForm(), suppliers: (project.suppliers || []).slice(0, 30) },
+    });
+    mostrarTextosPropuesta(data);
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = antes;
+  }
+}
+window.generarTextosPropuesta = generarTextosPropuesta;
+
+function mostrarTextosPropuesta(data) {
+  const yaHayTransporte = (project.items || []).some((it) => /transporte|portes|desplazamiento/i.test(it.name || ''));
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `
+    <div class="modal" style="max-width:720px">
+      <div class="modal-head">
+        <div class="t">Textos de la propuesta</div>
+        <div class="s">Escritos para esta obra y esta zona — revísalos antes de usarlos</div>
+      </div>
+      <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--slate);margin-bottom:4px">Presentación</div>
+        <div style="background:var(--sand-lt);padding:12px 14px;border-radius:8px;font-size:12.5px;line-height:1.7">${escapeHtml(data.intro || '')}</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--slate);margin:14px 0 4px">Enfoque de la obra</div>
+        <div style="background:var(--sand-lt);padding:12px 14px;border-radius:8px;font-size:12.5px;line-height:1.7">${escapeHtml(data.enfoque || '')}</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--slate);margin:14px 0 4px">Condiciones particulares</div>
+        ${(data.condiciones || []).map((c) => `
+          <div style="background:var(--sand-lt);padding:10px 14px;border-radius:8px;font-size:12.5px;line-height:1.7;margin-bottom:6px">
+            <strong>${escapeHtml(c.titulo)}</strong><br>${escapeHtml(c.texto)}
+          </div>`).join('')}
+        <div class="notice" style="margin-top:14px">
+          Transporte estimado: <strong>${fmtMoney(data.transporteEstimado)}</strong> — ${escapeHtml(data.transporteJustificacion || '')}
+          ${yaHayTransporte ? '<br>El presupuesto ya tiene una partida de transporte, así que no se añade otra.' : ''}
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-sec" id="textosCancel">Cerrar</button>
+        ${yaHayTransporte || !data.transporteEstimado ? '' : '<button class="btn btn-sec" id="textosTransporte">+ Añadir partida de transporte</button>'}
+        <button class="btn btn-pri" id="textosUsar">Usar en la propuesta</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
+  wrap.querySelector('#textosCancel').addEventListener('click', () => wrap.remove());
+
+  const btnTransporte = wrap.querySelector('#textosTransporte');
+  if (btnTransporte) {
+    btnTransporte.addEventListener('click', () => {
+      project.items = project.items || [];
+      project.items.push({
+        name: 'Transporte, portes y desplazamientos (estimado)',
+        capitulo: 'CAP.0  COSTES GENERALES DE OBRA',
+        supplier: 'estimación',
+        unit: 'pa', quantity: 1,
+        unitPrice: data.transporteEstimado,
+        totalPrice: data.transporteEstimado,
+        material: 0, manoObra: 0,
+        realCost: 0,
+        reasoning: 'Estimación: ' + (data.transporteJustificacion || '') + ' Se factura aparte según coste real.',
+      });
+      seleccionItems.clear();
+      renderItems();
+      saveProject(false);
+      btnTransporte.disabled = true;
+      toast('Partida de transporte añadida al presupuesto', 'success');
+    });
+  }
+
+  wrap.querySelector('#textosUsar').addEventListener('click', () => {
+    project.propuestaTextos = {
+      intro: data.intro || '',
+      enfoque: data.enfoque || '',
+      condiciones: data.condiciones || [],
+      transporteEstimado: data.transporteEstimado || 0,
+    };
+    saveProject(true);
+    wrap.remove();
+    toast('Textos guardados — se aplicarán al enviar a propuesta', 'success');
+  });
+}
+
 // ── Enviar a propuesta (plataforma cliente) ──────────────────────────────
 
 const TEMPLATE_BY_TIPO = {
@@ -1065,8 +1160,17 @@ async function enviarAPropuesta() {
     // Ejecución material: el beneficio industrial y el impuesto los calcula la
     // propia plantilla de la propuesta.
     total: rows.reduce((s, r) => s + r.mat + r.labor, 0),
+    // Textos adaptados por IA, si se han generado para este proyecto.
+    textos: project.propuestaTextos || null,
   };
   localStorage.setItem('obreko_budget_import', JSON.stringify(payload));
+  // El impuesto elegido en el pie del presupuesto manda también en la
+  // propuesta: su selector IVA/IGIC lee esta misma clave del navegador. Sin
+  // esto la propuesta salía con el 21% por defecto aunque la obra fuera
+  // canaria.
+  try {
+    localStorage.setItem('obreko-tax-type', ($('fTaxLabel') || {}).value === 'IVA' ? 'iva' : 'igic');
+  } catch (e) { /* navegador sin localStorage: la plantilla usa su valor por defecto */ }
   const tpl = TEMPLATE_BY_TIPO[project.tipo] || 'reformas.html';
   window.open('/propuestas-interno/' + tpl, '_blank', 'noopener');
   toast('Presupuesto preparado — confirma la importación en la plantilla que se ha abierto', 'success');
