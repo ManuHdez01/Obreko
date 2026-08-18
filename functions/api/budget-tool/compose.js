@@ -41,12 +41,12 @@ const COMPOSE_TOOL = {
           properties: {
             name: { type: 'string', description: 'Nombre claro de la partida.' },
             capitulo: { type: 'string', description: 'Capítulo del presupuesto al que pertenece, copiado tal cual del texto (ej. "CAP.1 DEMOLICIONES, DESMONTAJES Y RETIRADA DE ESCOMBROS"). Vacío si el texto no trae capítulos.' },
-            material: { type: 'number', description: 'Importe en € de la parte de material de la partida. Si el texto lo separa (columna "Material (€)"), cópialo tal cual; si no, estímalo. material + manoObra tiene que sumar el importe total de la partida.' },
-            manoObra: { type: 'number', description: 'Importe en € de la parte de mano de obra de la partida. Si el texto lo separa (columna "Mano de obra (€)"), cópialo tal cual; si no, estímalo. Una demolición o un alicatado son casi toda mano de obra; un sanitario o un electrodoméstico, casi todo material.' },
+            material: { type: 'number', description: 'Importe en euros ENTEROS (sin decimales) de la parte de material de la partida. Si el texto lo separa (columna "Material (€)"), redondea ese importe; si no, estímalo. material + manoObra tiene que sumar el importe total de la partida.' },
+            manoObra: { type: 'number', description: 'Importe en euros ENTEROS (sin decimales) de la parte de mano de obra de la partida. Si el texto lo separa (columna "Mano de obra (€)"), redondea ese importe; si no, estímalo. Una demolición o un alicatado son casi toda mano de obra; un sanitario o un electrodoméstico, casi todo material.' },
             repartoEstimado: { type: 'boolean', description: 'true si el reparto entre material y mano de obra lo has estimado tú; false si venía separado en el texto.' },
             supplier: { type: 'string', description: 'Proveedor si el texto lo menciona o "estimación".' },
             unit: { type: 'string', description: 'ud, m2, ml, h, pa (partida alzada)...' },
-            unitPrice: { type: 'number', description: 'Precio unitario orientativo en € (sin impuestos).' },
+            unitPrice: { type: 'number', description: 'Precio unitario en euros ENTEROS, sin decimales ni impuestos. Redondea al euro (18,53 → 19).' },
             quantity: { type: 'number' },
             reasoning: { type: 'string', description: 'De dónde sale la cantidad/precio, en pocas palabras.' },
           },
@@ -199,6 +199,8 @@ Si el texto trae capítulos ("CAP.1 DEMOLICIONES...", "CAPÍTULO 2 ALBAÑILERÍA
 
 Reparte SIEMPRE el importe de cada partida entre "material" y "manoObra", de forma que sumen el importe total de esa partida. Si el texto ya los separa (columnas "Material (€)" y "Mano de obra (€)"), cópialos tal cual y pon repartoEstimado en false. Si no los separa, estima el reparto según el tipo de trabajo (una demolición o un desmontaje son casi toda mano de obra; un sanitario, un electrodoméstico o un alicatado llevan material y colocación) y pon repartoEstimado en true.
 
+IMPORTANTE: en obreko no se trabaja con céntimos. Todos los importes en euros ENTEROS, sin decimales: precios unitarios, material y mano de obra. Redondea al euro más cercano (18,53 → 19; 393,28 → 393) y cuadra el reparto para que material + manoObra sume el importe de la partida. Las cantidades sí pueden llevar decimales (49,16 m²).
+
 Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de las medidas del texto; si no hay, estima razonable y dilo en reasoning) y precio unitario orientativo realista para la región y calidad (sin impuestos). Si el texto ya trae cantidades y precios, respétalos en vez de reestimarlos. No inventes trabajos que el texto no pida. Si algo es ambiguo, inclúyelo con tu mejor interpretación y señálalo en summary. Usa return_items.`;
 
   let res;
@@ -260,10 +262,10 @@ function normalizarItems(raw) {
       supplier: it.supplier ? String(it.supplier) : 'estimación',
       unit: it.unit ? String(it.unit) : 'ud',
       capitulo: it.capitulo ? String(it.capitulo).replace(/["']/g, '').trim() : '',
-      material: Number(it.material) || 0,
-      manoObra: Number(it.manoObra) || 0,
+      material: Math.round(Number(it.material) || 0),
+      manoObra: Math.round(Number(it.manoObra) || 0),
       repartoEstimado: it.repartoEstimado === true,
-      unitPrice: Number(it.unitPrice) || 0,
+      unitPrice: Math.round(Number(it.unitPrice) || 0),
       quantity: Number(it.quantity) || 1,
       reasoning: it.reasoning ? String(it.reasoning) : '',
     }));

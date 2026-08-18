@@ -424,11 +424,11 @@ function renderItems() {
           </td>
           <td>${escapeHtml(it.supplier || '—')}</td>
           <td class="r"><span class="cant-cell"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"><span class="cant-ud">${escapeHtml(it.unit || 'ud')}</span></span></td>
-          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
-          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
-          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
           <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
-          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
           <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoney(dev)}</td>
           <td class="r" style="white-space:nowrap">
             <button class="btn btn-sm btn-sec" title="Guardar en la biblioteca de partidas" onclick="guardarEnBiblioteca(${i}, this)">★</button>
@@ -485,10 +485,12 @@ function estiloReparto(it) {
 
 function pintarTotales(pem, totalMaterial, totalObra, realTotal) {
   const giPct = Number(($('fGiPct') || {}).value) || 0;
-  const gi = pem * (giPct / 100);
+  // Todo en euros enteros, y el total es la suma de lo que se ve: si se
+  // redondeara solo al pintar, las líneas no cuadrarían con el total.
+  const gi = Math.round(pem * (giPct / 100));
   const contrata = pem + gi;
   const taxPct = Number(($('fTaxPctPie') || {}).value) || 0;
-  const impuesto = contrata * (taxPct / 100);
+  const impuesto = Math.round(contrata * (taxPct / 100));
   $('itemsPem').textContent = fmtMoney(pem);
   $('itemsGi').textContent = fmtMoney(gi);
   $('itemsContrata').textContent = fmtMoney(contrata);
@@ -539,8 +541,10 @@ function updItem(i, field, value) {
   // Un reparto corregido a mano deja de ser una estimación de la IA.
   if (field === 'material' || field === 'manoObra') it.repartoEstimado = false;
   if (field === 'name' || field === 'estancia') it[field] = value;
-  else it[field] = Number(value) || 0;
-  it.totalPrice = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
+  // Los euros van enteros; la cantidad sí admite decimales (49,16 m²).
+  else if (field === 'quantity') it[field] = Number(value) || 0;
+  else it[field] = Math.round(Number(value) || 0);
+  it.totalPrice = Math.round((Number(it.quantity) || 0) * (Number(it.unitPrice) || 0));
   renderItems();
   saveProject(false);
 }
@@ -837,7 +841,7 @@ function renderRfqHistory() {
         </select>
         ${r.sendError ? `<div style="font-size:10px;color:var(--red)">${escapeHtml(r.sendError)}</div>` : ''}
       </td>
-      <td class="r"><input class="num" type="number" min="0" step="0.01" value="${r.quotedAmount != null ? r.quotedAmount : ''}" placeholder="—" onchange="updRfq(${idx},'quotedAmount',this.value)"></td>
+      <td class="r"><input class="num" type="number" min="0" step="1" value="${r.quotedAmount != null ? r.quotedAmount : ''}" placeholder="—" onchange="updRfq(${idx},'quotedAmount',this.value)"></td>
     </tr>`;
   }).join('') : '<tr><td colspan="5" class="tbl-empty">Ninguna solicitud enviada todavía.</td></tr>';
 }
@@ -1178,14 +1182,14 @@ function applyAssistantAction(action) {
     project.items = project.items || [];
     for (const it of action.items) {
       const qty = Number(it.quantity) || 1;
-      const price = Number(it.unitPrice) || 0;
+      const price = Math.round(Number(it.unitPrice) || 0);
       project.items.push({
         name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
         capitulo: String(it.capitulo || ''),
         material: Number(it.material) || 0, manoObra: Number(it.manoObra) || 0,
         repartoEstimado: it.repartoEstimado === true,
         unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
-        totalPrice: +(qty * price).toFixed(2), reasoning: String(it.reasoning || ''),
+        totalPrice: Math.round(qty * price), reasoning: String(it.reasoning || ''),
       });
     }
     renderItems();
