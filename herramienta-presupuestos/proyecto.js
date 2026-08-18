@@ -756,9 +756,10 @@ function renderEconomics() {
     </tr>`;
   };
   const margenTotal = e.ventaTotal - e.costeTotal;
-  // El coste previsto resta sobre el precio de venta: lo que queda es el
-  // margen con el que sale el presupuesto tal y como está.
-  const margenPrevisto = e.ventaTotal - e.internalCost;
+  // El coste que resta es el real de la columna de al lado (facturas de
+  // proveedor clasificadas + horas × tarifa), no una estimación aparte.
+  const margenPrevisto = e.ventaTotal - e.costeTotal;
+  const pvpConMargenObjetivo = e.costeTotal * (1 + (Number(e.marginPct) || 0) / 100);
   // El total va dentro de la tabla, con cada cifra bajo su columna y la misma
   // tipografía que el resto de números.
   $('costBreakdown').innerHTML = `
@@ -781,9 +782,10 @@ function renderEconomics() {
       </tfoot>
     </table>
     <div class="totals-row" style="margin-top:10px"><span>Precio de venta (presupuesto, sin impuestos)</span><span class="val">${fmtMoney(e.ventaTotal)}</span></div>
-    <div class="totals-row"><span>Coste interno previsto (materiales + horas + indirectos)</span><span class="val" style="color:var(--red)">-${fmtMoney(e.internalCost)}</span></div>
-    <div class="totals-row grand"><span>Margen previsto</span><span class="val" style="color:${margenPrevisto < 0 ? 'var(--red)' : 'var(--green)'}">${fmtMoney(margenPrevisto)}${e.ventaTotal ? ' (' + fmtPct((margenPrevisto / e.ventaTotal) * 100) + ')' : ''}</span></div>
-    <div class="totals-row" style="margin-top:10px"><span style="color:var(--slate)">Referencia: con el margen objetivo del ${fmtPct(e.marginPct)}, el PVP sería</span><span class="val" style="color:var(--slate)">${fmtMoney(e.suggestedPrice)}</span></div>
+    <div class="totals-row"><span>Coste real acumulado (facturas + horas × tarifa)</span><span class="val" style="color:var(--red)">-${fmtMoney(e.costeTotal)}</span></div>
+    <div class="totals-row grand"><span>Margen</span><span class="val" style="color:${margenPrevisto < 0 ? 'var(--red)' : 'var(--green)'}">${fmtMoney(margenPrevisto)}${e.ventaTotal ? ' (' + fmtPct((margenPrevisto / e.ventaTotal) * 100) + ')' : ''}</span></div>
+    <div class="totals-row" style="margin-top:10px"><span style="color:var(--slate)">Referencia: con el margen objetivo del ${fmtPct(e.marginPct)}, ese coste daría un PVP de</span><span class="val" style="color:var(--slate)">${fmtMoney(pvpConMargenObjetivo)}</span></div>
+    <div class="totals-row" style="font-size:11.5px"><span style="color:var(--slate)">El coste va subiendo según registres facturas: mientras falten, el margen sale más alto de lo que será.</span><span class="val"></span></div>
   `;
   $('realBreakdown').innerHTML = `
     <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
