@@ -215,7 +215,7 @@ function genId() {
 // Para empezar en otro número basta con cambiar REF_INICIO y borrar la clave
 // refseq del KV.
 const REF_CONTADOR_KEY = 'refseq';
-const REF_INICIO = 800;
+const REF_INICIO = 1200;
 const REF_SALTO_MAX = 7;
 
 // Formato antiguo: OBR-2026-0712-2249 (año + día + hora de creación).
