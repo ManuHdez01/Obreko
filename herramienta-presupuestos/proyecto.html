@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>obreko — Proyecto</title>
-<link rel="stylesheet" href="_styles.css?v=20260818f">
+<link rel="stylesheet" href="_styles.css?v=20260818g">
 <style>
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
 .tab{padding:9px 16px;border-radius:7px;border:1px solid rgba(26,34,54,.14);background:#fff;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);}
@@ -202,8 +202,12 @@
       <div id="reviewResult"></div>
       <datalist id="itemNameSuggestions"></datalist>
       <div style="overflow-x:auto">
-        <table class="tbl">
-          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Concepto</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r" title="Dato interno, no sale al cliente">Material</th><th class="r" title="Dato interno, no sale al cliente">M. obra</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
+        <table class="tbl" id="itemsTable">
+          <colgroup>
+            <col class="c-check"><col class="c-cap"><col><col class="c-prov"><col class="c-cant"><col class="c-precio">
+            <col class="c-mat"><col class="c-obra"><col class="c-total"><col class="c-real"><col class="c-desv"><col class="c-acc">
+          </colgroup>
+          <thead><tr><th><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Concepto</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r" title="Dato interno, no sale al cliente">Material</th><th class="r" title="Dato interno, no sale al cliente">M. obra</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
           <tbody id="itemsBody"><tr><td colspan="12" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr></tbody>
         </table>
       </div>
@@ -439,7 +443,7 @@
 .ai-input button:disabled{background:rgba(26,34,54,.15);color:var(--slate);cursor:wait;}
 @media print{#aiFab,#aiPanel{display:none !important;}}
 </style>
-<script src="_common.js?v=20260818f"></script>
-<script src="proyecto.js?v=20260818f"></script>
+<script src="_common.js?v=20260818g"></script>
+<script src="proyecto.js?v=20260818g"></script>
 </body>
 </html>

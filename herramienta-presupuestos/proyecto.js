@@ -419,11 +419,11 @@ function renderItems() {
           <td><input type="checkbox" ${seleccionItems.has(i) ? 'checked' : ''} onchange="toggleSeleccionItem(${i}, this.checked)"></td>
           <td style="font-size:11px;color:var(--slate);white-space:nowrap">${escapeHtml(capituloCorto(it.capitulo))}</td>
           <td>
-            <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
-            ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
+            <input type="text" style="width:100%" list="itemNameSuggestions" title="${escapeHtml(it.name)}" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
+            ${it.reasoning ? `<div class="item-why" title="${escapeHtml(it.reasoning)}">${escapeHtml(it.reasoning)}</div>` : ''}
           </td>
           <td>${escapeHtml(it.supplier || '—')}</td>
-          <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
+          <td class="r"><span class="cant-cell"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"><span class="cant-ud">${escapeHtml(it.unit || 'ud')}</span></span></td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
