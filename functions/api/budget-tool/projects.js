@@ -90,7 +90,7 @@ export async function onRequestPost({ request, env }) {
       ...defaultProject(),
       ...sanitizeProject(payload),
       id,
-      ref: payload.ref || autoRef(),
+      ref: payload.ref || (await autoRef(env)),
       createdAt: now,
       updatedAt: now,
     };
@@ -105,7 +105,9 @@ export async function onRequestPost({ request, env }) {
   }
 
   await env.BUDGET_TOOL.put('project:' + project.id, JSON.stringify(project));
-  await upsertIndex(env, { id: project.id, updatedAt: now });
+  // La referencia va también en el índice: así se puede comprobar de un tirón
+  // qué números se han emitido ya sin leer todos los proyectos.
+  await upsertIndex(env, { id: project.id, ref: project.ref, updatedAt: now });
 
   return json({ project, economics: computeEconomics(project) });
 }
@@ -201,9 +203,29 @@ function genId() {
   return 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
 }
 
-function autoRef() {
-  const d = new Date();
-  return `OBR-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
+// ── Referencia de los presupuestos ───────────────────────────────────────
+// Formato: OBR-<año>-<contador de 4 dígitos>, p.ej. OBR-2026-0847.
+// El contador no se reinicia nunca y avanza a saltos irregulares, así que la
+// referencia no deja ver el ritmo de trabajo (con el formato viejo,
+// OBR-2026-0712-2249, se leía el día y la hora exacta en que se creó).
+// Para empezar en otro número basta con cambiar REF_INICIO y borrar la clave
+// refseq del KV.
+const REF_CONTADOR_KEY = 'refseq';
+const REF_INICIO = 800;
+const REF_SALTO_MAX = 7;
+
+async function autoRef(env) {
+  const year = new Date().getFullYear();
+  const guardado = Number(await env.BUDGET_TOOL.get(REF_CONTADOR_KEY)) || 0;
+  // Red de seguridad: si la clave del contador se perdiera, se retoma desde la
+  // referencia más alta ya emitida en vez de repetir números.
+  const emitido = (await readIndex(env)).reduce((max, e) => {
+    const m = String(e.ref || '').match(/^OBR-\d{4}-(\d+)$/);
+    return m ? Math.max(max, Number(m[1])) : max;
+  }, 0);
+  const siguiente = Math.max(guardado, emitido, REF_INICIO) + 1 + Math.floor(Math.random() * REF_SALTO_MAX);
+  await env.BUDGET_TOOL.put(REF_CONTADOR_KEY, String(siguiente));
+  return `OBR-${year}-${String(siguiente).padStart(4, '0')}`;
 }
 
 async function readIndex(env) {
