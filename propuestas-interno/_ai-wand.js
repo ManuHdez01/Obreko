@@ -129,7 +129,35 @@
     return boton;
   }
 
+  // Clases que siempre llevan varita aunque el texto sea corto o esté vacío:
+  // son campos de redacción (observaciones, notas, etiquetas de plano...).
+  var SIEMPRE = ['p4-field-val', 'sand-note', 'p6-trabajo-text', 'p5-plan-label',
+    'p9-card-desc', 'p3-card-desc', 'p11-subtext', 'task-name'];
+
+  function tipoDeBloque(el) {
+    if (el.getAttribute('data-ai-wand')) return el.getAttribute('data-ai-wand');
+    if (el.classList.contains('p6-trabajo-text')) return 'trabajo';
+    if (el.classList.contains('task-name')) return 'trabajo';
+    if (el.closest('#condicionesExtra') || el.closest('.p7-cond, .conditions')) return 'condicion';
+    return 'libre';
+  }
+
+  // Un bloque merece varita si es un campo de redacción o si ya tiene un texto
+  // de cierta longitud. Los números del presupuesto y las etiquetas cortas se
+  // quedan fuera: ahí una varita solo estorba.
+  function mereceVarita(el) {
+    if (el.closest('#budgetTable') || el.closest('.p1-meta')) return false;
+    if (el.getAttribute('data-ai-wand')) return true;
+    for (var i = 0; i < SIEMPRE.length; i++) if (el.classList.contains(SIEMPRE[i])) return true;
+    return (el.textContent || '').trim().length >= 60;
+  }
+
   function montar() {
+    var candidatos = document.querySelectorAll('[contenteditable="true"], [data-ai-wand]');
+    Array.prototype.forEach.call(candidatos, function (el) {
+      if (el.dataset.aiWandListo || !mereceVarita(el)) return;
+      if (!el.getAttribute('data-ai-wand')) el.setAttribute('data-ai-wand', tipoDeBloque(el));
+    });
     var bloques = document.querySelectorAll('[data-ai-wand]');
     Array.prototype.forEach.call(bloques, function (el) {
       if (el.dataset.aiWandListo) return;

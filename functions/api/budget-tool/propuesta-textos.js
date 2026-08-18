@@ -44,6 +44,19 @@ const TEXTOS_TOOL = {
         description: 'Lista de trabajos incluidos, uno por capítulo o grupo de partidas, en el orden del presupuesto. Entre 5 y 12, cada uno en una línea corta como "Demolición selectiva y retirada de escombros".',
         items: { type: 'string' },
       },
+      calendario: {
+        type: 'array',
+        description: 'Planificación estimada de la obra por semanas, en el orden real de ejecución (primero demoliciones, al final acabados y limpieza). Entre 4 y 8 tareas, sin solaparse todas a la vez.',
+        items: {
+          type: 'object',
+          properties: {
+            tarea: { type: 'string', description: 'Nombre corto de la fase, como aparecería en un diagrama de barras.' },
+            desde: { type: 'number', description: 'Semana en la que empieza (1 a 8).' },
+            hasta: { type: 'number', description: 'Semana en la que termina (1 a 8, mayor o igual que desde).' },
+          },
+          required: ['tarea', 'desde', 'hasta'],
+        },
+      },
       condiciones: {
         type: 'array',
         description: 'Condiciones particulares de esta obra, además de las generales de la plantilla. Entre 3 y 5.',
@@ -65,7 +78,7 @@ const TEXTOS_TOOL = {
         description: 'Una frase explicando de dónde sale esa estimación (volumen de material, distancia, número de portes).',
       },
     },
-    required: ['intro', 'enfoque', 'objetivo', 'trabajos', 'condiciones', 'transporteEstimado', 'transporteJustificacion'],
+    required: ['intro', 'enfoque', 'objetivo', 'trabajos', 'calendario', 'condiciones', 'transporteEstimado', 'transporteJustificacion'],
   },
 };
 
@@ -130,7 +143,12 @@ CÓMO ESCRIBIR
 - Nada de superlativos vacíos ("máxima calidad", "excelencia"). Frases que un cliente pueda comprobar.
 
 OBJETIVO Y TRABAJOS
-Escribe el "objetivo de la intervención" de esta obra y la lista de "trabajos incluidos", sacándolos de los capítulos y partidas reales, no de una plantilla. Si el presupuesto no toca un oficio, no lo menciones.
+Escribe el "objetivo de la intervención" de esta obra: un párrafo adaptado a lo que se va a hacer de verdad, no el texto de una plantilla.
+
+La lista de "trabajos incluidos" es el resumen de los capítulos del presupuesto: UNA línea por capítulo, en el mismo orden, resumiendo lo que ese capítulo contiene. Si el presupuesto no toca un oficio, no lo menciones.
+
+CALENDARIO
+Planifica la obra por semanas, en el orden real de ejecución y con una duración creíble para el tamaño de este presupuesto. Cada tarea con su semana de inicio y de fin (de 1 a 8).
 
 CONDICIONES PARTICULARES
 Redacta entre 3 y 5, específicas de esta obra (por ejemplo: acceso y acopio de material, gestión de residuos y vertedero, suministro de material con plazo largo, trabajos condicionados por elementos ocultos).
@@ -177,6 +195,14 @@ Usa return_textos.`;
     intro: String(out.intro || ''),
     objetivo: String(out.objetivo || ''),
     trabajos: (Array.isArray(out.trabajos) ? out.trabajos : []).map((t) => String(t)).filter(Boolean).slice(0, 14),
+    calendario: (Array.isArray(out.calendario) ? out.calendario : [])
+      .map((f) => ({
+        tarea: String(f.tarea || ''),
+        desde: Math.min(8, Math.max(1, Math.round(Number(f.desde) || 1))),
+        hasta: Math.min(8, Math.max(1, Math.round(Number(f.hasta) || 1))),
+      }))
+      .filter((f) => f.tarea && f.hasta >= f.desde)
+      .slice(0, 10),
     enfoque: String(out.enfoque || ''),
     condiciones: (Array.isArray(out.condiciones) ? out.condiciones : [])
       .map((c) => ({ titulo: String(c.titulo || ''), texto: String(c.texto || '') }))

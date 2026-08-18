@@ -1105,6 +1105,7 @@ function mostrarTextosPropuesta(data) {
       enfoque: data.enfoque || '',
       objetivo: data.objetivo || '',
       trabajos: data.trabajos || [],
+      calendario: data.calendario || [],
       condiciones: data.condiciones || [],
       transporteEstimado: data.transporteEstimado || 0,
     };
@@ -1147,6 +1148,7 @@ async function enviarAPropuesta() {
         enfoque: textos.enfoque || '',
         objetivo: textos.objetivo || '',
         trabajos: textos.trabajos || [],
+        calendario: textos.calendario || [],
         condiciones: textos.condiciones || [],
         transporteEstimado: textos.transporteEstimado || 0,
       };

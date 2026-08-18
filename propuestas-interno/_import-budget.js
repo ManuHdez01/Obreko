@@ -45,15 +45,32 @@
     });
   }
 
+  // Las filas que faltan se clonan de la última partida y se insertan JUSTO
+  // detrás de ella. Si se añadieran al final del tbody caerían debajo del
+  // bloque de subtotal / impuesto / total, y el presupuesto salía con los
+  // totales a mitad de documento y partidas después.
   function ensureRows(tbody, needed) {
     var rows = dataRows(tbody);
     var template = rows[rows.length - 1];
     while (rows.length < needed && template) {
+      var ultima = rows[rows.length - 1];
       var clone = template.cloneNode(true);
-      tbody.appendChild(clone);
-      rows = dataRows(tbody);
+      ultima.parentNode.insertBefore(clone, ultima.nextSibling);
+      var nuevas = dataRows(tbody);
+      if (nuevas.length === rows.length) break; // por si el clon no cuenta como fila de datos
+      rows = nuevas;
     }
     return rows;
+  }
+
+  // La numeración se rehace al final: los clones traen el número de la fila
+  // que se copió y salían ocho "8" seguidos.
+  function renumerar(rows) {
+    rows.forEach(function (tr, idx) {
+      var num = tr.querySelector('td.num') || tr.children[0];
+      var soloNumero = String(num ? num.textContent : "").trim();
+      if (num && (num.classList.contains("num") || soloNumero === "" || !isNaN(Number(soloNumero)))) num.textContent = String(idx + 1);
+    });
   }
 
   function conceptCell(tr) {
@@ -117,6 +134,7 @@
       }));
     } catch (e) {}
 
+    renumerar(rows);
     aplicarTextos(payload.textos);
 
     if (typeof window.calcBudget === 'function') window.calcBudget();
@@ -134,9 +152,45 @@
       if (t.objetivo || t.intro) hechos.push('textos');
       if (Array.isArray(t.trabajos) && t.trabajos.length) hechos.push(t.trabajos.length + ' trabajos');
       if (Array.isArray(t.condiciones) && t.condiciones.length) hechos.push(t.condiciones.length + ' condiciones');
+      if (Array.isArray(t.calendario) && t.calendario.length) hechos.push('calendario de ' + t.calendario.length + ' fases');
     }
     window.__ultimoImport = hechos;
     return true;
+  }
+
+  // Calendario de obra: la IA propone las fases y sus semanas, y se pintan en
+  // el diagrama. Sigue siendo editable: se puede cambiar el nombre de la fase
+  // y pintar o despintar cualquier celda a mano.
+  function volcarCalendario(fases) {
+    var tabla = document.getElementById('ganttTable');
+    if (!tabla || !Array.isArray(fases) || !fases.length) return;
+    var tbody = tabla.querySelector('tbody');
+    if (!tbody) return;
+
+    while (tbody.querySelectorAll('tr').length < fases.length && typeof window.addGanttRow === 'function') {
+      var antes = tbody.querySelectorAll('tr').length;
+      window.addGanttRow();
+      if (tbody.querySelectorAll('tr').length === antes) break;
+    }
+    var filas = tbody.querySelectorAll('tr');
+
+    filas.forEach(function (tr, idx) {
+      var nombre = tr.querySelector('.task-name');
+      var celdas = tr.querySelectorAll('.gcell');
+      var fase = fases[idx];
+      if (!fase) {
+        // Fase que no usa la IA: se vacía en vez de dejar el ejemplo puesto.
+        if (nombre) nombre.textContent = '';
+        celdas.forEach(function (c) { c.style.background = ''; delete c.dataset.color; });
+        return;
+      }
+      if (nombre) nombre.textContent = fase.tarea;
+      celdas.forEach(function (c, semana) {
+        var dentro = (semana + 1) >= fase.desde && (semana + 1) <= fase.hasta;
+        c.style.background = dentro ? '#5C7CD9' : '';
+        if (dentro) c.dataset.color = '#5C7CD9'; else delete c.dataset.color;
+      });
+    });
   }
 
   // Documentación gráfica: las fotos y planos del proyecto entran en las cajas
@@ -216,6 +270,8 @@
       var punto = (refe && refe.classList && refe.classList.contains('ai-wand')) ? refe.nextSibling : objetivo.nextSibling;
       objetivo.parentNode.insertBefore(extra, punto);
     }
+
+    volcarCalendario(textos.calendario);
 
     // Trabajos incluidos: se rehace la lista con los del presupuesto.
     var lista = document.getElementById('worksList');

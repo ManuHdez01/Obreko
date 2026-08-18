@@ -372,7 +372,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
 .next-step-text{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);line-height:1.5;padding-top:4px;}
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260818b">
+<link rel="stylesheet" href="_text-bump.css?v=20260818c">
 </head>
 <body>
 
@@ -724,9 +724,8 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <th style="width:20px;">#</th>
           <th style="width:28%;" contenteditable="true">Concepto</th>
           <th style="width:34%;" contenteditable="true">Descripción</th>
-          <th class="right" style="width:18%;" contenteditable="true">Importe €</th>
-                    <th class="right" style="width:18%;" contenteditable="true">Total €</th>
-          <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
+          <th class="right" style="width:20%;" contenteditable="true">Importe €</th>
+                              <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
         </tr>
       </thead>
       <tbody id="budgetBody">
@@ -735,7 +734,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Demolición y preparación</td>
           <td class="desc" contenteditable="true">Vaciado, picado y retirada de escombros</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="1">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="1">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -743,7 +741,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Albañilería</td>
           <td class="desc" contenteditable="true">Tabiquería, rozas, guarnecidos y enlucidos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="2">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="2">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -751,7 +748,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Fontanería</td>
           <td class="desc" contenteditable="true">Red de distribución y aparatos sanitarios</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="3">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="3">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -759,7 +755,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Electricidad</td>
           <td class="desc" contenteditable="true">Cuadro, circuitos y puntos de luz/enchufe</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="4">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="4">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -767,7 +762,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Solados y alicatados</td>
           <td class="desc" contenteditable="true">Pavimento y revestimientos cerámicos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="5">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="5">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -775,7 +769,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Carpintería</td>
           <td class="desc" contenteditable="true">Puertas, armarios y carpintería exterior</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="6">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="6">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -783,7 +776,6 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Pintura</td>
           <td class="desc" contenteditable="true">Paredes, techos y elementos metálicos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="7">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="7">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <tr>
@@ -791,22 +783,21 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="concept" contenteditable="true">Limpieza y entrega</td>
           <td class="desc" contenteditable="true">Limpieza final y gestión de residuos</td>
           <td class="money" contenteditable="true" data-type="mat" data-row="8">—</td>
-          <td class="total-cell" data-type="rowtotal" data-row="8">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <!-- Subtotal -->
         <tr class="p7-sub-row" id="rowSubMat">
-          <td colspan="4" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
+          <td colspan="3" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
           <td style="text-align:right;font-weight:600;font-size:8pt;color:var(--navy);"><span id="subtotal">—</span>&nbsp;€</td>
         </tr>
         <!-- IVA -->
         <tr class="p7-iva-row" id="rowIva">
-          <td colspan="4" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
+          <td colspan="3" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
           <td style="text-align:right;color:var(--slate);"><span id="iva">—</span>&nbsp;€</td>
         </tr>
         <!-- Grand total -->
         <tr class="p7-total-row">
-          <td colspan="4" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
+          <td colspan="3" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
           <td style="text-align:right;"><span id="grand">—</span>&nbsp;€</td>
         </tr>
       </tbody>
@@ -1101,19 +1092,23 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
         </tr>
         <tr style="border-bottom:1px solid #E8E2D3;background:#FAFAFA">
           <td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Destinatarios</td>
-          <td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">No se cederán datos a terceros salvo obligación legal o cuando sea estrictamente necesario para la ejecución del contrato (p. ej. subcontratistas vinculados al proyecto, debidamente comprometidos en protección de datos).</td>
+          <td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">No se cederán datos a terceros salvo obligación legal o cuando sea estrictamente necesario para la ejecución del contrato (p. ej. subcontratistas vinculados al proyecto, debidamente comprometidos en protección de datos). No se realizan transferencias internacionales de datos.</td>
         </tr>
         <tr style="border-bottom:1px solid #E8E2D3">
           <td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Conservación</td>
           <td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Los datos se conservarán durante la vigencia de la relación contractual y, una vez finalizada, durante los plazos legalmente exigidos (mínimo 5 años por obligaciones fiscales y mercantiles).</td>
         </tr>
         <tr style="background:#FAFAFA">
+          <td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Carácter de los datos</td>
+          <td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Los datos solicitados son necesarios para la elaboración de la propuesta y la eventual ejecución del contrato; su no aportación impide continuar con la relación contractual. No se toman decisiones automatizadas ni se elaboran perfiles.</td>
+        </tr>
+        <tr>
           <td style="padding:3.5mm 4mm;font-weight:700;color:#1A2236;vertical-align:top;font-size:7.5pt;border-right:2px solid #FED544">Derechos</td>
           <td contenteditable="true" style="padding:3.5mm 4mm;color:#555;line-height:1.7">Puede ejercer sus derechos de acceso, rectificación, supresión, portabilidad, oposición y limitación del tratamiento dirigiéndose a <strong>hola@obreko.com</strong>. Si considera que el tratamiento no es conforme, puede presentar reclamación ante la <strong>Agencia Española de Protección de Datos</strong> (www.aepd.es).</td>
         </tr>
       </tbody>
     </table>
-    <div style="background:#F1EDE0;padding:4mm 6mm;border-left:3px solid #FED544;font-size:7.5pt;color:#666;line-height:1.65;font-family:'DM Sans',Arial,sans-serif" contenteditable="true">La cumplimentación y firma de esta propuesta implica el consentimiento informado al tratamiento de sus datos personales para los fines descritos. obreko se compromete a tratar sus datos con confidencialidad y a adoptar las medidas técnicas y organizativas necesarias para garantizar su seguridad.</div>
+    <div style="background:#F1EDE0;padding:4mm 6mm;border-left:3px solid #FED544;font-size:7.5pt;color:#666;line-height:1.65;font-family:'DM Sans',Arial,sans-serif" contenteditable="true">La cumplimentación y firma de esta propuesta implica el consentimiento informado al tratamiento de sus datos personales para los fines descritos, incluida la toma de fotografías del inmueble antes, durante y después de la obra con fines de documentación y seguimiento del proyecto. obreko se compromete a tratar sus datos con confidencialidad y a adoptar las medidas técnicas y organizativas necesarias para garantizar su seguridad, conforme al Reglamento (UE) 2016/679 y la Ley Orgánica 3/2018.</div>
   </div>
   <div style="padding:4mm 15mm;border-top:1px solid #E8E2D3;display:flex;justify-content:space-between;align-items:center;margin-top:auto">
     <span style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:8pt;color:#1A2236;opacity:.2">obreko</span>
@@ -1243,9 +1238,9 @@ function calcBudget(){
     var mEl=tr.querySelector('[data-type="mat"]');
     var lEl=tr.querySelector('[data-type="labor"]');
     var tEl=tr.querySelector('[data-type="rowtotal"]');
-    if(!mEl||!tEl)return;   // la columna de mano de obra ya no existe en la propuesta
+    if(!mEl)return;   // en la propuesta solo queda la columna de importe
     var t=parseNum(mEl)+parseNum(lEl);
-    tEl.textContent=fmtMoney(t);
+    if(tEl)tEl.textContent=fmtMoney(t);
     sub+=t;
   });
   var iva=sub*(window.getTaxRate?window.getTaxRate():0.21),grand=sub+iva;
@@ -1267,7 +1262,6 @@ function addBudgetRow(){
     '<td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;font-weight:600;color:#1A2236;font-size:8pt"></td>'+
     '<td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;color:#555;font-size:8pt"></td>'+
     '<td contenteditable="true" data-type="mat" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td>'+
-    '<td data-type="rowtotal" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt;font-weight:600;color:#1A2236">—</td>'+
     extra+
     '<td style="padding:2mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';
   tr.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});
@@ -1385,16 +1379,16 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
 })();
 </script>
 
-<script src="_crm-button.js?v=20260818b"></script>
-<script src="_tax-selector.js?v=20260818b"></script>
-<script src="_ai-wand.js?v=20260818b"></script>
-<script src="_page-numbers.js?v=20260818b"></script>
-<script src="_page-delete.js?v=20260818b"></script>
-<script src="_form-field-manager.js?v=20260818b"></script>
-<script src="_budget-wrap.js?v=20260818b"></script>
-<script src="_photo-zoom.js?v=20260818b"></script>
-<script src="_budget-calc.js?v=20260818b"></script>
-<script src="_budget-format.js?v=20260818b"></script>
+<script src="_crm-button.js?v=20260818c"></script>
+<script src="_tax-selector.js?v=20260818c"></script>
+<script src="_ai-wand.js?v=20260818c"></script>
+<script src="_page-numbers.js?v=20260818c"></script>
+<script src="_page-delete.js?v=20260818c"></script>
+<script src="_form-field-manager.js?v=20260818c"></script>
+<script src="_budget-wrap.js?v=20260818c"></script>
+<script src="_photo-zoom.js?v=20260818c"></script>
+<script src="_budget-calc.js?v=20260818c"></script>
+<script src="_budget-format.js?v=20260818c"></script>
 
 <!-- Add/remove fields específico para estructura p4-fields (Ficha del inmueble) -->
 <style>
@@ -1456,6 +1450,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260818b"></script>
+<script src="_import-budget.js?v=20260818c"></script>
 </body>
 </html>
