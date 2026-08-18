@@ -38,7 +38,15 @@ function renderAll() {
   $('topRef').textContent = 'PROYECTO · ' + (project.ref || project.id);
   $('projTitle').innerHTML = escapeHtml(project.clientName || 'Proyecto') + ' <em>' + escapeHtml(project.ref || '') + '</em>';
   const statusTxt = project.status === 'ganado' ? ' · 🏆 Ganado' : project.status === 'perdido' ? ' · Perdido' : '';
-  $('projSub').textContent = [project.tipo, project.m2 ? project.m2 + ' m²' : '', project.region].filter(Boolean).join(' · ') + statusTxt;
+  // El tipo y la plaza se guardan en minúscula ("reforma integral", "tenerife")
+  // porque son valores de un desplegable, pero en la cabecera se leen como
+  // texto: van con inicial mayúscula y los metros con coma decimal.
+  const subtitulo = [
+    conInicialMayuscula(project.tipo),
+    project.m2 ? String(project.m2).replace('.', ',') + ' m²' : '',
+    conInicialMayuscula(project.region),
+  ].filter(Boolean).join(' · ');
+  $('projSub').textContent = subtitulo + statusTxt;
   const ganadoBtn = $('ganadoBtn');
   if (ganadoBtn) {
     if (project.status === 'ganado') {
@@ -78,6 +86,11 @@ function renderAll() {
   renderSupplierSelect();
   renderRfqSection();
   renderInvoices();
+}
+
+function conInicialMayuscula(texto) {
+  const t = String(texto || '').trim();
+  return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
 }
 
 // ── Guardado ─────────────────────────────────────────────────────────────
