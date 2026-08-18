@@ -1069,16 +1069,33 @@ window.borrarDeBiblioteca = borrarDeBiblioteca;
 
 const EXCEL_TEXT_LIMIT = 9000; // compose.js acepta hasta 10000 caracteres
 
+// Copia local primero: así la subida de Excel funciona aunque haya
+// bloqueadores de anuncios, DNS filtrado o el CDN caído. El CDN queda
+// solo como respaldo por si faltara el archivo local.
+const SHEETJS_FUENTES = [
+  '../js/vendor/xlsx.full.min.js',
+  '/js/vendor/xlsx.full.min.js',
+  'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+];
+
 let sheetJsLoadPromise = null;
 function loadSheetJs() {
   if (window.XLSX) return Promise.resolve();
   if (sheetJsLoadPromise) return sheetJsLoadPromise;
   sheetJsLoadPromise = new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error('No se pudo cargar el lector de Excel'));
-    document.head.appendChild(s);
+    const intentar = (i) => {
+      if (i >= SHEETJS_FUENTES.length) {
+        sheetJsLoadPromise = null; // permite reintentar en la siguiente subida
+        reject(new Error('No se pudo cargar el lector de Excel'));
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = SHEETJS_FUENTES[i];
+      s.onload = () => (window.XLSX ? resolve() : intentar(i + 1));
+      s.onerror = () => intentar(i + 1);
+      document.head.appendChild(s);
+    };
+    intentar(0);
   });
   return sheetJsLoadPromise;
 }
@@ -1088,6 +1105,59 @@ function abrirSubirExcel() {
 }
 window.abrirSubirExcel = abrirSubirExcel;
 
+// El build completo de SheetJS abre bastante más que .xlsx, así que se
+// aceptan todos esos formatos para que valga "cualquier Excel": el moderno
+// .xlsx, los antiguos .xls, los que llevan macros, los .csv que exportan
+// otros programas de presupuestos y el .ods de LibreOffice.
+const EXTS_TEXTO = ['csv', 'txt', 'prn', 'dif'];
+
+// SheetJS es muy permisivo: si le das un JPG o un PDF renombrado a .xlsx no
+// falla, te devuelve los bytes como si fueran texto. Se cortan antes por la
+// firma del archivo para poder decir qué pasa de verdad.
+const FIRMAS_NO_HOJA = [
+  { bytes: [0x25, 0x50, 0x44, 0x46], nombre: 'un PDF' },
+  { bytes: [0xff, 0xd8, 0xff], nombre: 'una imagen JPG' },
+  { bytes: [0x89, 0x50, 0x4e, 0x47], nombre: 'una imagen PNG' },
+  { bytes: [0x47, 0x49, 0x46, 0x38], nombre: 'una imagen GIF' },
+  { bytes: [0x7b, 0x5c, 0x72, 0x74], nombre: 'un documento RTF' },
+];
+
+async function leerLibro(file) {
+  const buf = await file.arrayBuffer();
+  const cabecera = new Uint8Array(buf.slice(0, 8));
+  const firma = FIRMAS_NO_HOJA.find((f) => f.bytes.every((b, i) => cabecera[i] === b));
+  if (firma) throw new Error(`el archivo es ${firma.nombre}, no una hoja de cálculo.`);
+
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (EXTS_TEXTO.includes(ext)) {
+    // Los CSV que salen de programas españoles suelen venir en Windows-1252:
+    // si al leerlos como UTF-8 aparecen caracteres rotos, se reintenta.
+    let texto = new TextDecoder('utf-8').decode(buf);
+    if (texto.includes('\uFFFD')) texto = new TextDecoder('windows-1252').decode(buf);
+    return window.XLSX.read(texto, { type: 'string' });
+  }
+  return window.XLSX.read(buf, { type: 'array', cellDates: true });
+}
+
+function hojaTieneDatos(wb, name) {
+  const sheet = wb.Sheets[name];
+  if (!sheet || !sheet['!ref']) return false;
+  return window.XLSX.utils.sheet_to_csv(sheet, { blankrows: false }).replace(/[\s,;]/g, '') !== '';
+}
+
+// Los errores de SheetJS vienen en inglés y no dicen qué hacer: se traducen
+// a algo accionable para quien está subiendo el presupuesto.
+function explicarErrorExcel(e, file) {
+  const msg = String((e && e.message) || e);
+  if (/password|encrypt/i.test(msg)) {
+    return 'el archivo está protegido con contraseña. Ábrelo en Excel, guárdalo sin contraseña y vuelve a subirlo.';
+  }
+  if (/unsupported|corrupt|zip|CFB|cannot find|bad format|invalid/i.test(msg)) {
+    return `no se reconoce "${file.name}" como hoja de cálculo. Si viene de Numbers, de Google Sheets o es un PDF, expórtalo antes a .xlsx o .csv.`;
+  }
+  return msg;
+}
+
 async function onExcelFileSelected(input) {
   const file = input.files && input.files[0];
   input.value = ''; // permite volver a elegir el mismo archivo después
@@ -1095,10 +1165,11 @@ async function onExcelFileSelected(input) {
   toast('Leyendo ' + file.name + '…');
   try {
     await loadSheetJs();
-    const buf = await file.arrayBuffer();
-    const wb = window.XLSX.read(buf, { type: 'array' });
-    const sheetNames = wb.SheetNames || [];
-    if (!sheetNames.length) throw new Error('El archivo no tiene hojas legibles.');
+    const wb = await leerLibro(file);
+    // Se descartan las hojas vacías (portadas, hojas sueltas sin datos) para
+    // no preguntar por hojas que no aportan nada.
+    const sheetNames = (wb.SheetNames || []).filter((n) => hojaTieneDatos(wb, n));
+    if (!sheetNames.length) throw new Error('el archivo no tiene ninguna celda con contenido.');
 
     if (sheetNames.length === 1) {
       abrirMontarTexto(sheetToText(wb, sheetNames[0]));
@@ -1106,7 +1177,7 @@ async function onExcelFileSelected(input) {
       abrirSeleccionHojas(wb, sheetNames);
     }
   } catch (e) {
-    toast('Error leyendo el Excel: ' + e.message, 'error');
+    toast('Error leyendo el Excel: ' + explicarErrorExcel(e, file), 'error');
   }
 }
 window.onExcelFileSelected = onExcelFileSelected;
@@ -1170,6 +1241,7 @@ function abrirMontarTexto(prefillText) {
     textarea.value = prefillText.length > EXCEL_TEXT_LIMIT
       ? prefillText.slice(0, EXCEL_TEXT_LIMIT) + '\n… (contenido recortado, el archivo era muy largo — revisa que no falte nada relevante)'
       : prefillText;
+    if (prefillText.length > EXCEL_TEXT_LIMIT) toast('El Excel era muy largo y se ha recortado — revisa el texto antes de montar las partidas.', 'error');
   }
   wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
   wrap.querySelector('#composeCancel').addEventListener('click', () => wrap.remove());

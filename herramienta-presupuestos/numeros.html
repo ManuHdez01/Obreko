@@ -87,9 +87,9 @@
     <div class="card-hint">Exporta desde Holded (Contabilidad → Pérdidas y ganancias / Balance de situación → Excel) y súbelo aquí. Se muestran tal cual los calcula Holded, sin recalcular nada — sustituye a la reconstrucción en vivo por API mientras la afinamos.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
       <button class="btn btn-sm btn-pri" onclick="document.getElementById('pygFileInput').click()">📊 Subir Pérdidas y Ganancias</button>
-      <input type="file" id="pygFileInput" accept=".xlsx,.xls" style="display:none" onchange="onManualFileSelected(this,'pyg')">
+      <input type="file" id="pygFileInput" accept=".xlsx,.xlsm,.xlsb,.xls,.csv,.ods" style="display:none" onchange="onManualFileSelected(this,'pyg')">
       <button class="btn btn-sm btn-sec" onclick="document.getElementById('balanceFileInput').click()">📊 Subir Balance de situación</button>
-      <input type="file" id="balanceFileInput" accept=".xlsx,.xls" style="display:none" onchange="onManualFileSelected(this,'balance')">
+      <input type="file" id="balanceFileInput" accept=".xlsx,.xlsm,.xlsb,.xls,.csv,.ods" style="display:none" onchange="onManualFileSelected(this,'balance')">
     </div>
     <div id="manualUploadStatus" style="margin-top:8px;font-size:11.5px;color:var(--slate)"></div>
   </div>
@@ -119,16 +119,33 @@ function pnlRow(label, total, cls) {
 // apartado a)/b).../ cuenta contable) para pintarlo igual que el informe
 // oficial. Los importes son los que ya trae el Excel.
 
+// Copia local primero: así la subida de Excel funciona aunque haya
+// bloqueadores de anuncios, DNS filtrado o el CDN caído. El CDN queda
+// solo como respaldo por si faltara el archivo local.
+const SHEETJS_FUENTES = [
+  '../js/vendor/xlsx.full.min.js',
+  '/js/vendor/xlsx.full.min.js',
+  'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+];
+
 let sheetJsLoadPromise = null;
 function loadSheetJs() {
   if (window.XLSX) return Promise.resolve();
   if (sheetJsLoadPromise) return sheetJsLoadPromise;
   sheetJsLoadPromise = new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error('No se pudo cargar el lector de Excel'));
-    document.head.appendChild(s);
+    const intentar = (i) => {
+      if (i >= SHEETJS_FUENTES.length) {
+        sheetJsLoadPromise = null; // permite reintentar en la siguiente subida
+        reject(new Error('No se pudo cargar el lector de Excel'));
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = SHEETJS_FUENTES[i];
+      s.onload = () => (window.XLSX ? resolve() : intentar(i + 1));
+      s.onerror = () => intentar(i + 1);
+      document.head.appendChild(s);
+    };
+    intentar(0);
   });
   return sheetJsLoadPromise;
 }
