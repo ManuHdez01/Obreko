@@ -142,6 +142,7 @@ CÓMO ESCRIBIR
 - Aprovecha lo que sabemos de la zona: proveedores y almacenes cercanos, tiempos de suministro, accesos, y lo que condiciona trabajar ${canarias ? 'en la isla (material que viene por barco, plazos más largos en pedidos especiales, gestión del vertedero)' : 'en Madrid (accesos y horarios de carga y descarga, licencias, aparcamiento de contenedores)'}.
 - Menciona proveedores solo por el beneficio para el cliente (plazo, disponibilidad, servicio). Nunca precios de compra, márgenes ni costes internos.
 - Nada de superlativos vacíos ("máxima calidad", "excelencia"). Frases que un cliente pueda comprobar.
+- IMPORTANTE: nunca digas que el presupuesto es "cerrado", "fijo" ni que "el precio que se firma es el que se paga". El presupuesto es una ESTIMACIÓN: si hay que decir algo sobre eso, di que es una estimación seria y detallada, y que cualquier desviación se comunica al cliente de inmediato, antes de ejecutar el trabajo que la origine.
 
 OBJETIVO Y TRABAJOS
 Escribe el "objetivo de la intervención" de esta obra: un párrafo adaptado a lo que se va a hacer de verdad, no el texto de una plantilla.

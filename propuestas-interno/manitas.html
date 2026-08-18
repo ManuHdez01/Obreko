@@ -405,7 +405,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
 }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260819cc">
+<link rel="stylesheet" href="_text-bump.css?v=20260820">
 </head>
 <body>
 
@@ -504,7 +504,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
       </div>
       <div class="stat-card">
         <div class="stat-num" contenteditable="true">€</div>
-        <div class="stat-label" contenteditable="true">Precio cerrado</div>
+        <div class="stat-label" contenteditable="true">Precio estimado</div>
       </div>
     </div>
 
@@ -568,7 +568,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
         <span class="step-num">02</span>
         <div>
           <div class="step-title" contenteditable="true">Valoración in situ</div>
-          <div class="step-text" contenteditable="true">Vemos el trabajo sobre el terreno y te damos un precio cerrado antes de empezar.</div>
+          <div class="step-text" contenteditable="true">Vemos el trabajo sobre el terreno y te damos un precio estimado antes de empezar; cualquier desviación te la comunicamos de inmediato.</div>
         </div>
       </div>
       <div class="step">
@@ -925,8 +925,8 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
       </div>
       <div class="garantia-card">
         <div class="garantia-badge" contenteditable="true">€</div>
-        <div class="garantia-title" contenteditable="true">Precio cerrado antes de empezar</div>
-        <div class="garantia-text" contenteditable="true">El presupuesto no cambia salvo que aparezcan trabajos adicionales acordados por escrito.</div>
+        <div class="garantia-title" contenteditable="true">Precio estimado antes de empezar</div>
+        <div class="garantia-text" contenteditable="true">El presupuesto es una estimación: cualquier desviación te la comunicamos de inmediato, antes de ejecutar el trabajo adicional.</div>
       </div>
     </div>
 
@@ -972,7 +972,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   <div style="padding:6mm 15mm;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;align-content:start">
     <div style="display:flex;flex-direction:column;gap:0;padding-right:3.5mm;border-right:1px solid #E8E2D3">
       <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">1. Alcance y limitación de responsabilidad</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">La responsabilidad de obreko queda limitada a las tareas expresamente descritas en esta propuesta. obreko no responde de daños preexistentes no declarados, de averías estructurales que superen el alcance de una reparación puntual, ni de problemas derivados de instalaciones no incluidas en el servicio contratado.</div></div>
-      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">2. Condiciones económicas y forma de pago</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El pago se realizará al finalizar el servicio salvo acuerdo previo distinto. El presupuesto es cerrado para las tareas descritas. Cualquier trabajo adicional identificado durante la ejecución requerirá aprobación verbal o escrita del cliente antes de ejecutarse y se facturará por separado.</div></div>
+      <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">2. Condiciones económicas y forma de pago</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">El pago se realizará al finalizar el servicio salvo acuerdo previo distinto. El presupuesto es una estimación para las tareas descritas; cualquier desviación se comunicará al cliente de inmediato. Cualquier trabajo adicional identificado durante la ejecución requerirá aprobación verbal o escrita del cliente antes de ejecutarse y se facturará por separado.</div></div>
       <div style="padding:4mm 0;border-bottom:1px solid #F0EDE8"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">3. Trabajos adicionales y modificaciones</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Si durante la intervención se detectan trabajos necesarios no incluidos en la propuesta, el técnico los comunicará al cliente antes de actuar. Se podrá ampliar el alcance con la aprobación del cliente. Sin esta aprobación, el trabajo adicional no se ejecutará.</div></div>
       <div style="padding:4mm 0"><div contenteditable="true" style="font-size:7pt;font-weight:700;color:#1A2236;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2mm;font-family:'DM Sans',Arial,sans-serif">4. Cancelaciones y reprogramaciones</div><div contenteditable="true" style="font-size:7.5pt;color:#555;line-height:1.75;font-family:'DM Sans',Arial,sans-serif">Las cancelaciones con menos de 24h de antelación podrán estar sujetas a un cargo por desplazamiento según la distancia. En caso de cancelación por causas ajenas a obreko (acceso imposible, ausencia del cliente), se reprogramará la visita sin penalización adicional si se comunica con más de 24h de antelación.</div></div>
     </div>
@@ -1132,15 +1132,15 @@ function removePaymentItem(btn){var item=btn.closest('.includes-item');if(!item)
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260819cc"></script>
-<script src="_tax-selector.js?v=20260819cc"></script>
-<script src="_page-numbers.js?v=20260819cc"></script>
-<script src="_page-delete.js?v=20260819cc"></script>
-<script src="_form-field-manager.js?v=20260819cc"></script>
-<script src="_budget-wrap.js?v=20260819cc"></script>
-<script src="_photo-zoom.js?v=20260819cc"></script>
-<script src="_budget-calc.js?v=20260819cc"></script>
-<script src="_budget-format.js?v=20260819cc"></script>
+<script src="_crm-button.js?v=20260820"></script>
+<script src="_tax-selector.js?v=20260820"></script>
+<script src="_page-numbers.js?v=20260820"></script>
+<script src="_page-delete.js?v=20260820"></script>
+<script src="_form-field-manager.js?v=20260820"></script>
+<script src="_budget-wrap.js?v=20260820"></script>
+<script src="_photo-zoom.js?v=20260820"></script>
+<script src="_budget-calc.js?v=20260820"></script>
+<script src="_budget-format.js?v=20260820"></script>
 
 <!-- Add/remove en estructura ficha-grid (Ficha del inmueble) y obj-list (Trabajos solicitados) -->
 <style>
@@ -1236,6 +1236,6 @@ function removePaymentItem(btn){var item=btn.closest('.includes-item');if(!item)
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260819cc"></script>
+<script src="_import-budget.js?v=20260820"></script>
 </body>
 </html>
