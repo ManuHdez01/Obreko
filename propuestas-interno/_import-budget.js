@@ -115,6 +115,34 @@
     });
 
     renumerarDatos(tbody);
+    evitarSolapeEnPaginaLarga(tbody);
+  }
+
+  // Un presupuesto con muchos capítulos (cada uno añade su propia fila de
+  // cabecera) puede hacer que la tabla no quepa en una hoja A4 — la página
+  // simplemente crece porque no hay paginación real. El pie ("obreko" + nº
+  // de página) y el aviso de precios orientativos están clavados al fondo
+  // (position:absolute, calculado para una página de una sola hoja), así
+  // que en una página que ha crecido acaban solapados sobre el propio
+  // aviso en vez de ir debajo. Si la página se pasa de una hoja, se sueltan
+  // a flujo normal para que caigan justo después de la tabla, no encima.
+  function evitarSolapeEnPaginaLarga(tbody) {
+    var pagina = tbody.closest('.page');
+    if (!pagina) return;
+    var ALTURA_HOJA_PX = 1130; // 297mm a 96dpi + un margen pequeño
+    if (pagina.scrollHeight <= ALTURA_HOJA_PX) return;
+
+    var nota = pagina.querySelector('.p7-note');
+    if (nota) { nota.style.position = 'static'; nota.style.marginTop = '4mm'; }
+
+    var footer = pagina.querySelector('.page-footer');
+    if (footer) { footer.style.position = 'static'; footer.style.marginTop = '6mm'; footer.style.borderTop = '1px solid rgba(26,34,54,.08)'; }
+
+    // El número de página lo añade _page-numbers.js al cargar la hoja, antes
+    // de que se importe el presupuesto: su posición se calculó para la
+    // tabla de ejemplo, corta, así que también hay que soltarlo aquí.
+    var badge = pagina.querySelector('.page-number-badge');
+    if (badge) { badge.style.position = 'static'; badge.style.display = 'block'; badge.style.textAlign = 'center'; badge.style.marginTop = '2mm'; }
   }
 
   // Los números de fila se asignan al final y solo a filas de datos: las
