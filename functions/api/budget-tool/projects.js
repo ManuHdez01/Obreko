@@ -94,7 +94,7 @@ export async function onRequestPost({ request, env }) {
       ...defaultProject(),
       ...sanitizeProject(payload),
       id,
-      ref: payload.ref || (await autoRef(env)),
+      ref: payload.ref || (await autoRef(env, now)),
       createdAt: now,
       updatedAt: now,
     };
@@ -211,27 +211,34 @@ function sanitizeProject(payload) {
 function genId() {
   return 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
 }
-
 // ── Referencia de los presupuestos ───────────────────────────────────────
-// Formato: OBR-<año>-<contador de 4 dígitos>, p.ej. OBR-2026-0847.
-// El contador no se reinicia nunca y avanza a saltos irregulares, así que la
-// referencia no deja ver el ritmo de trabajo (con el formato viejo,
-// OBR-2026-0712-2249, se leía el día y la hora exacta en que se creó).
-// Para empezar en otro número basta con cambiar REF_INICIO y borrar la clave
-// refseq del KV.
-const REF_CONTADOR_KEY = 'refseq';
-const REF_INICIO = 1200;
+// Formato: OBR-<año>-<mes>-<contador>, p.ej. OBR-2026-08-057.
+// El contador se reinicia cada mes arrancando por encima de 50 y avanza a
+// saltos irregulares, así que la referencia no deja ver el ritmo real de
+// trabajo (el formato original, OBR-2026-0712-2249, cantaba el día y la hora
+// exacta en que se creó el presupuesto).
+// Para arrancar en otro número basta con cambiar REF_INICIO_MES.
+const REF_INICIO_MES = 50;
 const REF_SALTO_MAX = 7;
 
-// Formato antiguo: OBR-2026-0712-2249 (año + día + hora de creación).
-const RE_REF_ANTIGUA = /^OBR-\d{4}-\d{4}-\d{4}$/;
+const RE_REF_NUEVA = /^OBR-(\d{4}-\d{2})-(\d{3,})$/;
+// Formatos generados por versiones anteriores de la herramienta, que se
+// renumeran solos: OBR-2026-0712-2249 (fecha y hora) y OBR-2026-1204 (año
+// más contador corrido).
+const RE_REF_ANTIGUA = /^OBR-\d{4}-\d{4}-\d{4}$|^OBR-\d{4}-\d{4}$/;
 
-// Renumera de una vez los presupuestos que aún llevan el formato viejo,
-// en orden de creación para que los números sigan la cronología. Se deja
-// intacto el que ya haya salido de la empresa con esa referencia (una
-// petición de precios enviada a un proveedor la lleva en el asunto del
-// correo), porque cambiarle el número a un documento ya emitido es peor
-// que tener dos formatos conviviendo.
+function periodoDe(fecha) {
+  const d = fecha ? new Date(fecha) : new Date();
+  const valida = isNaN(d.getTime()) ? new Date() : d;
+  return `${valida.getUTCFullYear()}-${String(valida.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+// Renumera de una vez los presupuestos que aún llevan un formato antiguo.
+// Cada uno recibe la referencia del mes en que se creó y en orden
+// cronológico, para que los números sigan la secuencia real. Se deja intacto
+// el presupuesto cuya petición de precios ya salió por correo a un proveedor:
+// esa referencia ya está fuera de la empresa y cambiarla es peor que tener
+// dos formatos conviviendo.
 async function migrarRefsAntiguas(env) {
   const index = await readIndex(env);
   // refFija marca las que se dejan con el formato viejo a propósito, para no
@@ -244,15 +251,17 @@ async function migrarRefsAntiguas(env) {
     if (raw) proyectos.push(JSON.parse(raw));
   }
 
-  // El contador arranca por encima de la referencia nueva más alta que ya
-  // exista (por ejemplo una puesta a mano), para no repetir número.
-  const maxEmitido = proyectos.reduce((max, p) => {
-    const m = String(p.ref || '').match(/^OBR-\d{4}-(\d+)$/);
-    return m ? Math.max(max, Number(m[1])) : max;
-  }, 0);
-  if (maxEmitido) {
-    const guardado = Number(await env.BUDGET_TOOL.get(REF_CONTADOR_KEY)) || 0;
-    if (maxEmitido > guardado) await env.BUDGET_TOOL.put(REF_CONTADOR_KEY, String(maxEmitido));
+  // Los contadores de cada mes arrancan por encima de lo que ya haya emitido
+  // con el formato nuevo (por ejemplo una referencia puesta a mano).
+  const maximos = new Map();
+  for (const p of proyectos) {
+    const m = String(p.ref || '').match(RE_REF_NUEVA);
+    if (m) maximos.set(m[1], Math.max(maximos.get(m[1]) || 0, Number(m[2])));
+  }
+  for (const [periodo, max] of maximos) {
+    const clave = 'refseq:' + periodo;
+    const guardado = Number(await env.BUDGET_TOOL.get(clave)) || 0;
+    if (max > guardado) await env.BUDGET_TOOL.put(clave, String(max));
   }
 
   const renumerar = proyectos
@@ -260,7 +269,7 @@ async function migrarRefsAntiguas(env) {
     .sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)));
 
   for (const p of renumerar) {
-    p.ref = await autoRef(env);
+    p.ref = await autoRef(env, p.createdAt);
     await env.BUDGET_TOOL.put('project:' + p.id, JSON.stringify(p));
   }
 
@@ -276,20 +285,14 @@ async function migrarRefsAntiguas(env) {
   ));
 }
 
-async function autoRef(env) {
-  const year = new Date().getFullYear();
-  const guardado = Number(await env.BUDGET_TOOL.get(REF_CONTADOR_KEY)) || 0;
-  // Red de seguridad: si la clave del contador se perdiera, se retoma desde la
-  // referencia más alta ya emitida en vez de repetir números.
-  const emitido = (await readIndex(env)).reduce((max, e) => {
-    const m = String(e.ref || '').match(/^OBR-\d{4}-(\d+)$/);
-    return m ? Math.max(max, Number(m[1])) : max;
-  }, 0);
-  const siguiente = Math.max(guardado, emitido, REF_INICIO) + 1 + Math.floor(Math.random() * REF_SALTO_MAX);
-  await env.BUDGET_TOOL.put(REF_CONTADOR_KEY, String(siguiente));
-  return `OBR-${year}-${String(siguiente).padStart(4, '0')}`;
+async function autoRef(env, fecha) {
+  const periodo = periodoDe(fecha);
+  const clave = 'refseq:' + periodo;
+  const guardado = Number(await env.BUDGET_TOOL.get(clave)) || 0;
+  const siguiente = Math.max(guardado, REF_INICIO_MES) + 1 + Math.floor(Math.random() * REF_SALTO_MAX);
+  await env.BUDGET_TOOL.put(clave, String(siguiente));
+  return `OBR-${periodo}-${String(siguiente).padStart(3, '0')}`;
 }
-
 async function readIndex(env) {
   const raw = await env.BUDGET_TOOL.get(INDEX_KEY);
   if (!raw) return [];
