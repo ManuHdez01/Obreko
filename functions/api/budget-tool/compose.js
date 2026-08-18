@@ -41,8 +41,9 @@ const COMPOSE_TOOL = {
           properties: {
             name: { type: 'string', description: 'Nombre claro de la partida.' },
             capitulo: { type: 'string', description: 'Capítulo del presupuesto al que pertenece, copiado tal cual del texto (ej. "CAP.1 DEMOLICIONES, DESMONTAJES Y RETIRADA DE ESCOMBROS"). Vacío si el texto no trae capítulos.' },
-            material: { type: 'number', description: 'Importe en € de la parte de material de la partida, solo si el texto lo separa (columna "Material (€)"). Omitir si no viene.' },
-            manoObra: { type: 'number', description: 'Importe en € de la parte de mano de obra de la partida, solo si el texto lo separa (columna "Mano de obra (€)"). Omitir si no viene.' },
+            material: { type: 'number', description: 'Importe en € de la parte de material de la partida. Si el texto lo separa (columna "Material (€)"), cópialo tal cual; si no, estímalo. material + manoObra tiene que sumar el importe total de la partida.' },
+            manoObra: { type: 'number', description: 'Importe en € de la parte de mano de obra de la partida. Si el texto lo separa (columna "Mano de obra (€)"), cópialo tal cual; si no, estímalo. Una demolición o un alicatado son casi toda mano de obra; un sanitario o un electrodoméstico, casi todo material.' },
+            repartoEstimado: { type: 'boolean', description: 'true si el reparto entre material y mano de obra lo has estimado tú; false si venía separado en el texto.' },
             supplier: { type: 'string', description: 'Proveedor si el texto lo menciona o "estimación".' },
             unit: { type: 'string', description: 'ud, m2, ml, h, pa (partida alzada)...' },
             unitPrice: { type: 'number', description: 'Precio unitario orientativo en € (sin impuestos).' },
@@ -120,16 +121,21 @@ export async function onRequestPost({ request, env }) {
 // holgados en una sola respuesta del modelo.
 function partirTexto(text) {
   if (text.length <= CHUNK_CHARS) return [text];
+  const lineas = text.split('\n');
+  const cabecera = cabeceraDeColumnas(lineas);
   const trozos = [];
   let actual = '';
   let capitulo = '';
-  for (const linea of text.split('\n')) {
+  for (const linea of lineas) {
     if (actual && actual.length + linea.length + 1 > CHUNK_CHARS) {
       trozos.push(actual);
-      // El corte puede caer en mitad de un capítulo: al trozo siguiente se le
-      // recuerda a cuál pertenecen sus primeras líneas, para que no las deje
-      // sin capítulo.
-      actual = capitulo ? `[Estas primeras líneas pertenecen al capítulo: ${capitulo}]` : '';
+      // El corte deja al trozo siguiente sin la fila de encabezados y a mitad
+      // de un capítulo: se le recuerdan los dos, o no sabría qué columna es
+      // cada una ni a qué capítulo pertenecen sus primeras partidas.
+      const contexto = [];
+      if (cabecera) contexto.push(`[Columnas del Excel: ${cabecera}]`);
+      if (capitulo) contexto.push(`[Estas primeras líneas pertenecen al capítulo: ${capitulo}]`);
+      actual = contexto.join('\n');
     }
     const cap = capituloDeLinea(linea);
     if (cap) capitulo = cap;
@@ -137,6 +143,19 @@ function partirTexto(text) {
   }
   if (actual) trozos.push(actual);
   return trozos;
+}
+
+// Localiza la fila de encabezados del Excel ("Código,Descripción,Ud,Cantidad,
+// Precio Unit.,Importe,...,Material (€),Mano de obra (€),TOTAL (€)"): es la
+// primera línea que reúne varios nombres de columna típicos.
+function cabeceraDeColumnas(lineas) {
+  const pistas = ['descrip', 'cantidad', 'precio', 'importe', 'material', 'mano de obra', 'ud', 'total'];
+  for (const linea of lineas.slice(0, 40)) {
+    const bajo = linea.toLowerCase();
+    const aciertos = pistas.filter((p) => bajo.includes(p)).length;
+    if (aciertos >= 3) return linea.trim().slice(0, 300);
+  }
+  return '';
 }
 
 // Reconoce las líneas de cabecera de capítulo tal y como las exporta un Excel
@@ -178,7 +197,7 @@ ${libraryHint}
 
 Si el texto trae capítulos ("CAP.1 DEMOLICIONES...", "CAPÍTULO 2 ALBAÑILERÍA...", o títulos en mayúsculas que agrupan partidas), rellena "capitulo" en CADA partida con el capítulo al que pertenece, copiado tal cual, y devuelve las partidas en el mismo orden en que aparecen en el texto.
 
-Si el texto separa el importe de material y el de mano de obra de cada partida (columnas "Material (€)" y "Mano de obra (€)"), cópialos en "material" y "manoObra". Si no vienen separados, omítelos: no los repartas tú.
+Reparte SIEMPRE el importe de cada partida entre "material" y "manoObra", de forma que sumen el importe total de esa partida. Si el texto ya los separa (columnas "Material (€)" y "Mano de obra (€)"), cópialos tal cual y pon repartoEstimado en false. Si no los separa, estima el reparto según el tipo de trabajo (una demolición o un desmontaje son casi toda mano de obra; un sanitario, un electrodoméstico o un alicatado llevan material y colocación) y pon repartoEstimado en true.
 
 Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de las medidas del texto; si no hay, estima razonable y dilo en reasoning) y precio unitario orientativo realista para la región y calidad (sin impuestos). Si el texto ya trae cantidades y precios, respétalos en vez de reestimarlos. No inventes trabajos que el texto no pida. Si algo es ambiguo, inclúyelo con tu mejor interpretación y señálalo en summary. Usa return_items.`;
 
@@ -243,6 +262,7 @@ function normalizarItems(raw) {
       capitulo: it.capitulo ? String(it.capitulo).replace(/["']/g, '').trim() : '',
       material: Number(it.material) || 0,
       manoObra: Number(it.manoObra) || 0,
+      repartoEstimado: it.repartoEstimado === true,
       unitPrice: Number(it.unitPrice) || 0,
       quantity: Number(it.quantity) || 1,
       reasoning: it.reasoning ? String(it.reasoning) : '',

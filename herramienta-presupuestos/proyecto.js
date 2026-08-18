@@ -425,8 +425,8 @@ function renderItems() {
           <td>${escapeHtml(it.supplier || '—')}</td>
           <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
-          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—" title="Dato interno" onchange="updItem(${i},'material',this.value)"></td>
-          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—" title="Dato interno" onchange="updItem(${i},'manoObra',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
           <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
           <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoney(dev)}</td>
@@ -475,6 +475,14 @@ function capituloCorto(capitulo) {
 //   = TOTAL PRESUPUESTO (impuesto incluido)
 // Materiales y mano de obra se suman aparte: son dato interno y no entran en
 // el total, que ya sale de las partidas.
+// Los repartos que ha estimado la IA se pintan en cursiva y gris, para
+// distinguirlos de los que venían separados en el Excel.
+function estiloReparto(it) {
+  return it.repartoEstimado
+    ? ' style="font-style:italic;color:var(--slate)" title="Reparto estimado por la IA — corrígelo si lo sabes"'
+    : ' title="Dato interno, no sale al cliente"';
+}
+
 function pintarTotales(pem, totalMaterial, totalObra, realTotal) {
   const giPct = Number(($('fGiPct') || {}).value) || 0;
   const gi = pem * (giPct / 100);
@@ -489,6 +497,12 @@ function pintarTotales(pem, totalMaterial, totalObra, realTotal) {
   $('itemsTotalConIgic').textContent = fmtMoney(contrata + impuesto);
   $('itemsMatTotal').textContent = fmtMoney(totalMaterial);
   $('itemsObraTotal').textContent = fmtMoney(totalObra);
+  // Material + mano de obra debería sumar la ejecución material. Si no cuadra
+  // es que falta repartir alguna partida, y conviene verlo.
+  const sinRepartir = pem - (totalMaterial + totalObra);
+  $('itemsRepartoAviso').innerHTML = Math.abs(sinRepartir) > 0.5
+    ? ` · <span style="color:var(--red)">sin repartir ${escapeHtml(fmtMoney(sinRepartir))}</span>`
+    : '';
   $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
 }
 
@@ -522,6 +536,8 @@ window.onGiPctChange = onGiPctChange;
 function updItem(i, field, value) {
   const it = project.items[i];
   if (!it) return;
+  // Un reparto corregido a mano deja de ser una estimación de la IA.
+  if (field === 'material' || field === 'manoObra') it.repartoEstimado = false;
   if (field === 'name' || field === 'estancia') it[field] = value;
   else it[field] = Number(value) || 0;
   it.totalPrice = (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0);
@@ -1167,6 +1183,7 @@ function applyAssistantAction(action) {
         name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
         capitulo: String(it.capitulo || ''),
         material: Number(it.material) || 0, manoObra: Number(it.manoObra) || 0,
+        repartoEstimado: it.repartoEstimado === true,
         unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
         totalPrice: +(qty * price).toFixed(2), reasoning: String(it.reasoning || ''),
       });
