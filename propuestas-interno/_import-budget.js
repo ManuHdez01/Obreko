@@ -121,6 +121,19 @@
     if (typeof window.calcBudget === 'function') window.calcBudget();
     // Los bloques recién creados también tienen que llevar su varita.
     if (typeof window.montarVaritasIA === 'function') window.montarVaritasIA();
+
+    // Resumen de lo rellenado: si algo no ha entrado, se ve en el acto en vez
+    // de tener que ir página por página buscándolo.
+    var hechos = [payload.rows.length + ' partidas'];
+    if (clientEl && payload.clientName) hechos.push('portada');
+    if (document.querySelector('.p4-field-val') && payload.address) hechos.push('ficha técnica');
+    if (payload.textos) {
+      var t = payload.textos;
+      if (t.objetivo || t.intro) hechos.push('textos');
+      if (Array.isArray(t.trabajos) && t.trabajos.length) hechos.push(t.trabajos.length + ' trabajos');
+      if (Array.isArray(t.condiciones) && t.condiciones.length) hechos.push(t.condiciones.length + ' condiciones');
+    }
+    window.__ultimoImport = hechos;
     return true;
   }
 
@@ -243,7 +256,8 @@
       if (applyImport(payload)) {
         localStorage.removeItem(KEY);
         bar.style.background = '#1a8c4a';
-        bar.children[1].innerHTML = 'Presupuesto importado ✓ — revisa las partidas y guarda como PDF o en el CRM.';
+        bar.children[1].innerHTML = 'Importado ✓ ' + (window.__ultimoImport || []).join(' · ') +
+          ' — revisa el documento y guarda como PDF o en el CRM.';
         setTimeout(function () { bar.remove(); }, 3500);
       }
     });
