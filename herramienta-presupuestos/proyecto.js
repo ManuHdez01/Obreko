@@ -1031,29 +1031,30 @@ async function enviarAPropuesta() {
   await saveProject(false);
   const e = economics || {};
   const items = project.items || [];
-  if (!items.length || !e.internalCost) {
-    toast('El proyecto no tiene materiales o costes calculados todavía', 'error');
+  if (!items.length) {
+    toast('El presupuesto no tiene partidas todavía', 'error');
     return;
   }
-  // Factor de venta: reparte indirectos + margen proporcionalmente entre
-  // materiales y mano de obra. El coste interno NUNCA sale al documento.
-  const directCost = (e.materialsCost || 0) + (e.laborCost || 0);
-  const factor = directCost > 0 ? (e.suggestedPrice || directCost) / directCost : 1;
 
-  const rows = items.map((it) => ({
-    concept: it.name,
-    desc: it.supplier ? 'Suministro e instalación · ' + it.supplier : 'Suministro e instalación',
-    mat: +((Number(it.totalPrice) || 0) * factor).toFixed(2),
-    labor: 0,
-  }));
-  if (e.laborCost > 0) {
-    rows.push({
-      concept: 'Mano de obra',
-      desc: 'Ejecución completa de los trabajos descritos',
-      mat: 0,
-      labor: +((e.laborCost || 0) * factor).toFixed(2),
-    });
-  }
+  // El presupuesto detallado YA es precio de venta: se manda tal cual, sin
+  // aplicarle ningún factor. Antes se trataba cada partida como coste y se le
+  // recargaba el margen encima, así que a la propuesta llegaban importes
+  // inflados que no cuadraban con el presupuesto.
+  // De cada partida sale su reparto material / mano de obra; si no lo tiene,
+  // el importe entero va como material, que es como se venía haciendo.
+  const rows = items.map((it) => {
+    const total = Math.round(Number(it.totalPrice) || 0);
+    const mat = Math.round(Number(it.material) || 0);
+    const labor = Math.round(Number(it.manoObra) || 0);
+    const conReparto = mat + labor > 0;
+    const capitulo = String(it.capitulo || '').trim();
+    return {
+      concept: it.name,
+      desc: capitulo || (it.supplier ? 'Suministro e instalación · ' + it.supplier : 'Suministro e instalación'),
+      mat: conReparto ? mat : total,
+      labor: conReparto ? labor : 0,
+    };
+  });
 
   const payload = {
     v: 1,
@@ -1061,7 +1062,9 @@ async function enviarAPropuesta() {
     ref: project.ref || '',
     clientName: project.clientName || '',
     rows,
-    total: +(e.suggestedPrice || 0).toFixed(2),
+    // Ejecución material: el beneficio industrial y el impuesto los calcula la
+    // propia plantilla de la propuesta.
+    total: rows.reduce((s, r) => s + r.mat + r.labor, 0),
   };
   localStorage.setItem('obreko_budget_import', JSON.stringify(payload));
   const tpl = TEMPLATE_BY_TIPO[project.tipo] || 'reformas.html';
