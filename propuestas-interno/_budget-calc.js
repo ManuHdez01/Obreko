@@ -14,17 +14,22 @@
 (function () {
   'use strict';
 
+  // El punto es siempre separador de miles en lo que se muestra (los
+  // importes van en euros enteros, nunca con decimales): se quita entero.
+  // Solo la coma, si alguien teclea un decimal a mano, se trata como tal.
   function parseNum(el) {
     if (!el) return 0;
     var text = el.tagName === 'INPUT' ? (el.value || '') : (el.textContent || '');
-    var n = parseFloat(text.replace(/[^\d.,-]/g, '').replace(',', '.'));
+    var n = parseFloat(text.replace(/[^\d,-]/g, '').replace(',', '.'));
     return isFinite(n) ? n : 0;
   }
 
+  // El es-ES de JS deja las cifras de 4 dígitos sin punto de miles (3690 en
+  // vez de 3.690), así que se compone a mano.
   function fmtMoney(n) {
-    return n > 0
-      ? n.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' €'
-      : '—';
+    if (!(n > 0)) return '—';
+    var entera = String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return entera + ' €';
   }
 
   function setText(id, value) {

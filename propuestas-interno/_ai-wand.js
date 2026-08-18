@@ -132,12 +132,11 @@
   // Clases que siempre llevan varita aunque el texto sea corto o esté vacío:
   // son campos de redacción (observaciones, notas, etiquetas de plano...).
   var SIEMPRE = ['p4-field-val', 'sand-note', 'p6-trabajo-text', 'p5-plan-label',
-    'p9-card-desc', 'p3-card-desc', 'p11-subtext', 'task-name'];
+    'p9-card-desc', 'p3-card-desc', 'p11-subtext'];
 
   function tipoDeBloque(el) {
     if (el.getAttribute('data-ai-wand')) return el.getAttribute('data-ai-wand');
     if (el.classList.contains('p6-trabajo-text')) return 'trabajo';
-    if (el.classList.contains('task-name')) return 'trabajo';
     if (el.closest('#condicionesExtra') || el.closest('.p7-cond, .conditions')) return 'condicion';
     return 'libre';
   }
@@ -145,8 +144,16 @@
   // Un bloque merece varita si es un campo de redacción o si ya tiene un texto
   // de cierta longitud. Los números del presupuesto y las etiquetas cortas se
   // quedan fuera: ahí una varita solo estorba.
+  //
+  // Ninguna celda de tabla lleva varita: el botón se inserta como hermano del
+  // bloque (insertBefore en el mismo padre), y dentro de un <tr> el único
+  // hijo válido es <td>/<th> — un <button> ahí es HTML inválido y el
+  // navegador lo deja flotando, descuadrando las columnas siguientes (le
+  // pasó al calendario de obra: la varita del nombre de tarea rompía la
+  // columna de Semana 1). Por eso se excluye cualquier tabla entera, no solo
+  // el presupuesto.
   function mereceVarita(el) {
-    if (el.closest('#budgetTable') || el.closest('.p1-meta')) return false;
+    if (el.closest('table') || el.closest('.p1-meta')) return false;
     if (el.getAttribute('data-ai-wand')) return true;
     for (var i = 0; i < SIEMPRE.length; i++) if (el.classList.contains(SIEMPRE[i])) return true;
     return (el.textContent || '').trim().length >= 60;

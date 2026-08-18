@@ -405,7 +405,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
 }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260822">
+<link rel="stylesheet" href="_text-bump.css?v=20260823b">
 </head>
 <body>
 
@@ -1082,8 +1082,8 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 function scalePages(){var s=Math.min(1,(window.innerWidth-48)/794);document.querySelectorAll('.page').forEach(function(p){p.style.zoom=s<1?s:'';})}
 scalePages();window.addEventListener('resize',scalePages);
 // ── BUDGET ──
-function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
-function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})+' €':'—';}
+function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d,]/g,'').replace(',','.'))||0;}
+function fmtMoney(n){if(!(n>0))return '—';return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' €';}
 function calcBudget(){var sub=0;document.querySelectorAll('#budgetBody tr').forEach(function(tr){var mEl=tr.querySelector('[data-type="mat"]'),lEl=tr.querySelector('[data-type="labor"]'),tEl=tr.querySelector('[data-type="rowtotal"]');if(!mEl||!lEl||!tEl)return;var t=parseNum(mEl)+parseNum(lEl);tEl.textContent=fmtMoney(t);sub+=t;});var iva=sub*(window.getTaxRate?window.getTaxRate():0.21),grand=sub+iva;var s=document.getElementById('subtotal'),v=document.getElementById('iva'),g=document.getElementById('grand');if(s)s.textContent=fmtMoney(sub);if(v)v.textContent=fmtMoney(iva);if(g)g.textContent=fmtMoney(grand);}
 document.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});
 function addBudgetRow(){var tbody=document.getElementById('budgetBody');if(!tbody)return;var n=tbody.querySelectorAll('tr').length+1;var tr=document.createElement('tr');tr.style.background=n%2===0?'#FAFAFA':'#fff';tr.innerHTML='<td style="padding:3mm;border:1px solid #E8E2D3;text-align:center;color:#BBB;font-size:7.5pt">'+n+'</td><td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;font-weight:600;color:#1A2236;font-size:8pt"></td><td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;color:#555;font-size:8pt"></td><td contenteditable="true" data-type="mat" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td><td contenteditable="true" data-type="labor" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td><td data-type="rowtotal" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt;font-weight:600;color:#1A2236">—</td><td style="padding:2mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';tr.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});tbody.appendChild(tr);}
@@ -1132,15 +1132,15 @@ function removePaymentItem(btn){var item=btn.closest('.includes-item');if(!item)
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260822"></script>
-<script src="_tax-selector.js?v=20260822"></script>
-<script src="_page-numbers.js?v=20260822"></script>
-<script src="_page-delete.js?v=20260822"></script>
-<script src="_form-field-manager.js?v=20260822"></script>
-<script src="_budget-wrap.js?v=20260822"></script>
-<script src="_photo-zoom.js?v=20260822"></script>
-<script src="_budget-calc.js?v=20260822"></script>
-<script src="_budget-format.js?v=20260822"></script>
+<script src="_crm-button.js?v=20260823b"></script>
+<script src="_tax-selector.js?v=20260823b"></script>
+<script src="_page-numbers.js?v=20260823b"></script>
+<script src="_page-delete.js?v=20260823b"></script>
+<script src="_form-field-manager.js?v=20260823b"></script>
+<script src="_budget-wrap.js?v=20260823b"></script>
+<script src="_photo-zoom.js?v=20260823b"></script>
+<script src="_budget-calc.js?v=20260823b"></script>
+<script src="_budget-format.js?v=20260823b"></script>
 
 <!-- Add/remove en estructura ficha-grid (Ficha del inmueble) y obj-list (Trabajos solicitados) -->
 <style>
@@ -1236,6 +1236,6 @@ function removePaymentItem(btn){var item=btn.closest('.includes-item');if(!item)
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260822"></script>
+<script src="_import-budget.js?v=20260823b"></script>
 </body>
 </html>

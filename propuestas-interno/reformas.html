@@ -374,7 +374,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
 .next-step-text{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);line-height:1.5;padding-top:4px;}
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260822">
+<link rel="stylesheet" href="_text-bump.css?v=20260823b">
 </head>
 <body>
 
@@ -822,8 +822,9 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
     <div class="p8-header-tag">Planificación</div>
     <div class="p8-header-h">Calendario de obra</div>
     <div class="p8-dates">
-      <span>Inicio previsto:&nbsp;<span contenteditable="true" style="color:var(--navy);font-weight:600;">__ / __ / ____</span></span>
-      <span>Fin previsto:&nbsp;<span contenteditable="true" style="color:var(--navy);font-weight:600;">__ / __ / ____</span></span>
+      <span>Inicio previsto:&nbsp;<span id="ganttInicioPrevisto" contenteditable="true" style="color:var(--navy);font-weight:600;">__ / __ / ____</span></span>
+      <span>Fin previsto:&nbsp;<span id="ganttFinPrevisto" contenteditable="true" style="color:var(--navy);font-weight:600;">__ / __ / ____</span></span>
+      <button onclick="fecharSemanasGantt()" style="background:#1A2236;color:#FED544;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:6.5pt;font-weight:600;letter-spacing:.06em;padding:3px 9px;border-radius:3px;margin-left:2mm">📅 Fechar semanas</button>
     </div>
   </div>
 
@@ -1228,8 +1229,8 @@ function removePlanBox(e,btn){
 }
 
 // ── BUDGET CALCULATION ─────────────────────────────
-function parseNum(el){if(!el)return 0;return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
-function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})+' €':'—';}
+function parseNum(el){if(!el)return 0;return parseFloat((el.textContent||'').replace(/[^\d,]/g,'').replace(',','.'))||0;}
+function fmtMoney(n){if(!(n>0))return '—';return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' €';}
 function calcBudget(){
   var sub=0;
   document.querySelectorAll('#budgetBody tr').forEach(function(tr){
@@ -1295,6 +1296,54 @@ function addWorkItem(){
   list.appendChild(li);
 }
 function removeWorkItem(btn){var li=btn.closest('li');if(li)li.parentNode.removeChild(li);}
+
+// ── Fechar las semanas del gantt desde el inicio previsto ─────────────────
+// El diagrama solo dice "SEM 1, SEM 2...": con la fecha de inicio puesta,
+// cada cabecera pasa a mostrar también su rango real de fechas, y "Fin
+// previsto" se calcula solo a partir del número de columnas que haya.
+var MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+function leerFechaGantt(el) {
+  var m = (el.textContent || '').match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})/);
+  if (!m) return null;
+  var f = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])); // fecha "civil": sin new Date() a secas
+  return isNaN(f.getTime()) ? null : f;
+}
+
+function fmtFechaCorta(f) {
+  return f.getDate() + ' ' + MESES_CORTOS[f.getMonth()];
+}
+
+function fmtFechaGantt(f) {
+  var dd = String(f.getDate()).padStart(2, '0');
+  var mm = String(f.getMonth() + 1).padStart(2, '0');
+  return dd + ' / ' + mm + ' / ' + f.getFullYear();
+}
+
+function fecharSemanasGantt() {
+  var inicioEl = document.getElementById('ganttInicioPrevisto');
+  var inicio = inicioEl ? leerFechaGantt(inicioEl) : null;
+  if (!inicio) {
+    alert('Escribe primero la fecha de "Inicio previsto" (formato dd/mm/aaaa) y vuelve a pulsar "Fechar semanas".');
+    if (inicioEl) inicioEl.focus();
+    return;
+  }
+
+  var cabeceras = document.querySelectorAll('#ganttTable thead th:not(.task-col)');
+  var ultimoFin = inicio;
+  cabeceras.forEach(function (th, i) {
+    if (!th.textContent.trim() || th.querySelector('input')) return; // columna en blanco o de edición de nombre
+    var desde = new Date(inicio); desde.setDate(desde.getDate() + i * 7);
+    var hasta = new Date(desde); hasta.setDate(hasta.getDate() + 6);
+    ultimoFin = hasta;
+    th.innerHTML = 'SEM ' + (i + 1) + '<br><span style="font-weight:400;font-size:6pt;opacity:.75">' +
+      fmtFechaCorta(desde) + '–' + fmtFechaCorta(hasta) + '</span>';
+  });
+
+  var finEl = document.getElementById('ganttFinPrevisto');
+  if (finEl) finEl.textContent = fmtFechaGantt(ultimoFin);
+}
+window.fecharSemanasGantt = fecharSemanasGantt;
 
 // ── GANTT COLOR PICKER ─────────────────────────────
 var _gPal=[{c:'',l:'Vacío'},{c:'#1A2236',l:'Navy'},{c:'#FED544',l:'Amarillo'},{c:'#5C7CD9',l:'Azul'},{c:'#2d9e4f',l:'Verde'},{c:'#e55039',l:'Rojo'},{c:'#F1EDE0',l:'Arena'},{c:'#8896B3',l:'Gris'}];
@@ -1376,16 +1425,16 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
 })();
 </script>
 
-<script src="_crm-button.js?v=20260822"></script>
-<script src="_tax-selector.js?v=20260822"></script>
-<script src="_ai-wand.js?v=20260822"></script>
-<script src="_page-numbers.js?v=20260822"></script>
-<script src="_page-delete.js?v=20260822"></script>
-<script src="_form-field-manager.js?v=20260822"></script>
-<script src="_budget-wrap.js?v=20260822"></script>
-<script src="_photo-zoom.js?v=20260822"></script>
-<script src="_budget-calc.js?v=20260822"></script>
-<script src="_budget-format.js?v=20260822"></script>
+<script src="_crm-button.js?v=20260823b"></script>
+<script src="_tax-selector.js?v=20260823b"></script>
+<script src="_ai-wand.js?v=20260823b"></script>
+<script src="_page-numbers.js?v=20260823b"></script>
+<script src="_page-delete.js?v=20260823b"></script>
+<script src="_form-field-manager.js?v=20260823b"></script>
+<script src="_budget-wrap.js?v=20260823b"></script>
+<script src="_photo-zoom.js?v=20260823b"></script>
+<script src="_budget-calc.js?v=20260823b"></script>
+<script src="_budget-format.js?v=20260823b"></script>
 
 <!-- Add/remove fields específico para estructura p4-fields (Ficha del inmueble) -->
 <style>
@@ -1447,6 +1496,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260822"></script>
+<script src="_import-budget.js?v=20260823b"></script>
 </body>
 </html>

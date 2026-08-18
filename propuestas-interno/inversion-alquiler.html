@@ -255,7 +255,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .estancia-add-btn:hover{background:rgba(92,124,217,.09);}
 @media print{ .estancia-row-remove,.estancia-add-btn{display:none !important;} }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260822">
+<link rel="stylesheet" href="_text-bump.css?v=20260823b">
 </head>
 <body>
 
@@ -1010,8 +1010,8 @@ function removePlanBox(e,btn){
   if(box)box.remove();
 }
 
-function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
-function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})+' €':'—';}
+function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d,]/g,'').replace(',','.'))||0;}
+function fmtMoney(n){if(!(n>0))return '—';return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' €';}
 function calcBudget(){
   var subMat=0,subLabor=0;
   document.querySelectorAll('#budgetBody tr').forEach(function(tr){
@@ -1111,15 +1111,15 @@ function removePaymentItem(btn){var item=btn.parentNode;if(item)item.parentNode.
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260822"></script>
-<script src="_page-numbers.js?v=20260822"></script>
-<script src="_page-delete.js?v=20260822"></script>
-<script src="_mats-page.js?v=20260822"></script>
-<script src="_form-field-manager.js?v=20260822"></script>
-<script src="_budget-wrap.js?v=20260822"></script>
-<script src="_photo-zoom.js?v=20260822"></script>
-<script src="_budget-calc.js?v=20260822"></script>
-<script src="_budget-format.js?v=20260822"></script>
-<script src="_import-budget.js?v=20260822"></script>
+<script src="_crm-button.js?v=20260823b"></script>
+<script src="_page-numbers.js?v=20260823b"></script>
+<script src="_page-delete.js?v=20260823b"></script>
+<script src="_mats-page.js?v=20260823b"></script>
+<script src="_form-field-manager.js?v=20260823b"></script>
+<script src="_budget-wrap.js?v=20260823b"></script>
+<script src="_photo-zoom.js?v=20260823b"></script>
+<script src="_budget-calc.js?v=20260823b"></script>
+<script src="_budget-format.js?v=20260823b"></script>
+<script src="_import-budget.js?v=20260823b"></script>
 </body>
 </html>

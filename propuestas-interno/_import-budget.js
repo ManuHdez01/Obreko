@@ -28,7 +28,8 @@
   }
 
   function fmtMoney(n) {
-    return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    var v = Math.round(Number(n) || 0);
+    return String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(/^/, v < 0 ? '-' : '');
   }
 
   function setCell(cell, value) {
