@@ -361,7 +361,7 @@ body{background:#ddd;font-family:var(--sans);color:var(--navy);}
   .estado-photo{cursor:default;}
 }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260818c">
+<link rel="stylesheet" href="_text-bump.css?v=20260819bc">
 </head>
 <body>
 
@@ -1123,7 +1123,7 @@ function removeEstadoCard(btn){
 }
 // ── BUDGET ──
 function parseNum(el){return parseFloat((el.textContent||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
-function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €':'—';}
+function fmtMoney(n){return n>0?n.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})+' €':'—';}
 function calcBudget(){var sub=0;document.querySelectorAll('#budgetBody tr').forEach(function(tr){var mEl=tr.querySelector('[data-type="mat"]'),lEl=tr.querySelector('[data-type="labor"]'),tEl=tr.querySelector('[data-type="rowtotal"]');if(!mEl||!lEl||!tEl)return;var t=parseNum(mEl)+parseNum(lEl);tEl.textContent=fmtMoney(t);sub+=t;});var iva=sub*(window.getTaxRate?window.getTaxRate():0.21),grand=sub+iva;var s=document.getElementById('subtotal'),v=document.getElementById('iva'),g=document.getElementById('grand');if(s)s.textContent=fmtMoney(sub);if(v)v.textContent=fmtMoney(iva);if(g)g.textContent=fmtMoney(grand);}
 document.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});
 function addBudgetRow(){
@@ -1185,15 +1185,15 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)it
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260818c"></script>
-<script src="_tax-selector.js?v=20260818c"></script>
-<script src="_page-numbers.js?v=20260818c"></script>
-<script src="_page-delete.js?v=20260818c"></script>
-<script src="_form-field-manager.js?v=20260818c"></script>
-<script src="_budget-wrap.js?v=20260818c"></script>
-<script src="_photo-zoom.js?v=20260818c"></script>
-<script src="_budget-calc.js?v=20260818c"></script>
-<script src="_budget-format.js?v=20260818c"></script>
-<script src="_import-budget.js?v=20260818c"></script>
+<script src="_crm-button.js?v=20260819bc"></script>
+<script src="_tax-selector.js?v=20260819bc"></script>
+<script src="_page-numbers.js?v=20260819bc"></script>
+<script src="_page-delete.js?v=20260819bc"></script>
+<script src="_form-field-manager.js?v=20260819bc"></script>
+<script src="_budget-wrap.js?v=20260819bc"></script>
+<script src="_photo-zoom.js?v=20260819bc"></script>
+<script src="_budget-calc.js?v=20260819bc"></script>
+<script src="_budget-format.js?v=20260819bc"></script>
+<script src="_import-budget.js?v=20260819bc"></script>
 </body>
 </html>

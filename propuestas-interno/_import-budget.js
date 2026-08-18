@@ -28,7 +28,7 @@
   }
 
   function fmtMoney(n) {
-    return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
   function setCell(cell, value) {

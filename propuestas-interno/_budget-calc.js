@@ -23,7 +23,7 @@
 
   function fmtMoney(n) {
     return n > 0
-      ? n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
+      ? n.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' €'
       : '—';
   }
 
