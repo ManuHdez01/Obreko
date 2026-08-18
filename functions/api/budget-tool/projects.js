@@ -212,7 +212,7 @@ function genId() {
   return 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
 }
 // ── Referencia de los presupuestos ───────────────────────────────────────
-// Formato: OBR-<año>-<mes>-<contador>, p.ej. OBR-2026-08-057.
+// Formato: OBR<año><mes><contador>, todo seguido, p.ej. OBR202608057.
 // El contador se reinicia cada mes arrancando por encima de 50 y avanza a
 // saltos irregulares, así que la referencia no deja ver el ritmo real de
 // trabajo (el formato original, OBR-2026-0712-2249, cantaba el día y la hora
@@ -221,11 +221,11 @@ function genId() {
 const REF_INICIO_MES = 50;
 const REF_SALTO_MAX = 7;
 
-const RE_REF_NUEVA = /^OBR-(\d{4}-\d{2})-(\d{3,})$/;
+const RE_REF_NUEVA = /^OBR(\d{4})(\d{2})(\d{3,})$/;
 // Formatos generados por versiones anteriores de la herramienta, que se
-// renumeran solos: OBR-2026-0712-2249 (fecha y hora) y OBR-2026-1204 (año
-// más contador corrido).
-const RE_REF_ANTIGUA = /^OBR-\d{4}-\d{4}-\d{4}$|^OBR-\d{4}-\d{4}$/;
+// renumeran solos: OBR-2026-0712-2249 (fecha y hora), OBR-2026-1204 (año más
+// contador corrido) y OBR-2026-07-054 (el mismo de ahora, pero con guiones).
+const RE_REF_ANTIGUA = /^OBR-\d{4}-\d{4}-\d{4}$|^OBR-\d{4}-\d{4}$|^OBR-\d{4}-\d{2}-\d{3,}$/;
 
 function periodoDe(fecha) {
   const d = fecha ? new Date(fecha) : new Date();
@@ -256,7 +256,10 @@ async function migrarRefsAntiguas(env) {
   const maximos = new Map();
   for (const p of proyectos) {
     const m = String(p.ref || '').match(RE_REF_NUEVA);
-    if (m) maximos.set(m[1], Math.max(maximos.get(m[1]) || 0, Number(m[2])));
+    if (m) {
+      const periodo = `${m[1]}-${m[2]}`;
+      maximos.set(periodo, Math.max(maximos.get(periodo) || 0, Number(m[3])));
+    }
   }
   for (const [periodo, max] of maximos) {
     const clave = 'refseq:' + periodo;
@@ -301,7 +304,7 @@ async function autoRef(env, fecha) {
   const guardado = Number(await env.BUDGET_TOOL.get(clave)) || 0;
   const siguiente = Math.max(guardado, REF_INICIO_MES) + 1 + Math.floor(Math.random() * REF_SALTO_MAX);
   await env.BUDGET_TOOL.put(clave, String(siguiente));
-  return `OBR-${periodo}-${String(siguiente).padStart(3, '0')}`;
+  return `OBR${periodo.replace('-', '')}${String(siguiente).padStart(3, '0')}`;
 }
 async function readIndex(env) {
   const raw = await env.BUDGET_TOOL.get(INDEX_KEY);

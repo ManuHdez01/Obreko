@@ -12,8 +12,14 @@ window.BT = (function () {
     }[c]));
   }
 
+  // El formato español por defecto deja las cifras de cuatro dígitos sin punto
+  // de miles (3078,16 en vez de 3.078,16), así que se compone a mano: punto
+  // para los miles y coma para los decimales, siempre.
   function fmtMoney(n) {
-    return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    const v = Number(n) || 0;
+    const [entera, decimales] = Math.abs(v).toFixed(2).split('.');
+    const conMiles = entera.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return (v < 0 ? '-' : '') + conMiles + ',' + decimales + ' €';
   }
 
   function fmtPct(n) {
