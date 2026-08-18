@@ -1067,7 +1067,7 @@ window.borrarDeBiblioteca = borrarDeBiblioteca;
 // EmailJS) y se pasa por el mismo flujo de "Montar desde texto" — la IA de
 // compose.js ya sabe interpretar un Excel pegado como texto.
 
-const EXCEL_TEXT_LIMIT = 9000; // compose.js acepta hasta 10000 caracteres
+const EXCEL_TEXT_LIMIT = 55000; // compose.js acepta hasta 60000 caracteres y lo trocea si hace falta
 
 // Copia local primero: así la subida de Excel funciona aunque haya
 // bloqueadores de anuncios, DNS filtrado o el CDN caído. El CDN queda
@@ -1241,7 +1241,7 @@ function abrirMontarTexto(prefillText) {
     textarea.value = prefillText.length > EXCEL_TEXT_LIMIT
       ? prefillText.slice(0, EXCEL_TEXT_LIMIT) + '\n… (contenido recortado, el archivo era muy largo — revisa que no falte nada relevante)'
       : prefillText;
-    if (prefillText.length > EXCEL_TEXT_LIMIT) toast('El Excel era muy largo y se ha recortado — revisa el texto antes de montar las partidas.', 'error');
+    if (prefillText.length > EXCEL_TEXT_LIMIT) toast('El Excel es enorme y se ha recortado — revisa el texto antes de montar las partidas.', 'error');
   }
   wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
   wrap.querySelector('#composeCancel').addEventListener('click', () => wrap.remove());
@@ -1259,9 +1259,13 @@ function abrirMontarTexto(prefillText) {
         method: 'POST',
         body: { text, mode: $('fMode').value, region: $('fRegion').value, calidad: $('fCalidad').value, m2: Number($('fM2').value) || 0 },
       });
-      const items = data.items || [];
+      // data.items tiene que ser una lista sí o sí: si la IA se corta a medias
+      // puede llegar un string, y antes eso reventaba con "items.map is not a
+      // function" en vez de decir qué había pasado.
+      const items = Array.isArray(data.items) ? data.items : [];
       if (!items.length) throw new Error('No se pudo extraer ninguna partida del texto.');
       prev.innerHTML = `
+        ${data.truncated ? '<div class="notice" style="border-color:#C62828;color:#C62828">El texto era muy largo y puede faltar alguna partida al final — revisa la lista contra el original antes de añadirla.</div>' : ''}
         ${data.summary ? `<div class="notice">${escapeHtml(data.summary)}</div>` : ''}
         <table class="tbl">${items.map((it) => `
           <tr><td>${escapeHtml(it.name)}${it.reasoning ? `<div style="font-size:10px;color:var(--slate)">${escapeHtml(it.reasoning)}</div>` : ''}</td>

@@ -8,14 +8,24 @@
 //     "calidad": "economica"|"media"|"alta", "m2": 85 }
 //
 // Respuesta:
-//   { items: [{ name, supplier, unit, unitPrice, quantity, reasoning }], summary }
+//   { items: [{ name, supplier, unit, unitPrice, quantity, reasoning }], summary,
+//     truncated: bool }
 
 import { verifySession } from './_auth.js';
 import { readLibrary } from './library.js';
 
 const CLAUDE_MODEL = 'claude-sonnet-5';
 const CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
-const MAX_TEXT = 10000;
+
+// Un presupuesto detallado de Excel son decenas de líneas: el límite viejo de
+// 10.000 caracteres lo cortaba a la mitad sin avisar.
+const MAX_TEXT = 60000;
+// Trozo por llamada. Si el texto es más largo se parte y se montan las
+// partidas en varias llamadas en paralelo, porque si no la respuesta se corta
+// por max_tokens y llega un JSON a medias.
+const CHUNK_CHARS = 14000;
+const MAX_CHUNKS = 6;
+const MAX_TOKENS = 16000;
 
 const COMPOSE_TOOL = {
   name: 'return_items',
@@ -55,7 +65,8 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'JSON inválido' }, 400);
   }
 
-  const text = String(payload.text || '').trim().slice(0, MAX_TEXT);
+  const textoCompleto = String(payload.text || '').trim();
+  const text = textoCompleto.slice(0, MAX_TEXT);
   if (text.length < 10) return json({ error: 'El texto es demasiado corto para montar nada.' }, 400);
 
   const mode = payload.mode === 'amueblar' ? 'amueblar' : 'reforma';
@@ -74,9 +85,59 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
+  const trozos = partirTexto(text);
+  const recortadoEntrada = textoCompleto.length > MAX_TEXT || trozos.length > MAX_CHUNKS;
+  const usados = trozos.slice(0, MAX_CHUNKS);
+
+  const ctx = { mode, region, calidad, m2, libraryHint };
+  let respuestas;
+  try {
+    respuestas = await Promise.all(usados.map((t, i) => llamarClaude(env, t, i, usados.length, ctx)));
+  } catch (e) {
+    return json({ error: e.message }, e.status || 502);
+  }
+
+  const items = [];
+  const resumenes = [];
+  let truncated = recortadoEntrada;
+  for (const r of respuestas) {
+    items.push(...r.items);
+    if (r.summary) resumenes.push(r.summary);
+    if (r.truncated) truncated = true;
+  }
+
+  if (!items.length) {
+    return json({ error: 'La IA no devolvió ninguna partida legible del texto.' }, 502);
+  }
+
+  return json({ items, summary: resumenes.join(' '), truncated });
+}
+
+// Parte por líneas (nunca por la mitad de una partida) en trozos que quepan
+// holgados en una sola respuesta del modelo.
+function partirTexto(text) {
+  if (text.length <= CHUNK_CHARS) return [text];
+  const trozos = [];
+  let actual = '';
+  for (const linea of text.split('\n')) {
+    if (actual && actual.length + linea.length + 1 > CHUNK_CHARS) {
+      trozos.push(actual);
+      actual = '';
+    }
+    actual += (actual ? '\n' : '') + linea;
+  }
+  if (actual) trozos.push(actual);
+  return trozos;
+}
+
+async function llamarClaude(env, text, i, total, { mode, region, calidad, m2, libraryHint }) {
+  const aviso = total > 1
+    ? `\n\nEste es el fragmento ${i + 1} de ${total} de un presupuesto largo. Monta SOLO las partidas que aparecen en este fragmento; otro proceso monta el resto.`
+    : '';
+
   const prompt = `Eres el montador de presupuestos de obreko, empresa de reformas en ${region === 'tenerife' ? 'Tenerife (Canarias)' : 'Madrid'}.
 
-Un compañero te pega la descripción de una obra tal cual la tiene (puede venir desordenada, con jerga, de un WhatsApp del cliente o de un Excel). Contexto del proyecto: modo ${mode}, calidad ${calidad}${m2 ? ', ' + m2 + ' m²' : ''}.
+Un compañero te pega la descripción de una obra tal cual la tiene (puede venir desordenada, con jerga, de un WhatsApp del cliente o de un Excel). Contexto del proyecto: modo ${mode}, calidad ${calidad}${m2 ? ', ' + m2 + ' m²' : ''}.${aviso}
 
 TEXTO:
 """
@@ -84,7 +145,7 @@ ${text}
 """
 ${libraryHint}
 
-Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de las medidas del texto; si no hay, estima razonable y dilo en reasoning) y precio unitario orientativo realista para la región y calidad (sin impuestos). No inventes trabajos que el texto no pida. Si algo es ambiguo, inclúyelo con tu mejor interpretación y señálalo en summary. Usa return_items.`;
+Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de las medidas del texto; si no hay, estima razonable y dilo en reasoning) y precio unitario orientativo realista para la región y calidad (sin impuestos). Si el texto ya trae cantidades y precios, respétalos en vez de reestimarlos. No inventes trabajos que el texto no pida. Si algo es ambiguo, inclúyelo con tu mejor interpretación y señálalo en summary. Usa return_items.`;
 
   let res;
   try {
@@ -97,26 +158,57 @@ Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de la
       },
       body: JSON.stringify({
         model: CLAUDE_MODEL,
-        max_tokens: 4096,
+        max_tokens: MAX_TOKENS,
+        // Extracción mecánica: sin razonamiento extendido para que todo el
+        // presupuesto de tokens se vaya en las partidas y no se corte a medias.
+        thinking: { type: 'disabled' },
         tools: [COMPOSE_TOOL],
         tool_choice: { type: 'tool', name: 'return_items' },
         messages: [{ role: 'user', content: prompt }],
       }),
     });
   } catch (e) {
-    return json({ error: 'No se pudo contactar con la API de Claude: ' + e.message }, 502);
+    throw Object.assign(new Error('No se pudo contactar con la API de Claude: ' + e.message), { status: 502 });
   }
 
   if (!res.ok) {
     const t = await res.text().catch(() => '');
-    return json({ error: 'Claude API rechazó la petición.', status: res.status, details: t.slice(0, 400) }, 502);
+    throw Object.assign(new Error('Claude API rechazó la petición (' + res.status + '): ' + t.slice(0, 200)), { status: 502 });
   }
 
   const data = await res.json();
   const toolUse = (data.content || []).find((c) => c.type === 'tool_use' && c.name === 'return_items');
-  if (!toolUse) return json({ error: 'Respuesta inesperada de Claude.' }, 502);
+  if (!toolUse) throw Object.assign(new Error('Respuesta inesperada de Claude.'), { status: 502 });
 
-  return json(toolUse.input);
+  const input = toolUse.input || {};
+  return {
+    items: normalizarItems(input.items),
+    summary: typeof input.summary === 'string' ? input.summary : '',
+    // Si la respuesta llega al tope de tokens, el JSON de partidas viene a
+    // medias: se avisa en vez de dar el presupuesto por completo.
+    truncated: data.stop_reason === 'max_tokens',
+  };
+}
+
+// El modelo casi siempre devuelve el array bien, pero cuando la respuesta se
+// corta puede llegar un string o algo que no es lista: antes eso reventaba en
+// el navegador con "items.map is not a function".
+function normalizarItems(raw) {
+  let items = raw;
+  if (typeof items === 'string') {
+    try { items = JSON.parse(items); } catch { return []; }
+  }
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter((it) => it && typeof it === 'object' && it.name)
+    .map((it) => ({
+      name: String(it.name),
+      supplier: it.supplier ? String(it.supplier) : 'estimación',
+      unit: it.unit ? String(it.unit) : 'ud',
+      unitPrice: Number(it.unitPrice) || 0,
+      quantity: Number(it.quantity) || 1,
+      reasoning: it.reasoning ? String(it.reasoning) : '',
+    }));
 }
 
 function json(data, status = 200) {
