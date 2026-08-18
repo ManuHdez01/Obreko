@@ -357,27 +357,43 @@ window.recomendarIA = recomendarIA;
 // apuntando a la posición correcta dentro del array. "Sin estancia
 // asignada" agrupa las partidas sin ese campo (import antiguos, IA, etc.)
 // y siempre va al final.
+// Selección por posición dentro de project.items. Cualquier cosa que mueva
+// las posiciones (borrar, añadir, montar partidas) la vacía antes de repintar,
+// para no borrar por error una partida distinta a la marcada.
+let seleccionItems = new Set();
+
 function renderItems() {
   const items = project.items || [];
   const body = $('itemsBody');
+  seleccionItems = new Set(Array.from(seleccionItems).filter((i) => i < items.length));
   if (!items.length) {
-    body.innerHTML = '<tr><td colspan="9" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr>';
+    seleccionItems.clear();
+    body.innerHTML = '<tr><td colspan="10" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr>';
     $('itemsTotal').textContent = fmtMoney(0);
     $('itemsRealTotalRow').style.display = 'none';
+    actualizarBarraSeleccion();
     renderRfqItems();
     return;
   }
 
+  // Si las partidas traen capítulo (los "CAP.1 DEMOLICIONES…" del Excel de
+  // presupuesto), se agrupa por capítulo y respetando el orden del Excel. Si
+  // no hay capítulos, se sigue agrupando por estancia como hasta ahora.
+  const porCapitulo = items.some((it) => (it.capitulo || '').trim());
+  const sinGrupo = porCapitulo ? 'Sin capítulo' : 'Sin estancia asignada';
   const groups = new Map();
   items.forEach((it, i) => {
-    const key = (it.estancia || '').trim() || 'Sin estancia asignada';
+    const key = ((porCapitulo ? it.capitulo : it.estancia) || '').trim() || sinGrupo;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(i);
   });
   const keys = Array.from(groups.keys()).sort((a, b) => {
-    if (a === 'Sin estancia asignada') return 1;
-    if (b === 'Sin estancia asignada') return -1;
-    return a.localeCompare(b, 'es');
+    if (a === sinGrupo) return 1;
+    if (b === sinGrupo) return -1;
+    // Los capítulos van en el orden en que aparecen en el Excel (el sort de JS
+    // es estable, así que devolver 0 conserva ese orden); las estancias, por
+    // orden alfabético.
+    return porCapitulo ? 0 : a.localeCompare(b, 'es');
   });
 
   body.innerHTML = keys.map((key) => {
@@ -389,7 +405,8 @@ function renderItems() {
       const dev = it.realCost ? (Number(it.realCost) || 0) - (Number(it.totalPrice) || 0) : null;
       const devColor = dev == null ? 'var(--slate)' : dev > 0 ? 'var(--red)' : 'var(--green)';
       return `
-        <tr>
+        <tr${seleccionItems.has(i) ? ' style="background:rgba(26,34,54,.04)"' : ''}>
+          <td><input type="checkbox" ${seleccionItems.has(i) ? 'checked' : ''} onchange="toggleSeleccionItem(${i}, this.checked)"></td>
           <td><input type="text" style="width:100%" list="estanciaSuggestions" value="${escapeHtml(it.estancia || '')}" placeholder="Cocina, Baño…" onchange="updItem(${i},'estancia',this.value)"></td>
           <td>
             <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
@@ -407,8 +424,10 @@ function renderItems() {
           </td>
         </tr>`;
     }).join('');
+    const todoElGrupo = idxs.every((i) => seleccionItems.has(i));
     return `
       <tr style="background:var(--sand-lt)">
+        <td><input type="checkbox" ${todoElGrupo ? 'checked' : ''} title="Seleccionar todo el grupo" onchange="toggleSeleccionGrupo([${idxs.join(',')}], this.checked)"></td>
         <td colspan="5" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
         <td class="r" style="font-weight:700">${fmtMoney(groupBudget)}</td>
         <td class="r" style="font-weight:700">${groupReal ? fmtMoney(groupReal) : '—'}</td>
@@ -422,6 +441,7 @@ function renderItems() {
   $('itemsTotal').textContent = fmtMoney(total);
   $('itemsRealTotal').textContent = fmtMoney(realTotal);
   $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
+  actualizarBarraSeleccion();
   renderRfqItems();
 }
 
@@ -438,10 +458,71 @@ window.updItem = updItem;
 
 function delItem(i) {
   project.items.splice(i, 1);
+  seleccionItems.clear(); // las posiciones se han movido
   renderItems();
   saveProject(false);
 }
 window.delItem = delItem;
+
+// ── Selección múltiple y borrado en bloque ───────────────────────────────
+
+function toggleSeleccionItem(i, marcado) {
+  if (marcado) seleccionItems.add(i); else seleccionItems.delete(i);
+  renderItems();
+}
+window.toggleSeleccionItem = toggleSeleccionItem;
+
+function toggleSeleccionGrupo(idxs, marcado) {
+  idxs.forEach((i) => { if (marcado) seleccionItems.add(i); else seleccionItems.delete(i); });
+  renderItems();
+}
+window.toggleSeleccionGrupo = toggleSeleccionGrupo;
+
+function toggleSeleccionTodo(marcado) {
+  seleccionItems = marcado ? new Set((project.items || []).map((_, i) => i)) : new Set();
+  renderItems();
+}
+window.toggleSeleccionTodo = toggleSeleccionTodo;
+
+function actualizarBarraSeleccion() {
+  const n = seleccionItems.size;
+  const total = (project.items || []).length;
+  const barra = $('itemsBulkBar');
+  if (barra) {
+    barra.style.display = n ? 'flex' : 'none';
+    const txt = $('itemsSelCount');
+    if (txt) txt.textContent = n === 1 ? '1 partida seleccionada' : n + ' partidas seleccionadas';
+  }
+  const maestro = $('selAllItems');
+  if (maestro) {
+    maestro.checked = total > 0 && n === total;
+    maestro.indeterminate = n > 0 && n < total;
+  }
+}
+
+function borrarSeleccionadas() {
+  const n = seleccionItems.size;
+  if (!n) return;
+  if (!confirm(`¿Borrar ${n} ${n === 1 ? 'partida seleccionada' : 'partidas seleccionadas'}? No se puede deshacer.`)) return;
+  project.items = (project.items || []).filter((_, i) => !seleccionItems.has(i));
+  seleccionItems.clear();
+  renderItems();
+  saveProject(false);
+  toast(n + (n === 1 ? ' partida borrada' : ' partidas borradas'), 'success');
+}
+window.borrarSeleccionadas = borrarSeleccionadas;
+
+function borrarTodasLasPartidas() {
+  const n = (project.items || []).length;
+  if (!n) { toast('No hay partidas que borrar', 'error'); return; }
+  if (!confirm(`¿Borrar las ${n} partidas del proyecto? No se puede deshacer.`)) return;
+  project.items = [];
+  seleccionItems.clear();
+  renderItems();
+  saveProject(false);
+  toast('Materiales vaciados (' + n + ' partidas)', 'success');
+}
+window.borrarTodasLasPartidas = borrarTodasLasPartidas;
 
 function addItemManual() {
   project.items = project.items || [];
@@ -974,6 +1055,7 @@ function applyAssistantAction(action) {
       const price = Number(it.unitPrice) || 0;
       project.items.push({
         name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
+        capitulo: String(it.capitulo || ''),
         unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
         totalPrice: +(qty * price).toFixed(2), reasoning: String(it.reasoning || ''),
       });

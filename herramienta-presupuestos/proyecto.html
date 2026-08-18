@@ -207,12 +207,20 @@
       </datalist>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th>Estancia</th><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
-          <tbody id="itemsBody"><tr><td colspan="9" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
+          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Estancia</th><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
+          <tbody id="itemsBody"><tr><td colspan="10" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
         </table>
       </div>
+      <div id="itemsBulkBar" style="display:none;margin-top:10px;padding:8px 12px;background:var(--sand-lt);border-radius:8px;align-items:center;gap:10px;flex-wrap:wrap">
+        <strong id="itemsSelCount" style="font-size:13px"></strong>
+        <button class="btn btn-sm btn-danger" onclick="borrarSeleccionadas()">Borrar seleccionadas</button>
+        <button class="btn btn-sm btn-sec" onclick="toggleSeleccionTodo(false)">Quitar selección</button>
+      </div>
       <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-sm btn-sec" onclick="addItemManual()">+ Añadir a mano</button>
+        <span style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-sec" onclick="addItemManual()">+ Añadir a mano</button>
+          <button class="btn btn-sm btn-danger" onclick="borrarTodasLasPartidas()">🗑 Borrar todo</button>
+        </span>
         <div style="font-size:13.5px;text-align:right">
           <div><span style="color:var(--slate)">Coste materiales (presupuestado):</span> <strong id="itemsTotal">0,00 €</strong></div>
           <div id="itemsRealTotalRow" style="display:none"><span style="color:var(--slate)">Gasto real cargado:</span> <strong id="itemsRealTotal">0,00 €</strong></div>

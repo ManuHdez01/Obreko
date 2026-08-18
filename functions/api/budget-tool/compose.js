@@ -40,6 +40,7 @@ const COMPOSE_TOOL = {
           type: 'object',
           properties: {
             name: { type: 'string', description: 'Nombre claro de la partida.' },
+            capitulo: { type: 'string', description: 'Capítulo del presupuesto al que pertenece, copiado tal cual del texto (ej. "CAP.1 DEMOLICIONES, DESMONTAJES Y RETIRADA DE ESCOMBROS"). Vacío si el texto no trae capítulos.' },
             supplier: { type: 'string', description: 'Proveedor si el texto lo menciona o "estimación".' },
             unit: { type: 'string', description: 'ud, m2, ml, h, pa (partida alzada)...' },
             unitPrice: { type: 'number', description: 'Precio unitario orientativo en € (sin impuestos).' },
@@ -119,15 +120,43 @@ function partirTexto(text) {
   if (text.length <= CHUNK_CHARS) return [text];
   const trozos = [];
   let actual = '';
+  let capitulo = '';
   for (const linea of text.split('\n')) {
     if (actual && actual.length + linea.length + 1 > CHUNK_CHARS) {
       trozos.push(actual);
-      actual = '';
+      // El corte puede caer en mitad de un capítulo: al trozo siguiente se le
+      // recuerda a cuál pertenecen sus primeras líneas, para que no las deje
+      // sin capítulo.
+      actual = capitulo ? `[Estas primeras líneas pertenecen al capítulo: ${capitulo}]` : '';
     }
+    const cap = capituloDeLinea(linea);
+    if (cap) capitulo = cap;
     actual += (actual ? '\n' : '') + linea;
   }
   if (actual) trozos.push(actual);
   return trozos;
+}
+
+// Reconoce las líneas de cabecera de capítulo tal y como las exporta un Excel
+// de presupuesto: "CAP.1  DEMOLICIONES, DESMONTAJES Y RETIRADA DE ESCOMBROS",,,,,
+// Una cabecera ocupa ella sola la fila: si detrás hay más columnas con datos es
+// una partida ("1.1,Desmontaje de armario,ud,1,100 €"), no un capítulo.
+function capituloDeLinea(linea) {
+  const texto = String(linea).trim();
+  let primera, resto;
+  if (texto.startsWith('"')) {
+    const fin = texto.indexOf('"', 1);
+    if (fin === -1) return '';
+    primera = texto.slice(1, fin);
+    resto = texto.slice(fin + 1);
+  } else {
+    const coma = texto.indexOf(',');
+    primera = coma === -1 ? texto : texto.slice(0, coma);
+    resto = coma === -1 ? '' : texto.slice(coma);
+  }
+  if (resto.replace(/[,;\s]/g, '') !== '') return '';
+  if (!/^CAP(?:[IÍ]TULO)?\.?\s*\d+/i.test(primera.trim())) return '';
+  return primera.replace(/["']/g, '').replace(/[,;\s]+$/, '').trim();
 }
 
 async function llamarClaude(env, text, i, total, { mode, region, calidad, m2, libraryHint }) {
@@ -144,6 +173,8 @@ TEXTO:
 ${text}
 """
 ${libraryHint}
+
+Si el texto trae capítulos ("CAP.1 DEMOLICIONES...", "CAPÍTULO 2 ALBAÑILERÍA...", o títulos en mayúsculas que agrupan partidas), rellena "capitulo" en CADA partida con el capítulo al que pertenece, copiado tal cual, y devuelve las partidas en el mismo orden en que aparecen en el texto.
 
 Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de las medidas del texto; si no hay, estima razonable y dilo en reasoning) y precio unitario orientativo realista para la región y calidad (sin impuestos). Si el texto ya trae cantidades y precios, respétalos en vez de reestimarlos. No inventes trabajos que el texto no pida. Si algo es ambiguo, inclúyelo con tu mejor interpretación y señálalo en summary. Usa return_items.`;
 
@@ -205,6 +236,7 @@ function normalizarItems(raw) {
       name: String(it.name),
       supplier: it.supplier ? String(it.supplier) : 'estimación',
       unit: it.unit ? String(it.unit) : 'ud',
+      capitulo: it.capitulo ? String(it.capitulo).replace(/["']/g, '').trim() : '',
       unitPrice: Number(it.unitPrice) || 0,
       quantity: Number(it.quantity) || 1,
       reasoning: it.reasoning ? String(it.reasoning) : '',
