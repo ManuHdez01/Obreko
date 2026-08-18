@@ -756,6 +756,9 @@ function renderEconomics() {
     </tr>`;
   };
   const margenTotal = e.ventaTotal - e.costeTotal;
+  // El coste previsto resta sobre el precio de venta: lo que queda es el
+  // margen con el que sale el presupuesto tal y como está.
+  const margenPrevisto = e.ventaTotal - e.internalCost;
   // El total va dentro de la tabla, con cada cifra bajo su columna y la misma
   // tipografía que el resto de números.
   $('costBreakdown').innerHTML = `
@@ -777,9 +780,10 @@ function renderEconomics() {
         </tr>
       </tfoot>
     </table>
-    <div class="totals-row" style="margin-top:10px"><span>Coste interno previsto (materiales + horas + indirectos)</span><span class="val">${fmtMoney(e.internalCost)}</span></div>
-    <div class="totals-row"><span>Margen objetivo (${fmtPct(e.marginPct)})</span><span class="val">${fmtMoney(e.marginAmount)}</span></div>
-    <div class="totals-row grand"><span>PVP sugerido (sin impuestos)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>
+    <div class="totals-row" style="margin-top:10px"><span>Precio de venta (presupuesto, sin impuestos)</span><span class="val">${fmtMoney(e.ventaTotal)}</span></div>
+    <div class="totals-row"><span>Coste interno previsto (materiales + horas + indirectos)</span><span class="val" style="color:var(--red)">-${fmtMoney(e.internalCost)}</span></div>
+    <div class="totals-row grand"><span>Margen previsto</span><span class="val" style="color:${margenPrevisto < 0 ? 'var(--red)' : 'var(--green)'}">${fmtMoney(margenPrevisto)}${e.ventaTotal ? ' (' + fmtPct((margenPrevisto / e.ventaTotal) * 100) + ')' : ''}</span></div>
+    <div class="totals-row" style="margin-top:10px"><span style="color:var(--slate)">Referencia: con el margen objetivo del ${fmtPct(e.marginPct)}, el PVP sería</span><span class="val" style="color:var(--slate)">${fmtMoney(e.suggestedPrice)}</span></div>
   `;
   $('realBreakdown').innerHTML = `
     <div class="totals-row"><span>Presupuestado al cliente (PVP)</span><span class="val">${fmtMoney(e.suggestedPrice)}</span></div>

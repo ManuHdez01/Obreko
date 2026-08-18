@@ -91,7 +91,7 @@ body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100
 .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;}
 .summary-card{background:#fff;border-radius:10px;padding:13px 16px;border:1px solid rgba(26,34,54,.08);}
 .summary-label{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--slate);font-weight:700;}
-.summary-value{font-family:var(--serif);font-style:italic;font-size:21px;color:var(--navy);margin-top:4px;line-height:1.1;}
+.summary-value{font-family:var(--sans);font-style:normal;font-weight:700;font-size:20px;color:var(--navy);margin-top:4px;line-height:1.15;font-variant-numeric:tabular-nums;}
 .summary-extra{font-size:10px;color:var(--slate);margin-top:3px;}
 
 /* Totals */
@@ -99,7 +99,9 @@ body{background:#F7F3E8;font-family:var(--sans);color:var(--navy);min-height:100
 .totals-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#444;gap:10px;}
 .totals-row.grand{border-top:2px solid var(--navy);margin-top:6px;padding-top:10px;font-weight:700;color:var(--navy);font-size:15px;}
 .totals-row .val{font-variant-numeric:tabular-nums;}
-.totals-row.grand .val{font-family:var(--serif);font-style:italic;}
+/* Los importes van siempre en la tipografía de datos: la cursiva del titular
+   se lee mal en cifras y no cuadra con el resto de la columna. */
+.totals-row.grand .val{font-family:var(--sans);font-style:normal;font-variant-numeric:tabular-nums;}
 
 /* Estados y avisos */
 .state{padding:16px;text-align:center;color:var(--slate);font-size:12.5px;}
