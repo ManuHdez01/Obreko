@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>obreko — Proyecto</title>
-<link rel="stylesheet" href="_styles.css?v=20260818c">
+<link rel="stylesheet" href="_styles.css?v=20260818d">
 <style>
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
 .tab{padding:9px 16px;border-radius:7px;border:1px solid rgba(26,34,54,.14);background:#fff;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);}
@@ -203,12 +203,13 @@
       <datalist id="itemNameSuggestions"></datalist>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Concepto</th><th>Tipo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
-          <tbody id="itemsBody"><tr><td colspan="11" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr></tbody>
+          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Concepto</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
+          <tbody id="itemsBody"><tr><td colspan="10" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr></tbody>
         </table>
       </div>
       <div id="itemsBulkBar" style="display:none;margin-top:10px;padding:8px 12px;background:var(--sand-lt);border-radius:8px;align-items:center;gap:10px;flex-wrap:wrap">
         <strong id="itemsSelCount" style="font-size:13px"></strong>
+        <button class="btn btn-sm btn-sec" id="btnGuardarBiblioteca" onclick="guardarSeleccionadasEnBiblioteca(this)">★ Guardar en la biblioteca</button>
         <button class="btn btn-sm btn-danger" onclick="borrarSeleccionadas()">Borrar seleccionadas</button>
         <button class="btn btn-sm btn-sec" onclick="toggleSeleccionTodo(false)">Quitar selección</button>
       </div>
@@ -218,9 +219,7 @@
           <button class="btn btn-sm btn-danger" onclick="borrarTodasLasPartidas()">🗑 Borrar todo</button>
         </span>
         <div style="font-size:13.5px;text-align:right;min-width:280px">
-          <div><span style="color:var(--slate)">Materiales:</span> <strong id="itemsMatTotal">0,00 €</strong></div>
-          <div><span style="color:var(--slate)">Mano de obra:</span> <strong id="itemsObraTotal">0,00 €</strong></div>
-          <div style="border-top:1px solid rgba(26,34,54,.15);margin-top:4px;padding-top:4px"><span style="color:var(--slate)">Base imponible:</span> <strong id="itemsTotal">0,00 €</strong></div>
+          <div><span style="color:var(--slate)">Base imponible:</span> <strong id="itemsTotal">0,00 €</strong></div>
           <div><span style="color:var(--slate)">IGIC (<span id="itemsTaxPct">0</span>%):</span> <strong id="itemsTaxAmount">0,00 €</strong></div>
           <div style="font-size:15px;margin-top:2px"><span style="color:var(--slate)">Total con IGIC:</span> <strong id="itemsTotalConIgic">0,00 €</strong></div>
           <div id="itemsRealTotalRow" style="display:none;margin-top:4px"><span style="color:var(--slate)">Gasto real cargado:</span> <strong id="itemsRealTotal">0,00 €</strong></div>
@@ -428,7 +427,7 @@
 .ai-input button:disabled{background:rgba(26,34,54,.15);color:var(--slate);cursor:wait;}
 @media print{#aiFab,#aiPanel{display:none !important;}}
 </style>
-<script src="_common.js?v=20260818c"></script>
-<script src="proyecto.js?v=20260818c"></script>
+<script src="_common.js?v=20260818d"></script>
+<script src="proyecto.js?v=20260818d"></script>
 </body>
 </html>

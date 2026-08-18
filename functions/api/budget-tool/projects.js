@@ -134,13 +134,10 @@ export async function onRequestDelete({ request, env }) {
 // ── Economía del proyecto ────────────────────────────────────────────────
 
 export function computeEconomics(p) {
-  // Las partidas del presupuesto detallado pueden ser material o mano de obra.
-  // Las de obra se suman a la mano de obra de horas × tarifa en vez de contar
-  // como material, para no inflar el coste de materiales ni contar dos veces.
-  const items = p.items || [];
-  const materialsCost = items.filter((it) => it.tipo !== 'obra').reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
-  const laborItemsCost = items.filter((it) => it.tipo === 'obra').reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
-  const laborCost = (Number(p.laborHours) || 0) * (Number(p.laborRate) || 0) + laborItemsCost;
+  // Todas las partidas del presupuesto detallado suman igual, sin distinguir
+  // entre material y mano de obra.
+  const materialsCost = (p.items || []).reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const laborCost = (Number(p.laborHours) || 0) * (Number(p.laborRate) || 0);
   const indirectPct = Number(p.indirectPct) || 0;
   const indirectCost = (materialsCost + laborCost) * (indirectPct / 100);
   const internalCost = materialsCost + laborCost + indirectCost;
