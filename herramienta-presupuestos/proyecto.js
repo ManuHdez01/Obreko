@@ -1206,10 +1206,39 @@ async function enviarAPropuesta() {
     localStorage.setItem('obreko-tax-type', ($('fTaxLabel') || {}).value === 'IVA' ? 'iva' : 'igic');
   } catch (e) { /* navegador sin localStorage: la plantilla usa su valor por defecto */ }
   const tpl = TEMPLATE_BY_TIPO[project.tipo] || 'reformas.html';
-  window.open('/propuestas-interno/' + tpl, '_blank', 'noopener');
-  toast('Presupuesto preparado — confirma la importación en la plantilla que se ha abierto', 'success');
+  const url = '/propuestas-interno/' + tpl;
+  const ventana = window.open(url, '_blank', 'noopener');
+  if (ventana) {
+    toast('Presupuesto preparado — confirma la importación en la plantilla que se ha abierto', 'success');
+  } else {
+    // El navegador ha bloqueado la ventana emergente: sin aviso, parecería que
+    // el botón no hace nada y la propuesta saldría en blanco.
+    avisoPropuestaLista(url);
+  }
 }
 window.enviarAPropuesta = enviarAPropuesta;
+
+// Si el navegador bloquea la pestaña nueva, el presupuesto ya está preparado
+// pero hay que entrar a mano: se da el enlace en vez de dejarlo en nada.
+function avisoPropuestaLista(url) {
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-wrap';
+  wrap.innerHTML = `
+    <div class="modal" style="max-width:520px">
+      <div class="modal-head">
+        <div class="t">Presupuesto preparado</div>
+        <div class="s">Tu navegador ha bloqueado la ventana nueva</div>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;line-height:1.7">Abre la plantilla y pulsa <strong>IMPORTAR</strong> en la barra que aparece arriba. El presupuesto caduca en una hora.</p>
+        <p style="margin-top:10px"><a class="btn btn-pri" href="${url}" target="_blank" rel="noopener">Abrir la propuesta →</a></p>
+      </div>
+      <div class="modal-foot"><button class="btn btn-sec" id="propCerrar">Cerrar</button></div>
+    </div>`;
+  document.body.appendChild(wrap);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) wrap.remove(); });
+  wrap.querySelector('#propCerrar').addEventListener('click', () => wrap.remove());
+}
 
 // ── Comparativa de mercado ───────────────────────────────────────────────
 
