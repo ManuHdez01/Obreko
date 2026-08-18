@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>obreko — Proyecto</title>
-<link rel="stylesheet" href="_styles.css?v=20260818">
+<link rel="stylesheet" href="_styles.css?v=20260818b">
 <style>
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
 .tab{padding:9px 16px;border-radius:7px;border:1px solid rgba(26,34,54,.14);background:#fff;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);}
@@ -201,13 +201,9 @@
       </div>
       <div id="reviewResult"></div>
       <datalist id="itemNameSuggestions"></datalist>
-      <datalist id="estanciaSuggestions">
-        <option value="Cocina"><option value="Baño"><option value="Salón"><option value="Dormitorio">
-        <option value="Terraza"><option value="Zonas comunes"><option value="General">
-      </datalist>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Estancia</th><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
+          <thead><tr><th style="width:26px"><input type="checkbox" id="selAllItems" title="Seleccionar todas las partidas" onchange="toggleSeleccionTodo(this.checked)"></th><th>Cap.</th><th>Artículo</th><th>Proveedor</th><th class="r">Cantidad</th><th class="r">Precio ud.</th><th class="r">Presupuestado</th><th class="r">Coste real</th><th class="r">Desviación</th><th></th></tr></thead>
           <tbody id="itemsBody"><tr><td colspan="10" class="tbl-empty">Sin materiales. Usa la búsqueda o la recomendación IA.</td></tr></tbody>
         </table>
       </div>
@@ -428,7 +424,7 @@
 .ai-input button:disabled{background:rgba(26,34,54,.15);color:var(--slate);cursor:wait;}
 @media print{#aiFab,#aiPanel{display:none !important;}}
 </style>
-<script src="_common.js?v=20260818"></script>
-<script src="proyecto.js?v=20260818"></script>
+<script src="_common.js?v=20260818b"></script>
+<script src="proyecto.js?v=20260818b"></script>
 </body>
 </html>

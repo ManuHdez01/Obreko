@@ -407,7 +407,7 @@ function renderItems() {
       return `
         <tr${seleccionItems.has(i) ? ' style="background:rgba(26,34,54,.04)"' : ''}>
           <td><input type="checkbox" ${seleccionItems.has(i) ? 'checked' : ''} onchange="toggleSeleccionItem(${i}, this.checked)"></td>
-          <td><input type="text" style="width:100%" list="estanciaSuggestions" value="${escapeHtml(it.estancia || '')}" placeholder="Cocina, Baño…" onchange="updItem(${i},'estancia',this.value)"></td>
+          <td style="font-size:11px;color:var(--slate);white-space:nowrap">${escapeHtml(capituloCorto(it.capitulo))}</td>
           <td>
             <input type="text" style="width:100%" list="itemNameSuggestions" value="${escapeHtml(it.name)}" oninput="onItemNameInput(${i}, this.value)" onchange="onItemNameChange(${i}, this.value)">
             ${it.reasoning ? `<div style="font-size:10.5px;color:var(--slate);margin-top:2px">${escapeHtml(it.reasoning)}</div>` : ''}
@@ -443,6 +443,15 @@ function renderItems() {
   $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
   actualizarBarraSeleccion();
   renderRfqItems();
+}
+
+// En la fila basta con el código del capítulo ("CAP.1"): el título completo
+// ya va en la cabecera del grupo.
+function capituloCorto(capitulo) {
+  const texto = String(capitulo || '').trim();
+  if (!texto) return '—';
+  const m = texto.match(/^CAP(?:[IÍ]TULO)?\.?\s*(\d+)/i);
+  return m ? 'CAP.' + m[1] : texto.slice(0, 12);
 }
 
 function updItem(i, field, value) {
