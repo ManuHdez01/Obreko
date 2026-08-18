@@ -104,6 +104,7 @@
     if (addrEl && payload.address) addrEl.textContent = payload.address;
 
     rellenarFichaTecnica(payload);
+    volcarPlanos(payload.imagenes);
 
     // Contexto de la obra para la varita de redacción: sobrevive al borrado
     // del payload de importación.
@@ -125,6 +126,7 @@
     // Resumen de lo rellenado: si algo no ha entrado, se ve en el acto en vez
     // de tener que ir página por página buscándolo.
     var hechos = [payload.rows.length + ' partidas'];
+    if (Array.isArray(payload.imagenes) && payload.imagenes.length) hechos.push(payload.imagenes.length + ' planos/fotos');
     if (clientEl && payload.clientName) hechos.push('portada');
     if (document.querySelector('.p4-field-val') && payload.address) hechos.push('ficha técnica');
     if (payload.textos) {
@@ -135,6 +137,33 @@
     }
     window.__ultimoImport = hechos;
     return true;
+  }
+
+  // Documentación gráfica: las fotos y planos del proyecto entran en las cajas
+  // de la página de planos. Si hay más imágenes que cajas, se crean con el
+  // mismo botón que usarías a mano.
+  function volcarPlanos(claves) {
+    if (!Array.isArray(claves) || !claves.length) return;
+    var cajas = document.querySelectorAll('.p5-plan-box, .plan-box');
+    if (!cajas.length) return;
+
+    var botonAnadir = document.querySelector('.plan-add-btn');
+    while (cajas.length < claves.length && botonAnadir && typeof window.addPlanBox === 'function') {
+      var antes = cajas.length;
+      window.addPlanBox(botonAnadir);
+      cajas = document.querySelectorAll('.p5-plan-box, .plan-box');
+      if (cajas.length === antes) break; // por si el botón no crea nada
+    }
+
+    claves.forEach(function (clave, idx) {
+      var caja = cajas[idx];
+      if (!caja) return;
+      var url = '/api/budget-tool/imagen?key=' + encodeURIComponent(clave);
+      caja.style.backgroundImage = 'url("' + url + '")';
+      caja.classList.add('has-image');
+      var pista = caja.querySelector('.p5-plan-hint, .plan-hint');
+      if (pista) pista.textContent = '';
+    });
   }
 
   // Ficha técnica: los campos se localizan por su etiqueta, que es lo único

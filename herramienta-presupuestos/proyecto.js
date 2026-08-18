@@ -1189,6 +1189,9 @@ async function enviarAPropuesta() {
     region: project.region || 'tenerife',
     m2: project.m2 || 0,
     estancias: project.estancias || null,
+    // Fotos y planos que se subieron al análisis: van por su clave en R2, que
+    // la propuesta pide al endpoint /api/budget-tool/imagen.
+    imagenes: ((project.analysis || {}).imageKeys || []).slice(0, 8),
     fecha: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
     rows,
     // Ejecución material: el beneficio industrial y el impuesto los calcula la
