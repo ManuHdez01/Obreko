@@ -44,6 +44,10 @@ export async function onRequestGet({ request, env }) {
     return json({ project, economics: computeEconomics(project) });
   }
 
+  // Las referencias con el formato viejo (sello de fecha y hora) se renumeran
+  // solas al abrir el listado, para no tener que ir corrigiéndolas a mano.
+  await migrarRefsAntiguas(env);
+
   const index = await readIndex(env);
   // Resumen con economía básica para el listado / dashboard
   const items = [];
@@ -213,6 +217,59 @@ function genId() {
 const REF_CONTADOR_KEY = 'refseq';
 const REF_INICIO = 800;
 const REF_SALTO_MAX = 7;
+
+// Formato antiguo: OBR-2026-0712-2249 (año + día + hora de creación).
+const RE_REF_ANTIGUA = /^OBR-\d{4}-\d{4}-\d{4}$/;
+
+// Renumera de una vez los presupuestos que aún llevan el formato viejo,
+// en orden de creación para que los números sigan la cronología. Se deja
+// intacto el que ya haya salido de la empresa con esa referencia (una
+// petición de precios enviada a un proveedor la lleva en el asunto del
+// correo), porque cambiarle el número a un documento ya emitido es peor
+// que tener dos formatos conviviendo.
+async function migrarRefsAntiguas(env) {
+  const index = await readIndex(env);
+  // refFija marca las que se dejan con el formato viejo a propósito, para no
+  // repasarlas en cada carga del listado.
+  if (!index.some((e) => !e.ref || (RE_REF_ANTIGUA.test(String(e.ref)) && !e.refFija))) return;
+
+  const proyectos = [];
+  for (const entry of index) {
+    const raw = await env.BUDGET_TOOL.get('project:' + entry.id);
+    if (raw) proyectos.push(JSON.parse(raw));
+  }
+
+  // El contador arranca por encima de la referencia nueva más alta que ya
+  // exista (por ejemplo una puesta a mano), para no repetir número.
+  const maxEmitido = proyectos.reduce((max, p) => {
+    const m = String(p.ref || '').match(/^OBR-\d{4}-(\d+)$/);
+    return m ? Math.max(max, Number(m[1])) : max;
+  }, 0);
+  if (maxEmitido) {
+    const guardado = Number(await env.BUDGET_TOOL.get(REF_CONTADOR_KEY)) || 0;
+    if (maxEmitido > guardado) await env.BUDGET_TOOL.put(REF_CONTADOR_KEY, String(maxEmitido));
+  }
+
+  const renumerar = proyectos
+    .filter((p) => RE_REF_ANTIGUA.test(String(p.ref || '')) && !(p.rfqs || []).some((r) => r.sentAt))
+    .sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)));
+
+  for (const p of renumerar) {
+    p.ref = await autoRef(env);
+    await env.BUDGET_TOOL.put('project:' + p.id, JSON.stringify(p));
+  }
+
+  // El índice se queda con la referencia de cada proyecto (también las que no
+  // se renumeran), así las siguientes cargas del listado ya no tienen que
+  // repasarlos uno a uno.
+  const refs = new Map(proyectos.map((p) => [p.id, p.ref || '—']));
+  await env.BUDGET_TOOL.put(INDEX_KEY, JSON.stringify(
+    index.map((e) => {
+      const ref = refs.get(e.id) || '—';
+      return { ...e, ref, refFija: RE_REF_ANTIGUA.test(ref) };
+    })
+  ));
+}
 
 async function autoRef(env) {
   const year = new Date().getFullYear();
