@@ -1193,6 +1193,21 @@ const TEMPLATE_BY_TIPO = {
 // envíe a propuesta, en vez de quedarse para siempre con el hueco vacío.
 const TEXTOS_PROPUESTA_VERSION = 2;
 
+// El campo "Observaciones" de la ficha técnica de la propuesta se compone
+// con el análisis de plano/foto de la pestaña Datos & Análisis (estado
+// aparente, trabajos que sugiere, sus notas), en vez de quedarse vacío
+// esperando que alguien lo rellene a mano.
+function resumenAnalisisParaPropuesta(analysis) {
+  if (!analysis) return '';
+  const partes = [];
+  if (analysis.estadoAparente) partes.push('Estado: ' + analysis.estadoAparente + '.');
+  if (Array.isArray(analysis.trabajosSugeridos) && analysis.trabajosSugeridos.length) {
+    partes.push('Trabajos sugeridos: ' + analysis.trabajosSugeridos.join(', ') + '.');
+  }
+  if (analysis.notas) partes.push(analysis.notas);
+  return partes.join(' ').slice(0, 600);
+}
+
 async function enviarAPropuesta() {
   await saveProject(false);
   const e = economics || {};
@@ -1280,6 +1295,10 @@ async function enviarAPropuesta() {
     // Fotos y planos que se subieron al análisis: van por su clave en R2, que
     // la propuesta pide al endpoint /api/budget-tool/imagen.
     imagenes: ((project.analysis || {}).imageKeys || []).slice(0, 8),
+    // El campo "Observaciones" de la ficha técnica sale del análisis de
+    // plano/foto (Datos & Análisis): estado aparente, trabajos que sugiere y
+    // sus notas. Sigue siendo editable a mano en la propia propuesta.
+    observaciones: resumenAnalisisParaPropuesta(project.analysis),
     fecha: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
     rows,
     // Ejecución material: el beneficio industrial y el impuesto los calcula la

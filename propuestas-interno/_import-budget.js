@@ -268,6 +268,9 @@
       'dirección completa': payload.address || '',
       'superficie total': payload.m2 ? String(payload.m2).replace('.', ',') + ' m²' : '',
       'nº de estancias': estancias ? String(estancias) : '',
+      // Sale del análisis de plano/foto de la herramienta interna (estado
+      // aparente, trabajos sugeridos, notas). Sigue siendo editable aquí.
+      'observaciones': payload.observaciones || '',
     };
     Array.prototype.forEach.call(campos, function (campo) {
       var etiqueta = campo.querySelector('.p4-field-label');
