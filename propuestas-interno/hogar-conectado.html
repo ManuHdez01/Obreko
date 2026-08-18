@@ -564,7 +564,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
 }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260825">
+<link rel="stylesheet" href="_text-bump.css?v=20260826">
 </head>
 <body>
 
@@ -1580,11 +1580,15 @@ function addGanttCol(){
 }
 function removeGanttLastCol(){
   var tbl=document.getElementById('ganttTable');if(!tbl)return;
+  // No bajar de 1 semana: la cabecera son task-col + semanas + columna fija.
+  var cab=tbl.querySelector('thead tr')||tbl.querySelector('tr');
+  if(cab&&cab.querySelectorAll('th,td').length<=3)return;
   tbl.querySelectorAll('tr').forEach(function(tr){
-    var cells=tr.querySelectorAll('th,td');if(cells.length<=3)return;
-    var last=cells[cells.length-1];var prev=cells[cells.length-2];
-    if(last.querySelector&&last.querySelector('button')){if(prev&&!prev.querySelector('button'))tr.removeChild(prev);}
-    else if(!last.querySelector||!last.querySelector('button'))tr.removeChild(last);
+    var cells=tr.querySelectorAll('th,td');if(cells.length<=2)return;
+    // La última celda es siempre fija (botón de borrar fila en el cuerpo, el
+    // hueco a juego en la cabecera) y nunca se toca; se quita la penúltima,
+    // que es la última semana real — igual que addGanttCol() al insertar.
+    tr.removeChild(cells[cells.length-2]);
   });
 }
 
@@ -1611,15 +1615,15 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)it
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260825"></script>
-<script src="_tax-selector.js?v=20260825"></script>
-<script src="_page-numbers.js?v=20260825"></script>
-<script src="_page-delete.js?v=20260825"></script>
-<script src="_form-field-manager.js?v=20260825"></script>
-<script src="_budget-wrap.js?v=20260825"></script>
-<script src="_photo-zoom.js?v=20260825"></script>
-<script src="_budget-calc.js?v=20260825"></script>
-<script src="_budget-format.js?v=20260825"></script>
+<script src="_crm-button.js?v=20260826"></script>
+<script src="_tax-selector.js?v=20260826"></script>
+<script src="_page-numbers.js?v=20260826"></script>
+<script src="_page-delete.js?v=20260826"></script>
+<script src="_form-field-manager.js?v=20260826"></script>
+<script src="_budget-wrap.js?v=20260826"></script>
+<script src="_photo-zoom.js?v=20260826"></script>
+<script src="_budget-calc.js?v=20260826"></script>
+<script src="_budget-format.js?v=20260826"></script>
 
 <!-- Add/remove en Sistemas a instalar (estructura scope-list) -->
 <style>
@@ -1683,6 +1687,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)it
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260825"></script>
+<script src="_import-budget.js?v=20260826"></script>
 </body>
 </html>

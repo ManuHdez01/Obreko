@@ -255,7 +255,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .estancia-add-btn:hover{background:rgba(92,124,217,.09);}
 @media print{ .estancia-row-remove,.estancia-add-btn{display:none !important;} }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260825">
+<link rel="stylesheet" href="_text-bump.css?v=20260826">
 </head>
 <body>
 
@@ -1092,7 +1092,7 @@ document.querySelectorAll('.gcell').forEach(function(c){c.addEventListener('clic
 function addGanttRow(){var tbl=document.getElementById('ganttTable');if(!tbl)return;var hdr=tbl.querySelector('tr');var cols=hdr?hdr.querySelectorAll('th,td').length:9;var tbody=tbl.querySelector('tbody');if(!tbody)return;var tr=document.createElement('tr');var tTask=document.createElement('td');tTask.contentEditable='true';tTask.style.cssText='padding:3mm 4mm;border:1px solid #E8E2D3;font-size:8pt;font-weight:500;color:#1A2236';tTask.textContent='Nueva tarea';tr.appendChild(tTask);for(var i=0;i<cols-2;i++){var td=document.createElement('td');td.innerHTML='<span class="gcell" onclick="showGanttPicker(this.parentElement,event)" style="display:block;width:100%;height:100%;cursor:pointer;"></span>';td.style.cssText='border:1px solid #E8E2D3;height:33px;padding:0';tr.appendChild(td);}var tDel=document.createElement('td');tDel.style.cssText='padding:1mm;border:1px solid #E8E2D3;text-align:center';tDel.innerHTML='<button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button>';tr.appendChild(tDel);tbody.appendChild(tr);}
 function removeGanttRow(btn){var tr=btn.closest('tr');if(tr)tr.parentNode.removeChild(tr);}
 function addGanttCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr,i){var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];if(i===0){var th=document.createElement('th');th.contentEditable='true';th.style.cssText='padding:7px 4px;background:#1A2236;color:rgba(255,255,255,.7);font-size:7.5px;text-align:center;border:1px solid #283650;letter-spacing:.07em;font-family:var(--sans);text-transform:uppercase';th.textContent='Sem';tr.insertBefore(th,last);}else{var td=document.createElement('td');td.innerHTML='<span class="gcell" onclick="showGanttPicker(this.parentElement,event)" style="display:block;width:100%;height:100%;cursor:pointer;"></span>';td.style.cssText='border:1px solid #E8E2D3;height:33px;padding:0';tr.insertBefore(td,last);}});}
-function removeGanttLastCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells.length<=3)return;var last=cells[cells.length-1];var prev=cells[cells.length-2];if(last.querySelector&&last.querySelector('button')){if(prev&&!prev.querySelector('button'))tr.removeChild(prev);}else if(!last.querySelector||!last.querySelector('button'))tr.removeChild(last);});}
+function removeGanttLastCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;var cab=tbl.querySelector('thead tr')||tbl.querySelector('tr');if(cab&&cab.querySelectorAll('th,td').length<=3)return;tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells.length<=2)return;tr.removeChild(cells[cells.length-2]);});}
 function addPaymentItem(){var list=document.getElementById('paymentItems');if(!list)return;var div=document.createElement('div');div.style.cssText='display:flex;align-items:center;gap:11px;';div.innerHTML='<div style="width:7px;height:7px;background:var(--yellow);border-radius:50%;flex-shrink:0;"></div><div contenteditable="true" style="font-family:\'DM Sans\',Arial,sans-serif;font-size:10px;color:var(--navy);flex:1">Descripción del hito de pago...</div><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button>';list.appendChild(div);}
 function removePaymentItem(btn){var item=btn.parentNode;if(item)item.parentNode.removeChild(item);}
 
@@ -1111,15 +1111,15 @@ function removePaymentItem(btn){var item=btn.parentNode;if(item)item.parentNode.
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260825"></script>
-<script src="_page-numbers.js?v=20260825"></script>
-<script src="_page-delete.js?v=20260825"></script>
-<script src="_mats-page.js?v=20260825"></script>
-<script src="_form-field-manager.js?v=20260825"></script>
-<script src="_budget-wrap.js?v=20260825"></script>
-<script src="_photo-zoom.js?v=20260825"></script>
-<script src="_budget-calc.js?v=20260825"></script>
-<script src="_budget-format.js?v=20260825"></script>
-<script src="_import-budget.js?v=20260825"></script>
+<script src="_crm-button.js?v=20260826"></script>
+<script src="_page-numbers.js?v=20260826"></script>
+<script src="_page-delete.js?v=20260826"></script>
+<script src="_mats-page.js?v=20260826"></script>
+<script src="_form-field-manager.js?v=20260826"></script>
+<script src="_budget-wrap.js?v=20260826"></script>
+<script src="_photo-zoom.js?v=20260826"></script>
+<script src="_budget-calc.js?v=20260826"></script>
+<script src="_budget-format.js?v=20260826"></script>
+<script src="_import-budget.js?v=20260826"></script>
 </body>
 </html>

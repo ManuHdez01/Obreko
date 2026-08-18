@@ -383,7 +383,7 @@ body{background:#ddd;font-family:var(--sans);color:var(--navy);}
   .estado-photo{cursor:default;}
 }
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260825">
+<link rel="stylesheet" href="_text-bump.css?v=20260826">
 </head>
 <body>
 
@@ -1135,7 +1135,7 @@ document.querySelectorAll('.gcell').forEach(function(c){c.style.cursor='pointer'
 function addGanttRow(){var tbl=document.getElementById('ganttTable');if(!tbl)return;var hdr=tbl.querySelector('tr');var cols=hdr?hdr.querySelectorAll('th,td').length:9;var tbody=tbl.querySelector('tbody');if(!tbody)return;var tr=document.createElement('tr');var tTask=document.createElement('td');tTask.contentEditable='true';tTask.style.cssText='padding:3mm 4mm;border:1px solid #E8E2D3;font-size:8pt;font-weight:500;color:#1A2236';tTask.textContent='Nueva tarea';tr.appendChild(tTask);for(var i=0;i<cols-2;i++){var td=document.createElement('td');td.className='gcell';td.style.cssText='border:1px solid #E8E2D3;cursor:pointer;height:9mm;transition:background .15s';td.addEventListener('click',function(e){showGanttPicker(this,e);});tr.appendChild(td);}var tDel=document.createElement('td');tDel.style.cssText='padding:1mm;border:1px solid #E8E2D3;text-align:center';tDel.innerHTML='<button onclick="removeGanttRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:11pt;line-height:1;padding:0">×</button>';tr.appendChild(tDel);tbody.appendChild(tr);}
 function removeGanttRow(btn){var tr=btn.closest('tr');if(tr)tr.parentNode.removeChild(tr);}
 function addGanttCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr,i){var cells=tr.querySelectorAll('th,td');var last=cells[cells.length-1];if(i===0){var th=document.createElement('th');th.contentEditable='true';th.style.cssText='padding:3mm 2mm;background:#1A2236;color:rgba(255,255,255,.7);font-size:6.5pt;text-align:center;border:1px solid #283650;letter-spacing:.08em';th.textContent='Per.';tr.insertBefore(th,last);}else{var td=document.createElement('td');td.className='gcell';td.style.cssText='border:1px solid #E8E2D3;cursor:pointer;height:9mm;transition:background .15s';td.addEventListener('click',function(e){showGanttPicker(this,e);});tr.insertBefore(td,last);}});}
-function removeGanttLastCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells.length<=3)return;var last=cells[cells.length-1];var prev=cells[cells.length-2];if(last.querySelector&&last.querySelector('button')){if(prev&&!prev.querySelector('button'))tr.removeChild(prev);}else if(!last.querySelector||!last.querySelector('button'))tr.removeChild(last);});}
+function removeGanttLastCol(){var tbl=document.getElementById('ganttTable');if(!tbl)return;var cab=tbl.querySelector('thead tr')||tbl.querySelector('tr');if(cab&&cab.querySelectorAll('th,td').length<=3)return;tbl.querySelectorAll('tr').forEach(function(tr){var cells=tr.querySelectorAll('th,td');if(cells.length<=2)return;tr.removeChild(cells[cells.length-2]);});}
 function addPaymentItem(){var list=document.getElementById('paymentItems');if(!list)return;var div=document.createElement('div');div.className='payment-item';div.innerHTML='<div class="payment-dot"></div><input type="text" placeholder="Descripción del hito de pago..." style="background:transparent;border:none;border-bottom:1px solid #d0d0d0;font-family:\'DM Sans\',Arial,sans-serif;font-size:10px;color:#1A2236;padding:2px 0;outline:none;flex:1"><button onclick="removePaymentItem(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0;flex-shrink:0;margin-left:6px">×</button>';list.appendChild(div);}
 function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)item.parentNode.removeChild(item);}
 // ── IMPRESIÓN: pág 2 en blanco + última en blanco ──
@@ -1153,15 +1153,15 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)it
   window.addEventListener('afterprint',function(){cleanBlanks();if(typeof scalePages==='function')scalePages();});
 })();
 </script>
-<script src="_crm-button.js?v=20260825"></script>
-<script src="_page-numbers.js?v=20260825"></script>
-<script src="_page-delete.js?v=20260825"></script>
-<script src="_mats-page.js?v=20260825"></script>
-<script src="_form-field-manager.js?v=20260825"></script>
-<script src="_budget-wrap.js?v=20260825"></script>
-<script src="_photo-zoom.js?v=20260825"></script>
-<script src="_budget-calc.js?v=20260825"></script>
-<script src="_budget-format.js?v=20260825"></script>
+<script src="_crm-button.js?v=20260826"></script>
+<script src="_page-numbers.js?v=20260826"></script>
+<script src="_page-delete.js?v=20260826"></script>
+<script src="_mats-page.js?v=20260826"></script>
+<script src="_form-field-manager.js?v=20260826"></script>
+<script src="_budget-wrap.js?v=20260826"></script>
+<script src="_photo-zoom.js?v=20260826"></script>
+<script src="_budget-calc.js?v=20260826"></script>
+<script src="_budget-format.js?v=20260826"></script>
 
 <!-- Add/remove en columnas del alcance (pronexo-list) -->
 <style>
@@ -1222,6 +1222,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item');if(item)it
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260825"></script>
+<script src="_import-budget.js?v=20260826"></script>
 </body>
 </html>
