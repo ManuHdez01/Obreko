@@ -30,7 +30,12 @@
 
   function getProposalSlug() {
     const path = window.location.pathname;
-    const m = path.match(/\/propuestas\/([^/]+?)(?:\.html)?\/?$/);
+    // Vale tanto para la propuesta publicada (/propuestas/reformas) como
+    // para el editor interno (/propuestas-interno/reformas.html), que es
+    // donde de verdad se guarda en el CRM: sin el "-interno" opcional,
+    // aquí siempre salía "desconocida" y perdía el tipo/frecuencia por
+    // defecto de DEFAULTS.
+    const m = path.match(/\/propuestas(?:-interno)?\/([^/]+?)(?:\.html)?\/?$/);
     return m ? m[1] : 'desconocida';
   }
 
@@ -56,12 +61,15 @@
   function extractData() {
     const slug = getProposalSlug();
 
-    // Cliente: en cada propuesta es .cover-client-name
-    let clientName = txt('.cover-client-name');
+    // Cliente: la mayoría de propuestas usan .cover-client-name, pero
+    // reformas.html usa .p1-client-name — sin este segundo selector, aquí
+    // siempre salía "sin rellenar" aunque la portada tuviera el nombre.
+    let clientName = txt('.cover-client-name') || txt('.p1-client-name');
     // Dirección / contexto
-    let clientAddress = txt('.cover-client-addr');
-    // Ref del documento
-    let proposalRef = txt('.cover-meta-ref');
+    let clientAddress = txt('.cover-client-addr') || txt('.p1-client-addr');
+    // Ref del documento: en reformas.html no lleva clase propia, es el
+    // primer campo editable dentro de .p1-meta (ver _import-budget.js).
+    let proposalRef = txt('.cover-meta-ref') || txt('.p1-meta [contenteditable]');
     // Importe total (con IVA) — varios selectores
     let amountText = '';
     ['#grand', '.grand', '#budget-grand', '.budget-grand', '[data-crm="amount"]'].some(sel => {
