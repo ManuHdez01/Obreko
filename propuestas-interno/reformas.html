@@ -374,7 +374,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
 .next-step-text{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);line-height:1.5;padding-top:4px;}
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260829">
+<link rel="stylesheet" href="_text-bump.css?v=20260830">
 </head>
 <body>
 
@@ -780,7 +780,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
         </tr>
         <!-- Subtotal -->
         <tr class="p7-sub-row" id="rowSubMat">
-          <td colspan="2" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
+          <td colspan="2" data-tax-descriptor style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
           <td style="text-align:right;font-weight:600;font-size:8pt;color:var(--navy);"><span id="subtotal">—</span></td>
         </tr>
         <!-- IVA -->
@@ -1429,16 +1429,16 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
 })();
 </script>
 
-<script src="_crm-button.js?v=20260829"></script>
-<script src="_tax-selector.js?v=20260829"></script>
-<script src="_ai-wand.js?v=20260829"></script>
-<script src="_page-numbers.js?v=20260829"></script>
-<script src="_page-delete.js?v=20260829"></script>
-<script src="_form-field-manager.js?v=20260829"></script>
-<script src="_budget-wrap.js?v=20260829"></script>
-<script src="_photo-zoom.js?v=20260829"></script>
-<script src="_budget-calc.js?v=20260829"></script>
-<script src="_budget-format.js?v=20260829"></script>
+<script src="_crm-button.js?v=20260830"></script>
+<script src="_tax-selector.js?v=20260830"></script>
+<script src="_ai-wand.js?v=20260830"></script>
+<script src="_page-numbers.js?v=20260830"></script>
+<script src="_page-delete.js?v=20260830"></script>
+<script src="_form-field-manager.js?v=20260830"></script>
+<script src="_budget-wrap.js?v=20260830"></script>
+<script src="_photo-zoom.js?v=20260830"></script>
+<script src="_budget-calc.js?v=20260830"></script>
+<script src="_budget-format.js?v=20260830"></script>
 
 <!-- Add/remove fields específico para estructura p4-fields (Ficha del inmueble) -->
 <style>
@@ -1500,6 +1500,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260829"></script>
+<script src="_import-budget.js?v=20260830"></script>
 </body>
 </html>
