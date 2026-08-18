@@ -41,6 +41,8 @@ export async function onRequestGet({ request, env }) {
     const raw = await env.BUDGET_TOOL.get('project:' + id);
     if (!raw) return json({ error: 'Proyecto no encontrado' }, 404);
     const project = JSON.parse(raw);
+    // También al abrir la ficha directamente, sin pasar por el listado.
+    await renumerarSiHaceFalta(env, project);
     return json({ project, economics: computeEconomics(project) });
   }
 
@@ -281,6 +283,16 @@ async function migrarRefsAntiguas(env) {
       return { ...e, ref, refFija: RE_REF_ANTIGUA.test(ref) };
     })
   ));
+}
+
+// Renumera un solo proyecto si aún lleva un formato antiguo. Mismo criterio
+// que la migración del listado: no se toca el que ya salió a un proveedor.
+async function renumerarSiHaceFalta(env, p) {
+  if (!RE_REF_ANTIGUA.test(String(p.ref || ''))) return;
+  if ((p.rfqs || []).some((r) => r.sentAt)) return;
+  p.ref = await autoRef(env, p.createdAt);
+  await env.BUDGET_TOOL.put('project:' + p.id, JSON.stringify(p));
+  await upsertIndex(env, { id: p.id, ref: p.ref, updatedAt: p.updatedAt });
 }
 
 async function autoRef(env, fecha) {
