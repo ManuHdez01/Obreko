@@ -41,6 +41,8 @@ const COMPOSE_TOOL = {
           properties: {
             name: { type: 'string', description: 'Nombre claro de la partida.' },
             capitulo: { type: 'string', description: 'Capítulo del presupuesto al que pertenece, copiado tal cual del texto (ej. "CAP.1 DEMOLICIONES, DESMONTAJES Y RETIRADA DE ESCOMBROS"). Vacío si el texto no trae capítulos.' },
+            material: { type: 'number', description: 'Importe en € de la parte de material de la partida, solo si el texto lo separa (columna "Material (€)"). Omitir si no viene.' },
+            manoObra: { type: 'number', description: 'Importe en € de la parte de mano de obra de la partida, solo si el texto lo separa (columna "Mano de obra (€)"). Omitir si no viene.' },
             supplier: { type: 'string', description: 'Proveedor si el texto lo menciona o "estimación".' },
             unit: { type: 'string', description: 'ud, m2, ml, h, pa (partida alzada)...' },
             unitPrice: { type: 'number', description: 'Precio unitario orientativo en € (sin impuestos).' },
@@ -176,6 +178,8 @@ ${libraryHint}
 
 Si el texto trae capítulos ("CAP.1 DEMOLICIONES...", "CAPÍTULO 2 ALBAÑILERÍA...", o títulos en mayúsculas que agrupan partidas), rellena "capitulo" en CADA partida con el capítulo al que pertenece, copiado tal cual, y devuelve las partidas en el mismo orden en que aparecen en el texto.
 
+Si el texto separa el importe de material y el de mano de obra de cada partida (columnas "Material (€)" y "Mano de obra (€)"), cópialos en "material" y "manoObra". Si no vienen separados, omítelos: no los repartas tú.
+
 Monta las partidas del presupuesto: nombre claro, unidad, cantidad (deduce de las medidas del texto; si no hay, estima razonable y dilo en reasoning) y precio unitario orientativo realista para la región y calidad (sin impuestos). Si el texto ya trae cantidades y precios, respétalos en vez de reestimarlos. No inventes trabajos que el texto no pida. Si algo es ambiguo, inclúyelo con tu mejor interpretación y señálalo en summary. Usa return_items.`;
 
   let res;
@@ -237,6 +241,8 @@ function normalizarItems(raw) {
       supplier: it.supplier ? String(it.supplier) : 'estimación',
       unit: it.unit ? String(it.unit) : 'ud',
       capitulo: it.capitulo ? String(it.capitulo).replace(/["']/g, '').trim() : '',
+      material: Number(it.material) || 0,
+      manoObra: Number(it.manoObra) || 0,
       unitPrice: Number(it.unitPrice) || 0,
       quantity: Number(it.quantity) || 1,
       reasoning: it.reasoning ? String(it.reasoning) : '',

@@ -190,8 +190,9 @@ function defaultProject() {
   };
 }
 
-const STR_FIELDS = ['ref', 'clientName', 'clientEmail', 'clientPhone', 'address', 'region', 'mode', 'tipo', 'calidad'];
-const NUM_FIELDS = ['m2', 'laborHours', 'laborRate', 'indirectPct', 'marginPct', 'taxPct'];
+const STR_FIELDS = ['ref', 'clientName', 'clientEmail', 'clientPhone', 'address', 'region', 'mode', 'tipo', 'calidad', 'taxLabel'];
+// giPct: beneficio industrial y gastos generales sobre la ejecución material.
+const NUM_FIELDS = ['m2', 'laborHours', 'laborRate', 'indirectPct', 'marginPct', 'taxPct', 'giPct'];
 const OBJ_FIELDS = ['estancias', 'analysis'];
 const ARR_FIELDS = ['items', 'rfqs', 'invoices'];
 

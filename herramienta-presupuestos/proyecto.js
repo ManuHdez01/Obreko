@@ -59,6 +59,14 @@ function renderAll() {
     fTaxPct: 'taxPct',
   };
   for (const [el, key] of Object.entries(map)) $(el).value = project[key] != null ? project[key] : '';
+  // Pie del presupuesto: si el proyecto no trae impuesto, se pone el de su
+  // plaza (IGIC 7% en Canarias, IVA 21% en península).
+  const canarias = (project.region || 'tenerife') === 'tenerife';
+  $('fGiPct').value = project.giPct != null && project.giPct !== '' ? project.giPct : 10;
+  $('fTaxLabel').value = project.taxLabel || (canarias ? 'IGIC' : 'IVA');
+  $('fTaxPctPie').value = project.taxPct ? project.taxPct : (canarias ? 7 : 21);
+  $('fTaxPct').value = $('fTaxPctPie').value;
+
   const est = project.estancias || {};
   $('fCocinas').value = est.cocinas != null ? est.cocinas : 1;
   $('fBanos').value = est.banos != null ? est.banos : 1;
@@ -97,6 +105,8 @@ function collectForm() {
     indirectPct: Number($('fIndirectPct').value) || 0,
     marginPct: Number($('fMarginPct').value) || 0,
     taxPct: Number($('fTaxPct').value) || 0,
+    taxLabel: $('fTaxLabel').value || 'IGIC',
+    giPct: Number($('fGiPct').value) || 0,
     items: project.items || [],
     rfqs: project.rfqs || [],
     invoices: project.invoices || [],
@@ -368,8 +378,8 @@ function renderItems() {
   seleccionItems = new Set(Array.from(seleccionItems).filter((i) => i < items.length));
   if (!items.length) {
     seleccionItems.clear();
-    body.innerHTML = '<tr><td colspan="10" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr>';
-    pintarTotales(0, 0);
+    body.innerHTML = '<tr><td colspan="12" class="tbl-empty">Presupuesto vacío. Sube el Excel, móntalo desde texto o añade partidas a mano.</td></tr>';
+    pintarTotales(0, 0, 0, 0);
     $('itemsRealTotalRow').style.display = 'none';
     actualizarBarraSeleccion();
     renderRfqItems();
@@ -415,6 +425,8 @@ function renderItems() {
           <td>${escapeHtml(it.supplier || '—')}</td>
           <td class="r"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"> ${escapeHtml(it.unit || 'ud')}</td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—" title="Dato interno" onchange="updItem(${i},'material',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—" title="Dato interno" onchange="updItem(${i},'manoObra',this.value)"></td>
           <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
           <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoney(dev)}</td>
@@ -428,7 +440,7 @@ function renderItems() {
     return `
       <tr style="background:var(--sand-lt)">
         <td><input type="checkbox" ${todoElGrupo ? 'checked' : ''} title="Seleccionar todo el grupo" onchange="toggleSeleccionGrupo([${idxs.join(',')}], this.checked)"></td>
-        <td colspan="5" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
+        <td colspan="7" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
         <td class="r" style="font-weight:700">${fmtMoney(groupBudget)}</td>
         <td class="r" style="font-weight:700">${groupReal ? fmtMoney(groupReal) : '—'}</td>
         <td colspan="2"></td>
@@ -436,9 +448,11 @@ function renderItems() {
       ${rows}`;
   }).join('');
 
-  const base = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const pem = items.reduce((s, it) => s + (Number(it.totalPrice) || 0), 0);
+  const totalMaterial = items.reduce((s, it) => s + (Number(it.material) || 0), 0);
+  const totalObra = items.reduce((s, it) => s + (Number(it.manoObra) || 0), 0);
   const realTotal = items.reduce((s, it) => s + (Number(it.realCost) || 0), 0);
-  pintarTotales(base, realTotal);
+  pintarTotales(pem, totalMaterial, totalObra, realTotal);
   $('itemsRealTotal').textContent = fmtMoney(realTotal);
   actualizarBarraSeleccion();
   renderRfqItems();
@@ -453,17 +467,57 @@ function capituloCorto(capitulo) {
   return m ? 'CAP.' + m[1] : texto.slice(0, 12);
 }
 
-// Pie del presupuesto: base imponible, IGIC y total. El porcentaje sale del
-// campo IGIC/IVA de la pestaña Costes & Margen.
-function pintarTotales(base, realTotal) {
-  const taxPct = Number(($('fTaxPct') || {}).value) || 0;
-  const impuesto = base * (taxPct / 100);
-  $('itemsTotal').textContent = fmtMoney(base);
-  $('itemsTaxPct').textContent = String(taxPct);
+// Pie del presupuesto, con la estructura de un presupuesto de obra:
+//   TOTAL EJECUCIÓN MATERIAL (suma de capítulos)
+//   + Beneficio industrial y gastos generales (% s/ ejecución material)
+//   = TOTAL PRESUPUESTO CONTRATA (sin impuesto)
+//   + IGIC o IVA sobre el presupuesto de contrata
+//   = TOTAL PRESUPUESTO (impuesto incluido)
+// Materiales y mano de obra se suman aparte: son dato interno y no entran en
+// el total, que ya sale de las partidas.
+function pintarTotales(pem, totalMaterial, totalObra, realTotal) {
+  const giPct = Number(($('fGiPct') || {}).value) || 0;
+  const gi = pem * (giPct / 100);
+  const contrata = pem + gi;
+  const taxPct = Number(($('fTaxPctPie') || {}).value) || 0;
+  const impuesto = contrata * (taxPct / 100);
+  $('itemsPem').textContent = fmtMoney(pem);
+  $('itemsGi').textContent = fmtMoney(gi);
+  $('itemsContrata').textContent = fmtMoney(contrata);
   $('itemsTaxAmount').textContent = fmtMoney(impuesto);
-  $('itemsTotalConIgic').textContent = fmtMoney(base + impuesto);
+  $('itemsTaxLabel').textContent = ($('fTaxLabel') || {}).value || 'IGIC';
+  $('itemsTotalConIgic').textContent = fmtMoney(contrata + impuesto);
+  $('itemsMatTotal').textContent = fmtMoney(totalMaterial);
+  $('itemsObraTotal').textContent = fmtMoney(totalObra);
   $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
 }
+
+// El impuesto sale de la plaza: IGIC 7% en Canarias, IVA 21% en península.
+// Se aplica solo cuando el proyecto no trae porcentaje, o cuando se pulsa
+// "Según dirección": si lo has puesto tú a mano, no se toca.
+function impuestoSegunDireccion() {
+  const canarias = ($('fRegion').value || '') === 'tenerife';
+  $('fTaxLabel').value = canarias ? 'IGIC' : 'IVA';
+  $('fTaxPctPie').value = canarias ? 7 : 21;
+  onImpuestoChange();
+  toast('Impuesto: ' + (canarias ? 'IGIC 7% (Canarias)' : 'IVA 21% (península)'), 'success');
+}
+window.impuestoSegunDireccion = impuestoSegunDireccion;
+
+// El porcentaje vive en un único sitio (project.taxPct), pero se puede tocar
+// desde el pie del presupuesto o desde Costes & Margen: se sincronizan.
+function onImpuestoChange() {
+  $('fTaxPct').value = $('fTaxPctPie').value;
+  renderItems();
+  saveProject(false);
+}
+window.onImpuestoChange = onImpuestoChange;
+
+function onGiPctChange() {
+  renderItems();
+  saveProject(false);
+}
+window.onGiPctChange = onGiPctChange;
 
 function updItem(i, field, value) {
   const it = project.items[i];
@@ -1112,6 +1166,7 @@ function applyAssistantAction(action) {
       project.items.push({
         name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
         capitulo: String(it.capitulo || ''),
+        material: Number(it.material) || 0, manoObra: Number(it.manoObra) || 0,
         unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
         totalPrice: +(qty * price).toFixed(2), reasoning: String(it.reasoning || ''),
       });
