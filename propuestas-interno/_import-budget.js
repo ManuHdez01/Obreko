@@ -45,31 +45,87 @@
     });
   }
 
-  // Las filas que faltan se clonan de la última partida y se insertan JUSTO
-  // detrás de ella. Si se añadieran al final del tbody caerían debajo del
-  // bloque de subtotal / impuesto / total, y el presupuesto salía con los
-  // totales a mitad de documento y partidas después.
-  function ensureRows(tbody, needed) {
-    var rows = dataRows(tbody);
-    var template = rows[rows.length - 1];
-    while (rows.length < needed && template) {
-      var ultima = rows[rows.length - 1];
-      var clone = template.cloneNode(true);
-      ultima.parentNode.insertBefore(clone, ultima.nextSibling);
-      var nuevas = dataRows(tbody);
-      if (nuevas.length === rows.length) break; // por si el clon no cuenta como fila de datos
-      rows = nuevas;
-    }
-    return rows;
+  // Agrupa las partidas por capítulo (el campo "concept" de cada fila),
+  // conservando el orden en que aparecen la primera vez — es el mismo orden
+  // del presupuesto de origen.
+  function agruparPorCapitulo(filas) {
+    var grupos = [];
+    var indice = {};
+    filas.forEach(function (f) {
+      var clave = f.concept || 'Otros trabajos';
+      if (!(clave in indice)) {
+        indice[clave] = grupos.length;
+        grupos.push({ capitulo: clave, items: [] });
+      }
+      grupos[indice[clave]].items.push(f);
+    });
+    return grupos;
   }
 
-  // La numeración se rehace al final: los clones traen el número de la fila
-  // que se copió y salían ocho "8" seguidos.
-  function renumerar(rows) {
-    rows.forEach(function (tr, idx) {
-      var num = tr.querySelector('td.num') || tr.children[0];
-      var soloNumero = String(num ? num.textContent : "").trim();
-      if (num && (num.classList.contains("num") || soloNumero === "" || !isNaN(Number(soloNumero)))) num.textContent = String(idx + 1);
+  // Reconstruye el cuerpo del presupuesto agrupado por capítulo: una fila de
+  // cabecera (el capítulo, en negro, UNA sola vez) seguida de sus partidas.
+  // Las filas de subtotal/impuesto/total viven dentro del mismo <tbody> que
+  // las partidas (no en uno aparte), así que se apartan antes de vaciar la
+  // tabla y se vuelven a insertar al final, para que las partidas nuevas
+  // caigan siempre por delante de los totales y nunca detrás.
+  function volcarPresupuesto(tbody, filas) {
+    if (!tbody || !filas || !filas.length) return;
+
+    var especiales = [];
+    ['rowSubMat', 'rowIva'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.parentNode === tbody) especiales.push(el);
+    });
+    var totalRow = tbody.querySelector('.p7-total-row');
+    if (totalRow && totalRow.parentNode === tbody) especiales.push(totalRow);
+    var referencia = especiales[0] || null;
+
+    var plantilla = dataRows(tbody)[0];
+    if (!plantilla) return;
+    plantilla = plantilla.cloneNode(true);
+
+    // Vacía el cuerpo de datos (partidas + posibles cabeceras de una
+    // importación anterior), dejando intactas las filas de totales.
+    Array.prototype.slice.call(tbody.querySelectorAll('tr')).forEach(function (tr) {
+      if (especiales.indexOf(tr) === -1) tr.remove();
+    });
+
+    agruparPorCapitulo(filas).forEach(function (grupo) {
+      var cab = document.createElement('tr');
+      cab.className = 'cat-row';
+      var celda = document.createElement('td');
+      celda.colSpan = 4;
+      celda.textContent = grupo.capitulo;
+      cab.appendChild(celda);
+      tbody.insertBefore(cab, referencia);
+
+      grupo.items.forEach(function (item) {
+        var fila = plantilla.cloneNode(true);
+        setCell(conceptCell(fila), item.desc || '');
+        var descEl = fila.querySelector('td.desc');
+        if (descEl) setCell(descEl, '');
+        var mat = fila.querySelector('[data-type="mat"]');
+        setCell(mat, item.mat > 0 ? fmtMoney(item.mat) : '—');
+        var labor = fila.querySelector('[data-type="labor"]');
+        if (labor) setCell(labor, '—');
+        if (mat) mat.addEventListener('input', function () {
+          if (typeof window.calcBudget === 'function') window.calcBudget();
+        });
+        tbody.insertBefore(fila, referencia);
+      });
+    });
+
+    renumerarDatos(tbody);
+  }
+
+  // Los números de fila se asignan al final y solo a filas de datos: las
+  // cabeceras de capítulo no cuentan.
+  function renumerarDatos(tbody) {
+    var n = 1;
+    Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function (tr) {
+      if (tr.classList.contains('cat-row')) return;
+      var num = tr.querySelector('td.num');
+      if (num) { num.textContent = String(n); n++; }
     });
   }
 
@@ -86,25 +142,7 @@
     var tbody = document.getElementById('budgetBody');
     if (!tbody) { alert('Esta plantilla no tiene tabla de presupuesto compatible.'); return false; }
 
-    var rows = ensureRows(tbody, payload.rows.length);
-    rows.forEach(function (tr, i) {
-      var data = payload.rows[i];
-      var mat = tr.querySelector('[data-type="mat"]');
-      var labor = tr.querySelector('[data-type="labor"]');
-      var qty = tr.querySelector('[data-type="qty"]');
-      if (data) {
-        setCell(conceptCell(tr), data.concept || '');
-        var desc = tr.querySelector('td.desc');
-        if (desc) setCell(desc, data.desc || '');
-        setCell(mat, data.mat > 0 ? fmtMoney(data.mat) : '—');
-        setCell(labor, data.labor > 0 ? fmtMoney(data.labor) : '—');
-        if (qty) setCell(qty, '1');
-      } else {
-        // Fila sobrante de la plantilla: limpiar importes para no ensuciar el total
-        setCell(mat, '—');
-        setCell(labor, '—');
-      }
-    });
+    volcarPresupuesto(tbody, payload.rows);
 
     // Portada: cliente y referencia si la plantilla los tiene (los nombres de
     // clase varían entre plantillas)
@@ -129,12 +167,11 @@
       localStorage.setItem('obreko_proposal_ctx', JSON.stringify({
         tipo: payload.tipo || '', m2: payload.m2 || 0, address: payload.address || '',
         region: payload.region || 'tenerife', clientName: payload.clientName || '',
-        capitulos: (payload.rows || []).map(function (r) { return r.desc; })
+        capitulos: (payload.rows || []).map(function (r) { return r.concept; })
           .filter(function (d, idx, arr) { return d && arr.indexOf(d) === idx; }).slice(0, 20),
       }));
     } catch (e) {}
 
-    renumerar(rows);
     aplicarTextos(payload.textos);
 
     if (typeof window.calcBudget === 'function') window.calcBudget();
