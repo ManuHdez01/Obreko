@@ -173,8 +173,10 @@
     });
   }
 
-  // Fila "Subtotal Capítulo N" tras las partidas de cada capítulo, igual que
-  // en el Excel: suma de importe, material y mano de obra de ese capítulo.
+  // Fila "Subtotal Capítulo N" tras las partidas de cada capítulo: solo
+  // material, mano de obra y total de ese capítulo, cada uno bajo su
+  // columna correspondiente (Importe no lleva subtotal propio, coincide
+  // con el Total).
   function crearFilaSubtotalCapitulo(grupo, numeroCapitulo) {
     var sumaImporte = 0, sumaMaterial = 0, sumaManoObra = 0;
     grupo.items.forEach(function (it) {
@@ -186,10 +188,10 @@
     tr.className = 'subtotal-row';
     var label = document.createElement('td');
     label.className = 'subtotal-label';
-    label.colSpan = 5; // Código + Descripción + Ud + Cantidad + Precio Unit.
+    label.colSpan = 6; // Código + Descripción + Ud + Cantidad + Precio Unit. + Importe
     label.textContent = 'Subtotal Capítulo ' + numeroCapitulo;
     tr.appendChild(label);
-    [fmtMoney(sumaImporte), fmtMoney(sumaMaterial), fmtMoney(sumaManoObra), fmtMoney(sumaImporte)].forEach(function (texto) {
+    [fmtMoney(sumaMaterial), fmtMoney(sumaManoObra), fmtMoney(sumaImporte)].forEach(function (texto) {
       var td = document.createElement('td');
       td.textContent = texto;
       tr.appendChild(td);
