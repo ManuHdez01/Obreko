@@ -498,7 +498,7 @@
       '<div style="flex:1;font-size:12px;color:rgba(255,255,255,.75);min-width:200px;">' +
         'Hay un presupuesto preparado en la herramienta interna' +
         (payload.clientName ? ' para <strong>' + payload.clientName.replace(/</g, '&lt;') + '</strong>' : '') +
-        ' · ' + payload.rows.length + ' partidas · total ' + fmtMoney(payload.total) + ' €' +
+        ' · ' + payload.rows.length + ' partidas · total ' + fmtMoneyDecimal(payload.total) + ' €' +
         (payload.textos ? ' · con textos y condiciones adaptados por IA (revisa que la página de condiciones no se desborde)' : '') +
         '. ¿Volcarlo a esta propuesta?' +
       '</div>' +

@@ -439,8 +439,8 @@ function renderItems() {
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
           <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
           <td class="r"><strong>${fmtMoneyDecimal(it.totalPrice)}</strong></td>
-          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
-          <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoney(dev)}</td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
+          <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoneyDecimal(dev)}</td>
           <td class="r" style="white-space:nowrap">
             <button class="btn btn-sm btn-sec" title="Guardar en la biblioteca de partidas" onclick="guardarEnBiblioteca(${i}, this)">★</button>
             <button class="btn btn-sm btn-danger" onclick="delItem(${i})">×</button>
@@ -452,8 +452,8 @@ function renderItems() {
       <tr style="background:var(--sand-lt)">
         <td><input type="checkbox" ${todoElGrupo ? 'checked' : ''} title="Seleccionar todo el grupo" onchange="toggleSeleccionGrupo([${idxs.join(',')}], this.checked)"></td>
         <td colspan="7" style="font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">${escapeHtml(key)} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate)">(${idxs.length})</span></td>
-        <td class="r" style="font-weight:700">${fmtMoney(groupBudget)}</td>
-        <td class="r" style="font-weight:700">${groupReal ? fmtMoney(groupReal) : '—'}</td>
+        <td class="r" style="font-weight:700">${fmtMoneyDecimal(groupBudget)}</td>
+        <td class="r" style="font-weight:700">${groupReal ? fmtMoneyDecimal(groupReal) : '—'}</td>
         <td colspan="2"></td>
       </tr>
       ${rows}`;
@@ -464,7 +464,7 @@ function renderItems() {
   const totalObra = items.reduce((s, it) => s + (Number(it.manoObra) || 0), 0);
   const realTotal = items.reduce((s, it) => s + (Number(it.realCost) || 0), 0);
   pintarTotales(pem, totalMaterial, totalObra, realTotal);
-  $('itemsRealTotal').textContent = fmtMoney(realTotal);
+  $('itemsRealTotal').textContent = fmtMoneyDecimal(realTotal);
   actualizarBarraSeleccion();
   renderRfqItems();
 }
@@ -718,7 +718,7 @@ async function anadirTransporteEstimado() {
   if (!items.length) { toast('El presupuesto no tiene partidas todavía', 'error'); return; }
 
   const existente = partidaDeTransporteExistente();
-  if (existente && !confirm('Ya hay una partida de transporte estimado (' + fmtMoney(existente.totalPrice) + '). ¿Volver a estimarla?')) return;
+  if (existente && !confirm('Ya hay una partida de transporte estimado (' + fmtMoneyDecimal(existente.totalPrice) + '). ¿Volver a estimarla?')) return;
 
   const btn = $('btnTransporteEstimado');
   const antes = btn.textContent;
@@ -729,7 +729,7 @@ async function anadirTransporteEstimado() {
     seleccionItems.clear();
     renderItems();
     saveProject(false);
-    toast('Transporte estimado en ' + fmtMoney(data.estimado), 'success');
+    toast('Transporte estimado en ' + fmtMoneyDecimal(data.estimado), 'success');
   } catch (e) {
     toast('Error: ' + e.message, 'error');
   } finally {
@@ -776,7 +776,7 @@ function onItemNameChange(i, value) {
     it.quantity = it.quantity || 1;
     it.totalPrice = it.quantity * it.unitPrice;
     renderItems();
-    toast('Precio sugerido de la biblioteca: ' + fmtMoney(match.unitPrice), 'success');
+    toast('Precio sugerido de la biblioteca: ' + fmtMoneyDecimal(match.unitPrice), 'success');
     saveProject(false);
   } else {
     updItem(i, 'name', value);
