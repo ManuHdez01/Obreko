@@ -67,6 +67,13 @@ function injectEditBar(html, id) {
   var btn=document.getElementById('archiveSaveBtn');
   var msg=document.getElementById('archiveEditMsg');
   if(!btn) return;
+  // Al archivar se quitó "contenteditable" de todo (para que la vista normal
+  // no sea editable por accidente) dejando la marca data-archive-editable en
+  // su lugar. Aquí, en modo edición, es donde se restaura: sin esto la barra
+  // "Guardar cambios" aparecía pero no había nada que se pudiera tocar.
+  document.querySelectorAll('[data-archive-editable]').forEach(function(el){
+    el.setAttribute('contenteditable', el.getAttribute('data-archive-editable') || 'true');
+  });
   btn.addEventListener('click', async function(){
     btn.disabled=true;
     var prev=btn.textContent;
@@ -80,6 +87,10 @@ function injectEditBar(html, id) {
       // Quitar también el <style> y <script> que añadimos para la edición
       clone.querySelectorAll('script').forEach(function(s){ if((s.textContent||'').indexOf('archiveSaveBtn')>=0) s.remove(); });
       clone.querySelectorAll('style').forEach(function(s){ if((s.textContent||'').indexOf('archiveEditBar')>=0) s.remove(); });
+      // Se vuelve a congelar contenteditable en el HTML que se guarda (la
+      // marca data-archive-editable se conserva) para que la vista normal
+      // del archivo siga siendo de solo lectura tras este guardado.
+      clone.querySelectorAll('[data-archive-editable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
       var html='<!DOCTYPE html>\\n'+clone.outerHTML;
       var r=await fetch('/api/archive/update',{
         method:'POST',

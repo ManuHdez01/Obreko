@@ -248,10 +248,16 @@
           wrap.remove();
           toast('✅ Creado en HubSpot. Archivando snapshot...', 'success');
 
-          // Archivo HTML en R2 — no bloquea el flujo si falla
-          archiveSnapshot(data, { email, phone, amount: data.amount, amountSinIva, hubspotDealId: j.dealId }).catch(function(err){
-            console.warn('Archivo snapshot falló:', err);
-          });
+          // Archivo HTML en R2 — no bloquea el flujo del CRM si falla, pero
+          // el fallo tiene que verse: antes solo quedaba en la consola, así
+          // que si el bucket no estaba bien configurado en producción nadie
+          // se enteraba de que la propuesta nunca llegaba al Archivo.
+          archiveSnapshot(data, { email, phone, amount: data.amount, amountSinIva, hubspotDealId: j.dealId })
+            .then(function () { toast('✅ Guardado en el Archivo de propuestas', 'success'); })
+            .catch(function (err) {
+              console.warn('Archivo snapshot falló:', err);
+              toast('⚠️ Creado en HubSpot pero NO se pudo archivar: ' + err.message, 'error');
+            });
 
           setTimeout(() => { if (j.dealUrl) window.open(j.dealUrl, '_blank', 'noopener'); }, 400);
         } catch (e) {
@@ -268,18 +274,27 @@
     // Clonamos el DOM sin el propio botón CRM ni el diálogo
     var cloneDoc = document.cloneNode(true);
     // Limpiar elementos que no deben persistir en el snapshot
-    ['crm-save-btn','crm-remove-btn','estado-add-btn','estado-remove-btn','plan-line-add','plan-line-remove','toolbar','print-btn','plan-add-btn','plan-remove-btn']
+    ['crm-save-btn','crm-remove-btn','contrato-btn','estado-add-btn','estado-remove-btn','plan-line-add','plan-line-remove','toolbar','print-btn','plan-add-btn','plan-remove-btn']
       .forEach(function(cls){
         cloneDoc.querySelectorAll('.' + cls + ', #' + cls).forEach(function(el){ el.remove(); });
       });
     cloneDoc.querySelectorAll('script').forEach(function(s){ s.remove(); });
-    // Congelar contenteditable como texto plano (no editable en la versión archivada)
-    cloneDoc.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
-    // Inputs → convertir a texto visible preservando el valor
+    // Congelar contenteditable como texto plano (no editable en la vista normal
+    // del archivo) pero dejando marcado qué elementos lo eran, en un atributo
+    // que no se interpreta como editable: así /archivo/[id]?edit=1 puede
+    // restaurarlo luego sin tener que adivinar qué se podía tocar.
+    cloneDoc.querySelectorAll('[contenteditable]').forEach(function(el){
+      el.setAttribute('data-archive-editable', el.getAttribute('contenteditable') || 'true');
+      el.removeAttribute('contenteditable');
+    });
+    // Inputs → convertir a texto visible preservando el valor (también marcado
+    // como editable para el modo edición: un span con contenteditable hace el
+    // mismo papel que el input original para simple texto).
     cloneDoc.querySelectorAll('input').forEach(function(inp){
       var span = cloneDoc.createElement('span');
       span.textContent = inp.value || inp.getAttribute('value') || '';
       span.className = (inp.className || '') + ' archived-input';
+      span.setAttribute('data-archive-editable', 'true');
       span.style.cssText = 'display:inline-block;border-bottom:1px solid #ccc;min-width:60px;padding:2px 4px;font-family:inherit;';
       if (inp.parentNode) inp.parentNode.replaceChild(span, inp);
     });
@@ -287,6 +302,7 @@
       var div = cloneDoc.createElement('div');
       div.textContent = ta.value || '';
       div.className = (ta.className || '') + ' archived-textarea';
+      div.setAttribute('data-archive-editable', 'true');
       div.style.cssText = 'white-space:pre-wrap;border:1px solid #eee;padding:8px;font-family:inherit;border-radius:4px;';
       if (ta.parentNode) ta.parentNode.replaceChild(div, ta);
     });
@@ -323,8 +339,11 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    if (!r.ok) throw new Error('archive HTTP ' + r.status);
-    var j = await r.json();
+    var j = await r.json().catch(function () { return {}; });
+    // Antes se descartaba el cuerpo del error (p.ej. "Bucket R2 no
+    // configurado") y solo quedaba el código HTTP: no dejaba saber si el
+    // problema era de configuración o del propio dato enviado.
+    if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
     console.log('Snapshot archivado:', j);
     return j;
   }
