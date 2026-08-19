@@ -42,7 +42,10 @@
   function dataRows(tbody) {
     return Array.prototype.filter.call(tbody.querySelectorAll('tr'), function (tr) {
       if (tr.classList.contains('cat-row')) return false;
-      return tr.querySelector('[data-type="mat"]') || tr.querySelector('[data-type="labor"]');
+      // Presupuesto simple: celdas material/mano de obra marcadas con
+      // data-type. Presupuesto detallado (ver esFormatoDetallado más abajo):
+      // no llevan data-type, se identifican por su columna de código.
+      return tr.querySelector('[data-type="mat"]') || tr.querySelector('[data-type="labor"]') || tr.querySelector('td.codigo');
     });
   }
 
@@ -201,13 +204,15 @@
   }
 
   // Un presupuesto con muchos capítulos (cada uno añade su propia fila de
-  // cabecera) puede hacer que la tabla no quepa en una hoja A4 — la página
-  // simplemente crece porque no hay paginación real. El pie ("obreko" + nº
-  // de página) y el aviso de precios orientativos están clavados al fondo
-  // (position:absolute, calculado para una página de una sola hoja), así
-  // que en una página que ha crecido acaban solapados sobre el propio
-  // aviso en vez de ir debajo. Si la página se pasa de una hoja, se sueltan
-  // a flujo normal para que caigan justo después de la tabla, no encima.
+  // cabecera) puede hacer que la tabla no quepa en una hoja A4: al imprimir,
+  // el CSS de impresión (ver reformas.html, .p7-page) deja que la página
+  // fluya a tantas hojas físicas como haga falta, repitiendo la cabecera de
+  // columnas. Pero el pie ("obreko" + nº de página) y el aviso de precios
+  // orientativos están clavados al fondo (position:absolute, calculado para
+  // una página de una sola hoja), así que en una página que ha crecido
+  // acaban solapados sobre el propio aviso en vez de ir debajo de la última
+  // fila. Si la página se pasa de una hoja, se sueltan a flujo normal para
+  // que caigan justo después de la tabla, no encima.
   function evitarSolapeEnPaginaLarga(tbody) {
     var pagina = tbody.closest('.page');
     if (!pagina) return;
@@ -504,6 +509,14 @@
   function init() {
     var payload = readPayload();
     if (payload) showBanner(payload);
+
+    // Cubre también el caso de un presupuesto que ha crecido a mano (botón
+    // "+ Añadir partida") sin pasar nunca por la importación: se revisa otra
+    // vez justo antes de imprimir, no solo en el momento de importar.
+    var tbody = document.getElementById('budgetBody');
+    if (tbody) {
+      window.addEventListener('beforeprint', function () { evitarSolapeEnPaginaLarga(tbody); });
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

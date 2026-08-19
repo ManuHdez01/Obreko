@@ -387,6 +387,16 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   .page:last-child{page-break-after:auto;}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   [contenteditable]:hover,[contenteditable]:focus{outline:none!important;background:transparent!important;}
+
+  /* Presupuesto detallado: con muchas partidas/capítulos puede superar un
+     A4. En vez de recortarlo (overflow:hidden) o dejar que el motor de
+     impresión lo corte donde le parezca, se deja fluir a tantas hojas
+     físicas como haga falta, repitiendo la cabecera de columnas en cada
+     una y sin partir ninguna fila ni un capítulo de su primera partida. */
+  .p7-page{overflow:visible!important;min-height:0!important;}
+  .p7-table thead{display:table-header-group;}
+  .p7-table tbody tr{page-break-inside:avoid;break-inside:avoid;}
+  .p7-table tr.cat-row{page-break-after:avoid;break-after:avoid;}
 }
 .payment-items{display:flex;flex-direction:column;gap:5px;}
 .payment-item{display:flex;align-items:center;gap:10px;}
@@ -736,7 +746,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 <!-- ════════════════════════════════════════════════════════════════
      PAGE 7 — PRESUPUESTO DETALLADO
      ════════════════════════════════════════════════════════════════ -->
-<div class="page">
+<div class="page p7-page">
 
   <div class="p7-header">
     <div class="p7-header-tag">Detalle económico</div>
@@ -771,10 +781,10 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="ud" contenteditable="true">ud</td>
           <td class="cantidad" contenteditable="true">1</td>
           <td class="precio" contenteditable="true">—</td>
-          <td class="importe" data-type="importe">—</td>
+          <td class="importe">—</td>
           <td class="material-col" contenteditable="true">—</td>
           <td class="manoobra-col" contenteditable="true">—</td>
-          <td class="total-col" contenteditable="true" data-type="mat">—</td>
+          <td class="total-col">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <!-- Total ejecución material (suma de capítulos) -->
@@ -1262,18 +1272,22 @@ document.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(funct
 // Add budget row
 function addBudgetRow(){
   var tbody=document.getElementById('budgetBody');if(!tbody)return;
-  var n=tbody.querySelectorAll('tr:not(.p7-sub-row):not(.p7-iva-row):not(.p7-total-row)').length+1;
-  var tr=document.createElement('tr');tr.style.background=n%2===0?'#FAFAFA':'#fff';
-  var customCols=document.querySelectorAll('#budgetTable thead tr th[data-custom]').length;
-  var extra='';for(var ci=0;ci<customCols;ci++)extra+='<td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;font-size:8pt;color:#555;"></td>';
-  tr.innerHTML='<td style="padding:3mm;border:1px solid #E8E2D3;text-align:center;color:#BBB;font-size:7.5pt">'+n+'</td>'+
-    '<td contenteditable="true" style="padding:3mm;border:1px solid #E8E2D3;font-weight:600;color:#1A2236;font-size:8pt"></td>'+
-    '<td contenteditable="true" data-type="mat" data-row="'+n+'" style="padding:3mm;border:1px solid #E8E2D3;text-align:right;font-size:8pt"></td>'+
-    extra+
-    '<td style="padding:2mm;border:1px solid #E8E2D3;text-align:center"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0">×</button></td>';
-  tr.querySelectorAll('[data-type="mat"],[data-type="labor"]').forEach(function(el){el.addEventListener('input',calcBudget);});
-  var subRow=tbody.querySelector('.p7-sub-row');
-  subRow?tbody.insertBefore(tr,subRow):tbody.appendChild(tr);
+  var tr=document.createElement('tr');
+  tr.innerHTML=
+    '<td class="codigo" contenteditable="true">—</td>'+
+    '<td class="concept" contenteditable="true"></td>'+
+    '<td class="ud" contenteditable="true">ud</td>'+
+    '<td class="cantidad" contenteditable="true">1</td>'+
+    '<td class="precio" contenteditable="true">—</td>'+
+    '<td class="importe">—</td>'+
+    '<td class="material-col" contenteditable="true">—</td>'+
+    '<td class="manoobra-col" contenteditable="true">—</td>'+
+    '<td class="total-col">—</td>'+
+    '<td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>';
+  var referencia=tbody.querySelector('.p7-sub-row, .p7-iva-row, .p7-total-row');
+  referencia?tbody.insertBefore(tr,referencia):tbody.appendChild(tr);
+  if(typeof window.hookPresupuestoDetallado==='function')window.hookPresupuestoDetallado();
+  if(typeof window.calcBudget==='function')window.calcBudget();
 }
 function removeBudgetRow(btn){var tr=btn.closest('tr');if(tr){tr.parentNode.removeChild(tr);calcBudget();}}
 function toggleTotalsRow(id){var row=document.getElementById(id);if(!row)return;row.classList.toggle('row-hidden');}
@@ -1449,16 +1463,18 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
 <script src="_photo-zoom.js?v=20260902"></script>
 <script src="_budget-calc.js?v=20260902"></script>
 <script>
-// Pie del presupuesto detallado, igual que el Excel de origen:
-//   TOTAL EJECUCIÓN MATERIAL (lo que ya suma _budget-calc.js en #subtotal)
+// Cálculo del presupuesto detallado (estructura del Excel de origen:
+// código, ud, cantidad, precio, importe, material, mano de obra, total).
+// _budget-calc.js está pensado para la tabla simple (concepto + importe,
+// con material/mano de obra COMO PRECIO POR UNIDAD que hay que multiplicar
+// por cantidad) — aquí material/mano de obra ya son el importe de la línea,
+// así que necesita su propio motor en vez de reusar ese, o los duplicaría
+// aplicando una cantidad que ya está incluida.
+//   TOTAL EJECUCIÓN MATERIAL (suma de todas las líneas)
 //   + Beneficio industrial y gastos generales (% editable, por defecto 10%)
 //   = TOTAL PRESUPUESTO CONTRATA
 //   + IGIC/IVA — sobre la CONTRATA, no sobre la ejecución material
 //   = TOTAL PRESUPUESTO
-// _budget-calc.js ya calcula #subtotal (ejecución material) y, con la
-// fórmula genérica, pondría el impuesto directamente sobre eso — aquí se
-// corrige después: se recalculan #iva y #grand sobre la contrata en vez de
-// sobre la ejecución material.
 (function () {
   'use strict';
   function num(el) {
@@ -1468,45 +1484,117 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
     return isFinite(n) ? n : 0;
   }
   function fmt(n) {
+    if (!(n > 0)) return '—';
     var v = Math.round(n);
-    var texto = String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(/^/, v < 0 ? '-' : '');
-    return texto + ' €'; // igual que #subtotal, que ya lo pinta _budget-calc.js con € incluido
+    return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
-  function recalcularConBeneficioIndustrial() {
-    var em = num(document.getElementById('subtotal'));
+  function setText(el, txt) { if (el) el.textContent = txt; }
+
+  // Importe y Total de cada línea se derivan de Cantidad × Precio Unit. —
+  // no son campos editables directamente (ver colgroup/thead más arriba).
+  function recalcularFila(tr) {
+    var cantidadEl = tr.querySelector('td.cantidad');
+    var precioEl = tr.querySelector('td.precio');
+    if (!cantidadEl || !precioEl) return;
+    var importe = num(cantidadEl) * num(precioEl);
+    setText(tr.querySelector('td.importe'), fmt(importe));
+    setText(tr.querySelector('td.total-col'), fmt(importe));
+  }
+
+  function recalcularPresupuesto() {
+    var tbody = document.getElementById('budgetBody');
+    if (!tbody) return;
+    var acumMaterial = 0, acumManoObra = 0, acumTotal = 0, totalGeneral = 0;
+
+    Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function (tr) {
+      if (tr.classList.contains('cat-row')) {
+        acumMaterial = 0; acumManoObra = 0; acumTotal = 0;
+        return;
+      }
+      if (tr.classList.contains('subtotal-row')) {
+        var celdas = tr.querySelectorAll('td');
+        var n = celdas.length;
+        // últimas 4 celdas: material, mano de obra, total, hueco del botón borrar
+        setText(celdas[n - 4], fmt(acumMaterial));
+        setText(celdas[n - 3], fmt(acumManoObra));
+        setText(celdas[n - 2], fmt(acumTotal));
+        return;
+      }
+      if (tr.classList.contains('p7-footer-row')) return;
+      if (!tr.querySelector('td.codigo')) return;
+
+      recalcularFila(tr);
+      var material = num(tr.querySelector('td.material-col'));
+      var manoObra = num(tr.querySelector('td.manoobra-col'));
+      var total = num(tr.querySelector('td.total-col'));
+      acumMaterial += material; acumManoObra += manoObra; acumTotal += total;
+      totalGeneral += total;
+    });
+
+    setText(document.getElementById('subtotal'), fmt(totalGeneral) + ' €');
+
     var giPct = num(document.getElementById('giPct'));
-    var beneficio = Math.round(em * giPct / 100);
-    var contrata = em + beneficio;
+    var beneficio = Math.round(totalGeneral * giPct / 100);
+    var contrata = totalGeneral + beneficio;
     var taxRate = (typeof window.getTaxRate === 'function') ? window.getTaxRate() : 0.21;
     var impuesto = Math.round(contrata * taxRate);
     var total = contrata + impuesto;
-    var beneficioEl = document.getElementById('beneficioIndustrial');
-    var contrataEl = document.getElementById('totalContrata');
-    var ivaEl = document.getElementById('iva');
-    var grandEl = document.getElementById('grand');
-    if (beneficioEl) beneficioEl.textContent = fmt(beneficio);
-    if (contrataEl) contrataEl.textContent = fmt(contrata);
-    if (ivaEl) ivaEl.textContent = fmt(impuesto);
-    if (grandEl) grandEl.textContent = fmt(total);
+
+    setText(document.getElementById('beneficioIndustrial'), fmt(beneficio) + ' €');
+    setText(document.getElementById('totalContrata'), fmt(contrata) + ' €');
+    setText(document.getElementById('iva'), fmt(impuesto) + ' €');
+    setText(document.getElementById('grand'), fmt(total) + ' €');
   }
-  // _budget-calc.js instala su propio window.calcBudget en DOMContentLoaded
-  // (no al cargar el script), igual que este bloque tiene que esperar a lo
-  // mismo para no engancharse a una versión todavía sin instalar — y para
-  // que _budget-calc.js no nos pise el enganche instalándose después.
-  function engancharCalculoDeContrata() {
-    var original = window.calcBudget;
-    window.calcBudget = function () {
-      if (typeof original === 'function') original();
-      recalcularConBeneficioIndustrial();
-    };
+
+  function hookInputs() {
+    // Marca en la propiedad JS del elemento, no en un atributo/dataset: las
+    // filas importadas se clonan de la fila plantilla (cloneNode), y un
+    // dataset ya "enganchado" se clona también sin el listener real —
+    // dejaría las filas importadas sin recálculo. Una propiedad JS no se
+    // clona nunca, así que cada fila (también las clonadas) se re-engancha.
+    var selector = '#budgetBody td.cantidad, #budgetBody td.precio, #budgetBody td.material-col, #budgetBody td.manoobra-col';
+    Array.prototype.forEach.call(document.querySelectorAll(selector), function (el) {
+      if (el.__detalladoHooked) return;
+      el.__detalladoHooked = true;
+      el.addEventListener('input', recalcularPresupuesto);
+    });
     var giInput = document.getElementById('giPct');
-    if (giInput) giInput.addEventListener('input', window.calcBudget);
-    window.calcBudget(); // primer cálculo, para que no se quede en "—"
+    if (giInput && !giInput.__detalladoHooked) {
+      giInput.__detalladoHooked = true;
+      giInput.addEventListener('input', recalcularPresupuesto);
+    }
   }
+
+  function init() {
+    // Sustituye al motor genérico de _budget-calc.js para esta tabla: los
+    // botones + Añadir partida / + Columna llaman a window.calcBudget().
+    window.calcBudget = recalcularPresupuesto;
+    window.hookPresupuestoDetallado = hookInputs;
+
+    hookInputs();
+    recalcularPresupuesto();
+
+    // OJO: no llamar a recalcularPresupuesto() desde el observer — escribir
+    // el resultado (textContent) dispara childList y forma un bucle
+    // infinito. Solo engancha los inputs nuevos; el cálculo lo dispara el
+    // propio oninput de esas celdas (o el caller de addBudgetRow/import).
+    var body = document.getElementById('budgetBody');
+    if (body) {
+      var mo = new MutationObserver(function (records) {
+        var hasAdds = records.some(function (r) { return r.addedNodes && r.addedNodes.length > 0; });
+        if (hasAdds) hookInputs();
+      });
+      mo.observe(body, { childList: true, subtree: true });
+    }
+  }
+
+  // _budget-calc.js instala su propio window.calcBudget en DOMContentLoaded
+  // (no al cargar el script), así que este bloque espera a lo mismo para
+  // ejecutarse después y quedarse con la última palabra.
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', engancharCalculoDeContrata);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    engancharCalculoDeContrata();
+    init();
   }
 })();
 </script>
