@@ -89,6 +89,8 @@
         out = out.replace(/\bsin\s+(IVA|IGIC)\b/gi, 'sin ' + otherLabel);
         // Patrón: "(sin IVA)" / "(sin IGIC)"
         out = out.replace(/\(\s*sin\s+(IVA|IGIC)\s*\)/gi, '(sin ' + otherLabel + ')');
+        // Patrón: "IVA incluido" / "IGIC incluido" (pie del presupuesto detallado)
+        out = out.replace(/\b(IVA|IGIC)\s+incluido\b/gi, otherLabel + ' incluido');
         if (out !== t) edits.push({ node: n, value: out });
       }
       edits.forEach((e) => { e.node.nodeValue = e.value; });

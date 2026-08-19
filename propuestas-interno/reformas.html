@@ -229,7 +229,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .p7-header-sub{font-size:7.5pt;color:var(--slate);margin-top:3mm;}
 .p7-table-wrap{padding:0 15mm;}
 .p7-table{width:100%;border-collapse:collapse;font-size:8pt;}
-.p7-table thead tr{background:var(--navy);color:#fff;}
+.p7-table thead tr{background:var(--blue);color:#fff;}
 .p7-table thead th{
   padding:4mm 3mm;font-family:var(--sans);
   font-size:6.5pt;text-transform:uppercase;letter-spacing:.12em;
@@ -244,14 +244,17 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .p7-table td.desc{color:#555;width:34%;}
 .p7-table td.money{text-align:right;width:12%;}
 .p7-table td.total-cell{text-align:right;font-weight:600;color:var(--navy);width:12%;}
-.p7-table tr.cat-row{background:var(--navy) !important;}
+.p7-table tr.cat-row{background:var(--blue) !important;}
 .p7-table tr.cat-row td{color:#fff;font-family:var(--sans);font-size:7pt;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:2.5mm 3mm;border-bottom:none;}
 
 /* Presupuesto detallado, estructura idéntica a la pestaña del Excel de
    origen: código, descripción, ud, cantidad, precio, importe, notas y el
    desglose material / mano de obra, con TOTAL al final. */
 .p7-table.p7-table--boq{font-size:7pt;table-layout:fixed;}
-.p7-table.p7-table--boq thead th{padding:3mm 2mm;font-size:6pt;}
+.p7-table.p7-table--boq thead th{
+  padding:2.2mm 1.3mm;font-size:5.5pt;letter-spacing:.02em;
+  line-height:1.2;word-wrap:break-word;vertical-align:middle;
+}
 .p7-table.p7-table--boq tbody td{padding:2.5mm 2mm;font-size:7pt;line-height:1.4;word-wrap:break-word;}
 .p7-table td.codigo{color:var(--slate);font-size:6.5pt;}
 .p7-table td.ud{color:#555;text-align:center;}
@@ -394,7 +397,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
 .next-step-text{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);line-height:1.5;padding-top:4px;}
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260831">
+<link rel="stylesheet" href="_text-bump.css?v=20260902">
 </head>
 <body>
 
@@ -742,9 +745,9 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   <div class="p7-table-wrap">
     <table class="p7-table p7-table--boq" id="budgetTable">
       <colgroup>
-        <col style="width:10mm"><col style="width:40mm"><col style="width:8mm"><col style="width:12mm">
-        <col style="width:14mm"><col style="width:14mm"><col style="width:28mm">
-        <col style="width:14mm"><col style="width:14mm"><col style="width:16mm"><col style="width:8mm">
+        <col style="width:10mm"><col style="width:55mm"><col style="width:8mm"><col style="width:12mm">
+        <col style="width:16mm"><col style="width:16mm">
+        <col style="width:16mm"><col style="width:16mm"><col style="width:18mm"><col style="width:8mm">
       </colgroup>
       <thead>
         <tr>
@@ -754,11 +757,10 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <th class="right" contenteditable="true">Cantidad</th>
           <th class="right" contenteditable="true">Precio Unit.</th>
           <th class="right" contenteditable="true">Importe</th>
-          <th contenteditable="true">Notas / Proveedor</th>
           <th class="right" contenteditable="true">Material (€)</th>
           <th class="right" contenteditable="true">M. obra (€)</th>
           <th class="right" contenteditable="true">TOTAL (€)</th>
-          <th style="background:#1A2236;border:1px solid #283650"></th>
+          <th style="background:var(--blue);border:1px solid #4a68bf"></th>
         </tr>
       </thead>
       <tbody id="budgetBody">
@@ -769,25 +771,34 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <td class="cantidad" contenteditable="true">1</td>
           <td class="precio" contenteditable="true">—</td>
           <td class="importe" data-type="importe">—</td>
-          <td class="notas" contenteditable="true"></td>
           <td class="material-col" contenteditable="true">—</td>
           <td class="manoobra-col" contenteditable="true">—</td>
           <td class="total-col" contenteditable="true" data-type="mat">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
-        <!-- Subtotal -->
-        <tr class="p7-sub-row" id="rowSubMat">
-          <td colspan="9" data-tax-descriptor style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
+        <!-- Total ejecución material (suma de capítulos) -->
+        <tr class="p7-sub-row p7-footer-row" id="rowSubMat">
+          <td colspan="8" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> TOTAL EJECUCIÓN MATERIAL (suma de capítulos)</td>
           <td style="text-align:right;font-weight:600;font-size:8pt;color:var(--navy);"><span id="subtotal">—</span></td>
         </tr>
-        <!-- IVA -->
-        <tr class="p7-iva-row" id="rowIva">
-          <td colspan="9" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
+        <!-- Beneficio industrial y gastos generales -->
+        <tr class="p7-iva-row p7-footer-row" id="rowBeneficio">
+          <td colspan="8" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowBeneficio')" title="Mostrar / ocultar">👁</button> Beneficio industrial y gastos generales (<input type="number" id="giPct" value="10" min="0" max="100" step="0.5" style="width:30px;text-align:right;border:none;border-bottom:1px solid #ccc;background:transparent;font:inherit;color:inherit;padding:0">% s/ Ejecución Material)</td>
+          <td style="text-align:right;color:var(--slate);"><span id="beneficioIndustrial">—</span></td>
+        </tr>
+        <!-- Total presupuesto contrata (sin impuesto) -->
+        <tr class="p7-sub-row p7-footer-row" id="rowContrata">
+          <td colspan="8" style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;">TOTAL PRESUPUESTO CONTRATA (<span data-tax-descriptor>sin IVA</span>)</td>
+          <td style="text-align:right;font-weight:600;font-size:8pt;color:var(--navy);"><span id="totalContrata">—</span></td>
+        </tr>
+        <!-- Impuesto -->
+        <tr class="p7-iva-row p7-footer-row" id="rowIva">
+          <td colspan="8" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
           <td style="text-align:right;color:var(--slate);"><span id="iva">—</span></td>
         </tr>
         <!-- Grand total -->
-        <tr class="p7-total-row">
-          <td colspan="9" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
+        <tr class="p7-total-row p7-footer-row">
+          <td colspan="8" style="text-align:right;letter-spacing:.08em;">TOTAL PRESUPUESTO (<span data-tax-descriptor>IVA incluido</span>)</td>
           <td style="text-align:right;"><span id="grand">—</span></td>
         </tr>
       </tbody>
@@ -1426,16 +1437,78 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
 })();
 </script>
 
-<script src="_crm-button.js?v=20260831"></script>
-<script src="_tax-selector.js?v=20260831"></script>
-<script src="_ai-wand.js?v=20260831"></script>
-<script src="_page-numbers.js?v=20260831"></script>
-<script src="_page-delete.js?v=20260831"></script>
-<script src="_form-field-manager.js?v=20260831"></script>
-<script src="_budget-wrap.js?v=20260831"></script>
-<script src="_photo-zoom.js?v=20260831"></script>
-<script src="_budget-calc.js?v=20260831"></script>
-<script src="_budget-format.js?v=20260831"></script>
+<script src="_crm-button.js?v=20260902"></script>
+<script src="_tax-selector.js?v=20260902"></script>
+<script src="_ai-wand.js?v=20260902"></script>
+<script src="_page-numbers.js?v=20260902"></script>
+<script src="_page-delete.js?v=20260902"></script>
+<script src="_form-field-manager.js?v=20260902"></script>
+<script src="_budget-wrap.js?v=20260902"></script>
+<script src="_photo-zoom.js?v=20260902"></script>
+<script src="_budget-calc.js?v=20260902"></script>
+<script>
+// Pie del presupuesto detallado, igual que el Excel de origen:
+//   TOTAL EJECUCIÓN MATERIAL (lo que ya suma _budget-calc.js en #subtotal)
+//   + Beneficio industrial y gastos generales (% editable, por defecto 10%)
+//   = TOTAL PRESUPUESTO CONTRATA
+//   + IGIC/IVA — sobre la CONTRATA, no sobre la ejecución material
+//   = TOTAL PRESUPUESTO
+// _budget-calc.js ya calcula #subtotal (ejecución material) y, con la
+// fórmula genérica, pondría el impuesto directamente sobre eso — aquí se
+// corrige después: se recalculan #iva y #grand sobre la contrata en vez de
+// sobre la ejecución material.
+(function () {
+  'use strict';
+  function num(el) {
+    if (!el) return 0;
+    var t = (el.value != null ? el.value : el.textContent) || '';
+    var n = parseFloat(t.replace(/[^\d,-]/g, '').replace(',', '.'));
+    return isFinite(n) ? n : 0;
+  }
+  function fmt(n) {
+    var v = Math.round(n);
+    var texto = String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(/^/, v < 0 ? '-' : '');
+    return texto + ' €'; // igual que #subtotal, que ya lo pinta _budget-calc.js con € incluido
+  }
+  function recalcularConBeneficioIndustrial() {
+    var em = num(document.getElementById('subtotal'));
+    var giPct = num(document.getElementById('giPct'));
+    var beneficio = Math.round(em * giPct / 100);
+    var contrata = em + beneficio;
+    var taxRate = (typeof window.getTaxRate === 'function') ? window.getTaxRate() : 0.21;
+    var impuesto = Math.round(contrata * taxRate);
+    var total = contrata + impuesto;
+    var beneficioEl = document.getElementById('beneficioIndustrial');
+    var contrataEl = document.getElementById('totalContrata');
+    var ivaEl = document.getElementById('iva');
+    var grandEl = document.getElementById('grand');
+    if (beneficioEl) beneficioEl.textContent = fmt(beneficio);
+    if (contrataEl) contrataEl.textContent = fmt(contrata);
+    if (ivaEl) ivaEl.textContent = fmt(impuesto);
+    if (grandEl) grandEl.textContent = fmt(total);
+  }
+  // _budget-calc.js instala su propio window.calcBudget en DOMContentLoaded
+  // (no al cargar el script), igual que este bloque tiene que esperar a lo
+  // mismo para no engancharse a una versión todavía sin instalar — y para
+  // que _budget-calc.js no nos pise el enganche instalándose después.
+  function engancharCalculoDeContrata() {
+    var original = window.calcBudget;
+    window.calcBudget = function () {
+      if (typeof original === 'function') original();
+      recalcularConBeneficioIndustrial();
+    };
+    var giInput = document.getElementById('giPct');
+    if (giInput) giInput.addEventListener('input', window.calcBudget);
+    window.calcBudget(); // primer cálculo, para que no se quede en "—"
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', engancharCalculoDeContrata);
+  } else {
+    engancharCalculoDeContrata();
+  }
+})();
+</script>
+<script src="_budget-format.js?v=20260902"></script>
 
 <!-- Add/remove fields específico para estructura p4-fields (Ficha del inmueble) -->
 <style>
@@ -1497,6 +1570,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260831"></script>
+<script src="_import-budget.js?v=20260902"></script>
 </body>
 </html>

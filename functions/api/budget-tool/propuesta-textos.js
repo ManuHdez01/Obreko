@@ -143,6 +143,7 @@ CÓMO ESCRIBIR
 - Menciona proveedores solo por el beneficio para el cliente (plazo, disponibilidad, servicio). Nunca precios de compra, márgenes ni costes internos.
 - Nada de superlativos vacíos ("máxima calidad", "excelencia"). Frases que un cliente pueda comprobar.
 - IMPORTANTE: nunca digas que el presupuesto es "cerrado", "fijo" ni que "el precio que se firma es el que se paga". El presupuesto es una ESTIMACIÓN: si hay que decir algo sobre eso, di que es una estimación seria y detallada, y que cualquier desviación se comunica al cliente de inmediato, antes de ejecutar el trabajo que la origine.
+- No uses la raya "—" en ningún texto: separa las ideas en frases distintas o con una coma.
 
 OBJETIVO Y TRABAJOS
 Escribe el "objetivo de la intervención" de esta obra: un párrafo adaptado a lo que se va a hacer de verdad, no el texto de una plantilla. Este bloque describe la obra, no la vende: usa vocabulario técnico de construcción (superficies, sistemas — fontanería, electricidad, saneamiento, ACS —, materiales, estado de conservación) en vez de adjetivos comerciales ("precioso", "moderno", "acogedor"). Precisión de profesional que ha visto la obra, sin dejar de ser comprensible para el cliente.

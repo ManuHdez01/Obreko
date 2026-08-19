@@ -72,13 +72,26 @@
   function volcarPresupuesto(tbody, filas) {
     if (!tbody || !filas || !filas.length) return;
 
+    // Filas de totales que nunca se tocan: las de siempre (rowSubMat/rowIva/
+    // .p7-total-row, para las plantillas con el pie simple de 3 filas) más
+    // cualquier fila marcada .p7-footer-row (el pie ampliado del presupuesto
+    // detallado, con 5 filas: ejecución material, beneficio industrial,
+    // contrata, impuesto y total). Sin esto último, las dos filas nuevas se
+    // borrarían en cada importación por no estar en la lista.
     var especiales = [];
-    ['rowSubMat', 'rowIva'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el && el.parentNode === tbody) especiales.push(el);
+    var vistas = [];
+    function marcarEspecial(el) {
+      if (el && el.parentNode === tbody && vistas.indexOf(el) === -1) { vistas.push(el); especiales.push(el); }
+    }
+    ['rowSubMat', 'rowIva'].forEach(function (id) { marcarEspecial(document.getElementById(id)); });
+    marcarEspecial(tbody.querySelector('.p7-total-row'));
+    Array.prototype.forEach.call(tbody.querySelectorAll('.p7-footer-row'), marcarEspecial);
+    // especiales[0] marca dónde se insertan las partidas nuevas: tiene que
+    // ser la primera fila de totales en el documento, no la primera que se
+    // haya detectado (el orden de detección de arriba no es el orden real).
+    especiales.sort(function (a, b) {
+      return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1;
     });
-    var totalRow = tbody.querySelector('.p7-total-row');
-    if (totalRow && totalRow.parentNode === tbody) especiales.push(totalRow);
     var referencia = especiales[0] || null;
 
     var plantilla = dataRows(tbody)[0];
@@ -151,7 +164,6 @@
     setCell(fila.querySelector('td.cantidad'), formatearCantidad(item.cantidad));
     setCell(fila.querySelector('td.precio'), item.precioUnit > 0 ? fmtMoney(item.precioUnit) : '—');
     setCell(fila.querySelector('td.importe'), item.importe > 0 ? fmtMoney(item.importe) : '—');
-    setCell(fila.querySelector('td.notas'), item.notas || '');
     setCell(fila.querySelector('td.material-col'), item.material > 0 ? fmtMoney(item.material) : '—');
     setCell(fila.querySelector('td.manoobra-col'), item.manoObra > 0 ? fmtMoney(item.manoObra) : '—');
     var total = fila.querySelector('td.total-col');
@@ -177,7 +189,7 @@
     label.colSpan = 5; // Código + Descripción + Ud + Cantidad + Precio Unit.
     label.textContent = 'Subtotal Capítulo ' + numeroCapitulo;
     tr.appendChild(label);
-    [fmtMoney(sumaImporte), '', fmtMoney(sumaMaterial), fmtMoney(sumaManoObra), fmtMoney(sumaImporte)].forEach(function (texto) {
+    [fmtMoney(sumaImporte), fmtMoney(sumaMaterial), fmtMoney(sumaManoObra), fmtMoney(sumaImporte)].forEach(function (texto) {
       var td = document.createElement('td');
       td.textContent = texto;
       tr.appendChild(td);
