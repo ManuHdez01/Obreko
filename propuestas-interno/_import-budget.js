@@ -181,8 +181,12 @@
     setCell(fila.querySelector('td.importe'), item.importe > 0 ? fmtMoneyDecimal(item.importe) : '—');
     setCell(fila.querySelector('td.material-col'), item.material > 0 ? fmtMoneyDecimal(item.material) : '—');
     setCell(fila.querySelector('td.manoobra-col'), item.manoObra > 0 ? fmtMoneyDecimal(item.manoObra) : '—');
+    // Total = Material + Mano de obra de esa partida, redondeado a entero
+    // (no una copia del Importe): reformas.html recalcula esto en cuanto
+    // carga, esto es solo el valor inicial antes de ese primer cálculo.
     var total = fila.querySelector('td.total-col');
-    setCell(total, item.importe > 0 ? fmtMoneyDecimal(item.importe) : '—');
+    var sumaTotal = (Number(item.material) || 0) + (Number(item.manoObra) || 0);
+    setCell(total, sumaTotal > 0 ? fmtMoney(sumaTotal) : '—');
     if (total) total.addEventListener('input', function () {
       if (typeof window.calcBudget === 'function') window.calcBudget();
     });

@@ -270,6 +270,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   font-variant-numeric:tabular-nums;text-align:right;
 }
 .p7-table tr.subtotal-row td.subtotal-label{text-align:right;text-transform:uppercase;letter-spacing:.04em;font-size:6.5pt;}
+.p7-table tr.subtotal-row td:last-child{background:#fff;border-top:none;border-bottom:none;}
 .p7-sub-row td{
   padding:3.5mm 3mm;border-top:2px solid var(--sand2);
   background:#F9F7F4;font-size:8pt;
@@ -1502,15 +1503,20 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   }
   function setText(el, txt) { if (el) el.textContent = txt; }
 
-  // Importe y Total de cada línea se derivan de Cantidad × Precio Unit. —
-  // no son campos editables directamente (ver colgroup/thead más arriba).
+  // Importe = Cantidad × Precio Unit., con céntimos — no es un campo
+  // editable directamente (ver colgroup/thead más arriba). Total, en
+  // cambio, es la suma de Material + Mano de obra de esa misma partida,
+  // redondeada a euros enteros: es el importe "limpio" que luego se suma
+  // en el subtotal de capítulo y en el total general.
   function recalcularFila(tr) {
     var cantidadEl = tr.querySelector('td.cantidad');
     var precioEl = tr.querySelector('td.precio');
     if (!cantidadEl || !precioEl) return;
     var importe = num(cantidadEl) * num(precioEl);
     setText(tr.querySelector('td.importe'), fmtDecimal(importe));
-    setText(tr.querySelector('td.total-col'), fmtDecimal(importe));
+    var material = num(tr.querySelector('td.material-col'));
+    var manoObra = num(tr.querySelector('td.manoobra-col'));
+    setText(tr.querySelector('td.total-col'), fmt(material + manoObra));
   }
 
   function recalcularPresupuesto() {
@@ -1672,6 +1678,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260905"></script>
+<script src="_import-budget.js?v=20260906"></script>
 </body>
 </html>
