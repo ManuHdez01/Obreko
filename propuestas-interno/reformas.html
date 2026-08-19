@@ -246,6 +246,26 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .p7-table td.total-cell{text-align:right;font-weight:600;color:var(--navy);width:12%;}
 .p7-table tr.cat-row{background:var(--navy) !important;}
 .p7-table tr.cat-row td{color:#fff;font-family:var(--sans);font-size:7pt;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:2.5mm 3mm;border-bottom:none;}
+
+/* Presupuesto detallado, estructura idéntica a la pestaña del Excel de
+   origen: código, descripción, ud, cantidad, precio, importe, notas y el
+   desglose material / mano de obra, con TOTAL al final. */
+.p7-table.p7-table--boq{font-size:7pt;table-layout:fixed;}
+.p7-table.p7-table--boq thead th{padding:3mm 2mm;font-size:6pt;}
+.p7-table.p7-table--boq tbody td{padding:2.5mm 2mm;font-size:7pt;line-height:1.4;word-wrap:break-word;}
+.p7-table td.codigo{color:var(--slate);font-size:6.5pt;}
+.p7-table td.ud{color:#555;text-align:center;}
+.p7-table td.cantidad,.p7-table td.precio,.p7-table td.importe,.p7-table td.material-col,.p7-table td.manoobra-col,.p7-table td.total-col{
+  text-align:right;font-variant-numeric:tabular-nums;color:#444;
+}
+.p7-table td.total-col{font-weight:700;color:var(--navy);}
+.p7-table td.notas{color:#888;font-style:italic;font-size:6.5pt;line-height:1.45;}
+.p7-table tr.subtotal-row td{
+  background:#EDEFF7;font-weight:700;color:var(--navy);
+  border-top:1px solid #C9CDE0;border-bottom:2px solid #C9CDE0;
+  font-variant-numeric:tabular-nums;
+}
+.p7-table tr.subtotal-row td.subtotal-label{text-align:right;text-transform:uppercase;letter-spacing:.04em;font-size:6.5pt;}
 .p7-sub-row td{
   padding:3.5mm 3mm;border-top:2px solid var(--sand2);
   background:#F9F7F4;font-size:8pt;
@@ -374,7 +394,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .next-step-n{width:26px;height:26px;background:var(--yellow);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:9px;font-weight:700;color:var(--navy);}
 .next-step-text{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.85);line-height:1.5;padding-top:4px;}
 </style>
-<link rel="stylesheet" href="_text-bump.css?v=20260830">
+<link rel="stylesheet" href="_text-bump.css?v=20260831">
 </head>
 <body>
 
@@ -720,77 +740,54 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
   </div>
 
   <div class="p7-table-wrap">
-    <table class="p7-table" id="budgetTable">
+    <table class="p7-table p7-table--boq" id="budgetTable">
+      <colgroup>
+        <col style="width:10mm"><col style="width:40mm"><col style="width:8mm"><col style="width:12mm">
+        <col style="width:14mm"><col style="width:14mm"><col style="width:28mm">
+        <col style="width:14mm"><col style="width:14mm"><col style="width:16mm"><col style="width:8mm">
+      </colgroup>
       <thead>
         <tr>
-          <th style="width:20px;">#</th>
-          <th style="width:74%;" contenteditable="true">Concepto</th>
-          <th class="right" style="width:20%;" contenteditable="true">Importe €</th>
-                              <th style="width:8mm;background:#1A2236;border:1px solid #283650"></th>
+          <th contenteditable="true">Código</th>
+          <th contenteditable="true">Descripción</th>
+          <th contenteditable="true">Ud</th>
+          <th class="right" contenteditable="true">Cantidad</th>
+          <th class="right" contenteditable="true">Precio Unit.</th>
+          <th class="right" contenteditable="true">Importe</th>
+          <th contenteditable="true">Notas / Proveedor</th>
+          <th class="right" contenteditable="true">Material (€)</th>
+          <th class="right" contenteditable="true">M. obra (€)</th>
+          <th class="right" contenteditable="true">TOTAL (€)</th>
+          <th style="background:#1A2236;border:1px solid #283650"></th>
         </tr>
       </thead>
       <tbody id="budgetBody">
         <tr>
-          <td class="num">1</td>
+          <td class="codigo" contenteditable="true">1.1</td>
           <td class="concept" contenteditable="true">Demolición y preparación</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="1">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">2</td>
-          <td class="concept" contenteditable="true">Albañilería</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="2">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">3</td>
-          <td class="concept" contenteditable="true">Fontanería</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="3">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">4</td>
-          <td class="concept" contenteditable="true">Electricidad</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="4">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">5</td>
-          <td class="concept" contenteditable="true">Solados y alicatados</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="5">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">6</td>
-          <td class="concept" contenteditable="true">Carpintería</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="6">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">7</td>
-          <td class="concept" contenteditable="true">Pintura</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="7">—</td>
-          <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
-        </tr>
-        <tr>
-          <td class="num">8</td>
-          <td class="concept" contenteditable="true">Limpieza y entrega</td>
-          <td class="money" contenteditable="true" data-type="mat" data-row="8">—</td>
+          <td class="ud" contenteditable="true">ud</td>
+          <td class="cantidad" contenteditable="true">1</td>
+          <td class="precio" contenteditable="true">—</td>
+          <td class="importe" data-type="importe">—</td>
+          <td class="notas" contenteditable="true"></td>
+          <td class="material-col" contenteditable="true">—</td>
+          <td class="manoobra-col" contenteditable="true">—</td>
+          <td class="total-col" contenteditable="true" data-type="mat">—</td>
           <td style="padding:2mm;border:1px solid #E8E2D3;text-align:center;vertical-align:middle"><button onclick="removeBudgetRow(this)" style="background:none;border:none;cursor:pointer;color:#C62828;font-size:13pt;line-height:1;padding:0" title="Eliminar fila">×</button></td>
         </tr>
         <!-- Subtotal -->
         <tr class="p7-sub-row" id="rowSubMat">
-          <td colspan="2" data-tax-descriptor style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
+          <td colspan="9" data-tax-descriptor style="text-align:right;font-weight:600;color:var(--navy);letter-spacing:.05em;"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowSubMat')" title="Mostrar / ocultar">👁</button> SUBTOTAL (sin IVA)</td>
           <td style="text-align:right;font-weight:600;font-size:8pt;color:var(--navy);"><span id="subtotal">—</span></td>
         </tr>
         <!-- IVA -->
         <tr class="p7-iva-row" id="rowIva">
-          <td colspan="2" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
+          <td colspan="9" style="text-align:right;color:var(--slate);"><button class="toggle-row-btn" onclick="toggleTotalsRow('rowIva')" title="Mostrar / ocultar">👁</button> <span data-tax-label>IVA 21%</span></td>
           <td style="text-align:right;color:var(--slate);"><span id="iva">—</span></td>
         </tr>
         <!-- Grand total -->
         <tr class="p7-total-row">
-          <td colspan="2" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
+          <td colspan="9" style="text-align:right;letter-spacing:.08em;">TOTAL</td>
           <td style="text-align:right;"><span id="grand">—</span></td>
         </tr>
       </tbody>
@@ -1429,16 +1426,16 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
 })();
 </script>
 
-<script src="_crm-button.js?v=20260830"></script>
-<script src="_tax-selector.js?v=20260830"></script>
-<script src="_ai-wand.js?v=20260830"></script>
-<script src="_page-numbers.js?v=20260830"></script>
-<script src="_page-delete.js?v=20260830"></script>
-<script src="_form-field-manager.js?v=20260830"></script>
-<script src="_budget-wrap.js?v=20260830"></script>
-<script src="_photo-zoom.js?v=20260830"></script>
-<script src="_budget-calc.js?v=20260830"></script>
-<script src="_budget-format.js?v=20260830"></script>
+<script src="_crm-button.js?v=20260831"></script>
+<script src="_tax-selector.js?v=20260831"></script>
+<script src="_ai-wand.js?v=20260831"></script>
+<script src="_page-numbers.js?v=20260831"></script>
+<script src="_page-delete.js?v=20260831"></script>
+<script src="_form-field-manager.js?v=20260831"></script>
+<script src="_budget-wrap.js?v=20260831"></script>
+<script src="_photo-zoom.js?v=20260831"></script>
+<script src="_budget-calc.js?v=20260831"></script>
+<script src="_budget-format.js?v=20260831"></script>
 
 <!-- Add/remove fields específico para estructura p4-fields (Ficha del inmueble) -->
 <style>
@@ -1500,6 +1497,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260830"></script>
+<script src="_import-budget.js?v=20260831"></script>
 </body>
 </html>

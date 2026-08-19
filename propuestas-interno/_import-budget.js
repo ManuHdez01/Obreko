@@ -83,6 +83,12 @@
 
     var plantilla = dataRows(tbody)[0];
     if (!plantilla) return;
+    // Presupuesto detallado: la misma estructura que la pestaña del Excel de
+    // origen (código, ud, cantidad, precio, notas, material, mano de obra).
+    // Se detecta por la propia plantilla, así este script sigue sirviendo
+    // sin cambios a las otras plantillas que solo llevan Concepto + Importe.
+    var esFormatoDetallado = !!plantilla.querySelector('td.codigo');
+    var columnasReales = plantilla.children.length - 1; // menos el botón de borrar
     plantilla = plantilla.cloneNode(true);
 
     // Vacía el cuerpo de datos (partidas + posibles cabeceras de una
@@ -91,31 +97,93 @@
       if (especiales.indexOf(tr) === -1) tr.remove();
     });
 
-    agruparPorCapitulo(filas).forEach(function (grupo) {
+    agruparPorCapitulo(filas).forEach(function (grupo, gi) {
       var cab = document.createElement('tr');
       cab.className = 'cat-row';
       var celda = document.createElement('td');
-      celda.colSpan = 3;
+      celda.colSpan = columnasReales;
       celda.textContent = grupo.capitulo;
       cab.appendChild(celda);
       tbody.insertBefore(cab, referencia);
 
-      grupo.items.forEach(function (item) {
+      grupo.items.forEach(function (item, ii) {
         var fila = plantilla.cloneNode(true);
-        setCell(conceptCell(fila), item.desc || '');
-        var mat = fila.querySelector('[data-type="mat"]');
-        setCell(mat, item.mat > 0 ? fmtMoney(item.mat) : '—');
-        var labor = fila.querySelector('[data-type="labor"]');
-        if (labor) setCell(labor, '—');
-        if (mat) mat.addEventListener('input', function () {
-          if (typeof window.calcBudget === 'function') window.calcBudget();
-        });
+        if (esFormatoDetallado) {
+          rellenarFilaDetallada(fila, item, (gi + 1) + '.' + (ii + 1));
+        } else {
+          setCell(conceptCell(fila), item.desc || '');
+          var mat = fila.querySelector('[data-type="mat"]');
+          setCell(mat, item.mat > 0 ? fmtMoney(item.mat) : '—');
+          var labor = fila.querySelector('[data-type="labor"]');
+          if (labor) setCell(labor, '—');
+          if (mat) mat.addEventListener('input', function () {
+            if (typeof window.calcBudget === 'function') window.calcBudget();
+          });
+        }
         tbody.insertBefore(fila, referencia);
       });
+
+      if (esFormatoDetallado) {
+        tbody.insertBefore(crearFilaSubtotalCapitulo(grupo, gi + 1), referencia);
+      }
     });
 
     renumerarDatos(tbody);
     evitarSolapeEnPaginaLarga(tbody);
+  }
+
+  // Redondea a 2 decimales como mucho y usa coma española; sin decimales de
+  // sobra para cantidades enteras (1, no 1,00).
+  function formatearCantidad(n) {
+    var v = Number(n) || 0;
+    if (!v) return '—';
+    var redondeado = Math.round(v * 100) / 100;
+    return (redondeado % 1 === 0 ? String(redondeado) : redondeado.toFixed(2)).replace('.', ',');
+  }
+
+  // Rellena una fila del presupuesto detallado (código, descripción, ud,
+  // cantidad, precio, importe, notas, material, mano de obra, total) — la
+  // misma estructura que la pestaña "Presupuesto Detallado" del Excel.
+  function rellenarFilaDetallada(fila, item, codigo) {
+    setCell(fila.querySelector('td.codigo'), codigo);
+    setCell(fila.querySelector('td.concept'), item.desc || '');
+    setCell(fila.querySelector('td.ud'), item.ud || 'ud');
+    setCell(fila.querySelector('td.cantidad'), formatearCantidad(item.cantidad));
+    setCell(fila.querySelector('td.precio'), item.precioUnit > 0 ? fmtMoney(item.precioUnit) : '—');
+    setCell(fila.querySelector('td.importe'), item.importe > 0 ? fmtMoney(item.importe) : '—');
+    setCell(fila.querySelector('td.notas'), item.notas || '');
+    setCell(fila.querySelector('td.material-col'), item.material > 0 ? fmtMoney(item.material) : '—');
+    setCell(fila.querySelector('td.manoobra-col'), item.manoObra > 0 ? fmtMoney(item.manoObra) : '—');
+    var total = fila.querySelector('td.total-col');
+    setCell(total, item.importe > 0 ? fmtMoney(item.importe) : '—');
+    if (total) total.addEventListener('input', function () {
+      if (typeof window.calcBudget === 'function') window.calcBudget();
+    });
+  }
+
+  // Fila "Subtotal Capítulo N" tras las partidas de cada capítulo, igual que
+  // en el Excel: suma de importe, material y mano de obra de ese capítulo.
+  function crearFilaSubtotalCapitulo(grupo, numeroCapitulo) {
+    var sumaImporte = 0, sumaMaterial = 0, sumaManoObra = 0;
+    grupo.items.forEach(function (it) {
+      sumaImporte += Number(it.importe) || 0;
+      sumaMaterial += Number(it.material) || 0;
+      sumaManoObra += Number(it.manoObra) || 0;
+    });
+    var tr = document.createElement('tr');
+    tr.className = 'subtotal-row';
+    var label = document.createElement('td');
+    label.className = 'subtotal-label';
+    label.colSpan = 5; // Código + Descripción + Ud + Cantidad + Precio Unit.
+    label.textContent = 'Subtotal Capítulo ' + numeroCapitulo;
+    tr.appendChild(label);
+    [fmtMoney(sumaImporte), '', fmtMoney(sumaMaterial), fmtMoney(sumaManoObra), fmtMoney(sumaImporte)].forEach(function (texto) {
+      var td = document.createElement('td');
+      td.textContent = texto;
+      tr.appendChild(td);
+    });
+    tr.appendChild(document.createElement('td')); // hueco bajo la columna de borrar
+    return tr;
   }
 
   // Un presupuesto con muchos capítulos (cada uno añade su propia fila de

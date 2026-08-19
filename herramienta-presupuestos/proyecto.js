@@ -1269,12 +1269,25 @@ async function enviarAPropuesta() {
   // material y mano de obra es información interna y no sale del despacho.
   // "Concepto" es el capítulo (agrupa varias filas bajo el mismo epígrafe,
   // como en el Excel de origen); "Descripción" es la partida en sí.
+  // Estructura idéntica a la pestaña "Presupuesto Detallado" del Excel de
+  // origen: código de partida, descripción, ud, cantidad, precio unitario,
+  // importe, notas, y el desglose de material / mano de obra visible al
+  // cliente (decisión expresa: antes se ocultaba, ahora se muestra igual
+  // que en el Excel que revisa el ingeniero).
   const rows = (project.items || []).map((it) => {
     const capitulo = String(it.capitulo || '').trim();
+    const importe = Math.round(Number(it.totalPrice) || 0);
     return {
       concept: capitulo || 'Otros trabajos',
       desc: it.name,
-      mat: Math.round(Number(it.totalPrice) || 0),
+      ud: it.unit || 'ud',
+      cantidad: Number(it.quantity) || 0,
+      precioUnit: Math.round(Number(it.unitPrice) || 0),
+      importe: importe,
+      notas: String(it.reasoning || '').slice(0, 300),
+      material: Math.round(Number(it.material) || 0),
+      manoObra: Math.round(Number(it.manoObra) || 0),
+      mat: importe, // usado por el total del banner de importación
       labor: 0,
     };
   });
@@ -1285,8 +1298,10 @@ async function enviarAPropuesta() {
     ref: project.ref || '',
     clientName: project.clientName || '',
     // Datos de la ficha para la portada y la ficha técnica de la propuesta.
-    // Aquí NO va nada interno: ni costes, ni márgenes, ni proveedores de
-    // compra, ni el reparto material / mano de obra.
+    // Sigue sin ir nada de coste interno ni proveedores de compra: el
+    // desglose material/mano de obra de cada partida SÍ se envía (ver
+    // rows arriba), por decisión expresa de mostrarlo igual que en el
+    // Excel de origen.
     address: project.address || '',
     tipo: project.tipo || '',
     region: project.region || 'tenerife',
