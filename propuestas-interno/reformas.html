@@ -396,8 +396,22 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
      una y sin partir ninguna fila ni un capítulo de su primera partida. */
   .p7-page{overflow:visible!important;min-height:0!important;}
   .p7-table thead{display:table-header-group;}
+  /* Un poco de aire por encima de la cabecera de columnas: como se repite
+     al principio de cada hoja física en la que continúa la tabla, si no
+     tuviera relleno propio quedaría pegada al borde superior del papel. */
+  .p7-table thead th{padding-top:6mm;}
   .p7-table tbody tr{page-break-inside:avoid;break-inside:avoid;}
   .p7-table tr.cat-row{page-break-after:avoid;break-after:avoid;}
+
+  /* La última columna (botón de borrar fila) es solo para editar en
+     pantalla: no debe imprimirse ni dejar hueco en blanco a la derecha.
+     Se excluyen dos tipos de fila cuyo último hijo NO es ese hueco:
+     .cat-row (una única celda con colspan, sería la vez primera Y última)
+     y .p7-footer-row (label + el propio importe, p.ej. el total final —
+     ocultarlo borraría la cifra, no un hueco). */
+  .p7-table colgroup col:last-child{display:none;}
+  .p7-table thead th:last-child,
+  .p7-table tbody tr:not(.cat-row):not(.p7-footer-row) td:last-child{display:none;}
 }
 .payment-items{display:flex;flex-direction:column;gap:5px;}
 .payment-item{display:flex;align-items:center;gap:10px;}
