@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>obreko — Contrato de ejecución de obra</title>
+<style>
+/* ── FONT FACES (local, mismas que el resto de propuestas) ─────────── */
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-italic.woff2') format('woff2');font-style:italic;font-weight:400;}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair.woff2') format('woff2');font-style:normal;font-weight:400;}
+@font-face{font-family:'DM Sans';src:url('fonts/dm-sans.woff2') format('woff2');font-style:normal;font-weight:400;}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1A2236;
+  --yellow:#FED544;
+  --sand:#F1EDE0;
+  --blue:#5C7CD9;
+  --slate:#8896B3;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',Arial,sans-serif;
+}
+body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
+
+/* ── AVISO INTERNO (no sale impresa) ────────────────────────────────── */
+#legal-notice{
+  position:sticky;top:0;left:0;right:0;z-index:9998;
+  background:var(--yellow);color:var(--navy);
+  font-family:var(--sans);font-size:11px;line-height:1.5;
+  padding:9px 20px;text-align:center;font-weight:600;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+@media print{#legal-notice{display:none !important;}}
+
+/* ── BOTÓN IMPRIMIR ──────────────────────────────────────────────────── */
+#print-btn{
+  position:fixed;top:56px;right:20px;z-index:9999;
+  background:var(--navy);color:#fff;border:none;
+  padding:9px 18px;font-family:var(--sans);font-size:11px;
+  letter-spacing:.07em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,0,0,.3);transition:background .2s;
+}
+#print-btn:hover{background:var(--yellow);color:var(--navy);}
+@media print{#print-btn{display:none !important;}}
+
+/* ── DOCUMENTO ───────────────────────────────────────────────────────── */
+.doc-wrap{padding:32px 20px 60px;display:flex;justify-content:center;}
+.doc{
+  width:210mm;max-width:100%;background:#fff;
+  box-shadow:0 4px 32px rgba(0,0,0,.18);
+  padding:20mm 18mm;
+}
+@media print{
+  @page{size:A4;margin:18mm 16mm;}
+  body{background:#fff;}
+  .doc-wrap{padding:0;display:block;}
+  .doc{width:auto;box-shadow:none;padding:0;}
+}
+
+[contenteditable]{outline:none;cursor:text;}
+[contenteditable]:focus{outline:2px solid var(--yellow);outline-offset:2px;}
+[contenteditable]:hover{background:rgba(254,213,68,.07);}
+[contenteditable]:empty::before{content:attr(data-placeholder);color:#CCC;pointer-events:none;}
+
+.doc-tag{font-family:var(--sans);font-size:7pt;text-transform:uppercase;letter-spacing:.3em;color:var(--blue);}
+.doc-title{font-family:var(--serif);font-style:italic;font-size:20pt;color:var(--navy);margin-top:2mm;}
+.doc-ref{font-size:8.5pt;color:var(--slate);margin-top:3mm;}
+.doc-rule{height:2px;width:32mm;background:var(--yellow);margin:6mm 0 8mm;}
+
+.doc h2{
+  font-family:var(--sans);font-size:9pt;font-weight:700;color:var(--navy);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin:8mm 0 3mm;padding-bottom:2mm;border-bottom:1px solid var(--sand);
+}
+.doc p, .doc li{font-size:9pt;line-height:1.75;color:#333;margin-bottom:2.5mm;}
+.doc ul{padding-left:5mm;margin-bottom:2.5mm;}
+.doc strong{color:var(--navy);}
+
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:8mm;margin:4mm 0 2mm;}
+.party-card{background:var(--sand);border-left:3px solid var(--yellow);padding:5mm 6mm;}
+.party-role{font-family:var(--sans);font-size:6.5pt;text-transform:uppercase;letter-spacing:.14em;color:var(--blue);font-weight:700;margin-bottom:2mm;}
+.party-card p{font-size:8pt;line-height:1.65;margin-bottom:1.5mm;}
+
+.price-box{background:var(--sand);border-left:3px solid var(--yellow);padding:5mm 6mm;margin:3mm 0;}
+.price-row{display:flex;justify-content:space-between;font-size:8.5pt;padding:1.2mm 0;}
+.price-row.total{font-weight:700;color:var(--navy);border-top:1px solid #ddd;margin-top:1.5mm;padding-top:2mm;}
+
+.signatures{display:grid;grid-template-columns:1fr 1fr;gap:12mm;margin-top:14mm;}
+.sign-block{text-align:center;}
+.sign-line{border-top:1px solid var(--navy);margin-top:22mm;padding-top:2mm;}
+.sign-role{font-size:7.5pt;text-transform:uppercase;letter-spacing:.1em;color:var(--slate);}
+.sign-name{font-size:8.5pt;margin-top:1mm;}
+
+.doc-footer{margin-top:12mm;padding-top:4mm;border-top:1px solid var(--sand);display:flex;justify-content:space-between;align-items:center;}
+.footer-logo{font-family:var(--serif);font-style:italic;font-size:8pt;opacity:.3;color:var(--navy);}
+</style>
+</head>
+<body>
+
+<div id="legal-notice">⚠ Plantilla estándar de contrato, pendiente de revisión legal — contrasta el texto con un abogado o gestoría antes de usarlo con un cliente real. Revisa también los datos entre corchetes.</div>
+<button id="print-btn" onclick="window.print()">Imprimir / PDF</button>
+
+<div class="doc-wrap">
+<div class="doc">
+
+  <div class="doc-tag">obreko · Pronexo Habitat SLL</div>
+  <div class="doc-title">Contrato de ejecución de obra</div>
+  <div class="doc-ref">Referencia del presupuesto: <span data-slot="ref" contenteditable="true" data-placeholder="OBR...">—</span> · Fecha: <span data-slot="fecha" contenteditable="true">—</span></div>
+  <div class="doc-rule"></div>
+
+  <p contenteditable="true">En <span data-slot="lugarFirma" contenteditable="true" data-placeholder="ciudad">[ciudad]</span>, a <span data-slot="fecha2" contenteditable="true">—</span>, se reúnen las partes que a continuación se identifican, con capacidad legal suficiente para suscribir el presente contrato de ejecución de obra, y</p>
+
+  <div class="parties">
+    <div class="party-card">
+      <div class="party-role">De una parte, el contratista</div>
+      <p><strong>Pronexo Habitat SLL</strong> (obreko)</p>
+      <p>CIF: B26657734</p>
+      <p data-slot="domicilioContratista">Domicilio social: Calle Oteiza 26, 1 izquierda [completar ciudad/CP]</p>
+      <p>Establecimiento permanente en Canarias: Camino Lomo Juan de La Guardia nº5, Icod el Alto, Los Realejos, Santa Cruz de Tenerife</p>
+    </div>
+    <div class="party-card">
+      <div class="party-role">De otra parte, el cliente</div>
+      <p data-slot="clienteNombre" contenteditable="true" data-placeholder="Nombre y apellidos / razón social">[nombre del cliente]</p>
+      <p>DNI/NIF: <span data-slot="clienteDni" contenteditable="true" data-placeholder="—">—</span></p>
+      <p data-slot="clienteDireccion" contenteditable="true" data-placeholder="Dirección del cliente">[dirección del cliente]</p>
+    </div>
+  </div>
+
+  <h2>Exponen</h2>
+  <p contenteditable="true">Que el Cliente ha solicitado al Contratista la ejecución de los trabajos descritos en el presupuesto de referencia <span data-slot="refInline" contenteditable="true">—</span>, y que ambas partes, de común acuerdo, formalizan su ejecución con arreglo a las siguientes</p>
+
+  <h2>Cláusulas</h2>
+
+  <p><strong>Primera. Objeto del contrato.</strong></p>
+  <p contenteditable="true">El Contratista se obliga a ejecutar, en el inmueble sito en <span data-slot="direccionObra" contenteditable="true" data-placeholder="dirección de la obra">[dirección de la obra]</span>, los trabajos descritos en el presupuesto de referencia, correspondientes a <span data-slot="tituloObra" contenteditable="true">[tipo de obra]</span>, y agrupados en los siguientes capítulos:</p>
+  <ul data-slot="listaCapitulos" contenteditable="true"><li>[los capítulos del presupuesto se completan al importar]</li></ul>
+
+  <p><strong>Segunda. Precio y forma de pago.</strong></p>
+  <div class="price-box">
+    <div class="price-row"><span>Presupuesto de ejecución (sin impuesto)</span><span data-slot="baseImponible">—</span></div>
+    <div class="price-row"><span data-slot="etiquetaImpuesto">Impuesto aplicable</span><span data-slot="importeImpuesto">—</span></div>
+    <div class="price-row total"><span>Total contrato</span><span data-slot="totalContrato">—</span></div>
+  </div>
+  <p contenteditable="true">El importe anterior corresponde a una estimación seria y detallada elaborada a partir de las mediciones y precios del presupuesto de referencia. Cualquier desviación sobre dicho importe, ya sea por cambios solicitados por el Cliente o por circunstancias sobrevenidas durante la ejecución, se comunicará al Cliente de forma inmediata y por escrito antes de ejecutar el trabajo que la origine, no procediendo su facturación sin la conformidad expresa del Cliente.</p>
+  <p contenteditable="true">La forma de pago se acuerda del siguiente modo: <span contenteditable="true" data-placeholder="[detallar hitos de pago: anticipo, hitos intermedios, liquidación final]">[detallar hitos de pago: anticipo, hitos intermedios, liquidación final]</span>.</p>
+
+  <p><strong>Tercera. Plazo de ejecución.</strong></p>
+  <p contenteditable="true">Los trabajos se ejecutarán en un plazo estimado de <span contenteditable="true" data-placeholder="[nº semanas/meses]">[plazo]</span> a contar desde la fecha de inicio acordada entre las partes, salvo causas de fuerza mayor, retrasos en suministros no imputables al Contratista, o modificaciones solicitadas por el Cliente que afecten al plazo, que se comunicarán tan pronto se conozcan.</p>
+
+  <p><strong>Cuarta. Obligaciones del Contratista.</strong></p>
+  <ul contenteditable="true">
+    <li>Ejecutar los trabajos conforme a las condiciones pactadas, con los materiales y calidades reflejados en el presupuesto.</li>
+    <li>Gestionar los residuos de la obra conforme a la normativa vigente.</li>
+    <li>Mantener informado al Cliente del avance de la obra y de cualquier incidencia relevante.</li>
+    <li>Entregar la obra limpia y en condiciones de uso a la finalización de los trabajos.</li>
+  </ul>
+
+  <p><strong>Quinta. Obligaciones del Cliente.</strong></p>
+  <ul contenteditable="true">
+    <li>Facilitar el acceso al inmueble en los horarios acordados para la correcta ejecución de la obra.</li>
+    <li>Disponer de los suministros de agua y electricidad necesarios para la ejecución de los trabajos, salvo pacto distinto.</li>
+    <li>Abonar el precio en los plazos y forma acordados en la cláusula segunda.</li>
+  </ul>
+
+  <p><strong>Sexta. Modificaciones y obra adicional.</strong></p>
+  <p contenteditable="true">Cualquier modificación sobre el alcance descrito en la cláusula primera deberá acordarse por escrito entre las partes antes de su ejecución, indicando su repercusión en precio y plazo.</p>
+
+  <p><strong>Séptima. Garantías.</strong></p>
+  <p contenteditable="true">El Contratista dispone de seguro de Responsabilidad Civil con límite de 600.000 € para la cobertura de los trabajos ejecutados. Sin perjuicio de lo anterior, resultan de aplicación los plazos de garantía legalmente establecidos para este tipo de obras.</p>
+
+  <p><strong>Octava. Resolución del contrato.</strong></p>
+  <p contenteditable="true">El presente contrato podrá resolverse por mutuo acuerdo de las partes, por incumplimiento grave de cualquiera de ellas de sus obligaciones, o por causa de fuerza mayor que imposibilite la ejecución de la obra, procediendo en tal caso a la liquidación de los trabajos efectivamente ejecutados hasta la fecha de resolución.</p>
+
+  <p><strong>Novena. Protección de datos.</strong></p>
+  <p contenteditable="true">Los datos personales facilitados por el Cliente serán tratados por Pronexo Habitat SLL con la finalidad de gestionar la relación contractual, conforme al Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), no siendo cedidos a terceros salvo obligación legal.</p>
+
+  <p><strong>Décima. Jurisdicción y legislación aplicable.</strong></p>
+  <p contenteditable="true">Para cuanto no esté previsto en el presente contrato, las partes se someten a la legislación española aplicable, y para la resolución de cualquier controversia, a los Juzgados y Tribunales del domicilio del Cliente cuando este tenga la condición de consumidor, o del lugar de ejecución de la obra en los demás casos.</p>
+
+  <p contenteditable="true">Y en prueba de conformidad con cuanto antecede, ambas partes firman el presente contrato por duplicado y a un solo efecto, en el lugar y fecha indicados en el encabezamiento.</p>
+
+  <div class="signatures">
+    <div class="sign-block">
+      <div class="sign-line"></div>
+      <div class="sign-role">Por el Contratista</div>
+      <div class="sign-name">Pronexo Habitat SLL</div>
+    </div>
+    <div class="sign-block">
+      <div class="sign-line"></div>
+      <div class="sign-role">Por el Cliente</div>
+      <div class="sign-name" data-slot="clienteNombreFirma">[nombre del cliente]</div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <div class="footer-logo">obreko</div>
+    <div style="font-size:7pt;color:var(--slate)">Pronexo Habitat SLL · B26657734</div>
+  </div>
+
+</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function fmtMoney(n) {
+    var v = Math.round(Number(n) || 0);
+    var texto = String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(/^/, v < 0 ? '-' : '');
+    return texto + ' €';
+  }
+
+  function formatDateEs(d) {
+    var months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return d.getDate() + ' de ' + months[d.getMonth()] + ' de ' + d.getFullYear();
+  }
+
+  function fill(name, value) {
+    if (!value) return;
+    document.querySelectorAll('[data-slot="' + name + '"]').forEach(function (el) {
+      el.textContent = value;
+    });
+  }
+
+  function init() {
+    var hoy = formatDateEs(new Date());
+    fill('fecha', hoy);
+    fill('fecha2', hoy);
+
+    var raw;
+    try { raw = localStorage.getItem('obreko_contrato_data'); } catch (e) {}
+    if (!raw) return;
+    var data;
+    try { data = JSON.parse(raw); } catch (e) { return; }
+    if (!data || data.v !== 1) return;
+
+    fill('ref', data.ref);
+    fill('refInline', data.ref);
+    fill('clienteNombre', data.clientName);
+    fill('clienteNombreFirma', data.clientName);
+    fill('clienteDireccion', data.clientAddress);
+    fill('direccionObra', data.clientAddress);
+    fill('tituloObra', data.title);
+
+    if (data.region === 'Canarias') {
+      fill('domicilioContratista', 'Domicilio a efectos del presente contrato: Camino Lomo Juan de La Guardia nº5, Icod el Alto, Los Realejos, Santa Cruz de Tenerife');
+    }
+
+    if (Array.isArray(data.capitulos) && data.capitulos.length) {
+      var ul = document.querySelector('[data-slot="listaCapitulos"]');
+      if (ul) {
+        ul.innerHTML = '';
+        data.capitulos.forEach(function (c) {
+          var li = document.createElement('li');
+          li.textContent = c;
+          ul.appendChild(li);
+        });
+      }
+    }
+
+    var base = 0, total = 0;
+    if (data.baseText) { var mb = data.baseText.replace(/[^\d]/g, ''); base = parseInt(mb, 10) || 0; }
+    if (data.amountText) { var mt = data.amountText.replace(/[^\d]/g, ''); total = parseInt(mt, 10) || 0; }
+    if (base) fill('baseImponible', fmtMoney(base));
+    if (total) fill('totalContrato', fmtMoney(total));
+    if (base && total && total > base) fill('importeImpuesto', fmtMoney(total - base));
+    if (data.taxLabel) fill('etiquetaImpuesto', data.taxLabel);
+
+    // El contrato se abre una vez y queda archivado en su propia pestaña:
+    // el payload no se borra de localStorage para poder reabrirlo si se
+    // cierra la pestaña por error, a diferencia de la importación de
+    // presupuesto (que sí se consume al confirmar).
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+</body>
+</html>
