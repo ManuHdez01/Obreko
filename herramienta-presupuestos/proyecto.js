@@ -1,5 +1,5 @@
 // Lógica de proyecto.html — ficha completa de proyecto.
-const { $, escapeHtml, fmtMoney, fmtPct, toast, api } = window.BT;
+const { $, escapeHtml, fmtMoney, fmtMoneyDecimal, fmtPct, toast, api } = window.BT;
 
 let project = null;
 let economics = null;
@@ -305,7 +305,7 @@ function renderSearchResults(data) {
     const rows = r.items.map((it, i) => `
       <tr>
         <td>${it.url ? `<a href="${escapeHtml(it.url)}" target="_blank" rel="noopener" style="color:var(--navy)">${escapeHtml(it.name)}</a>` : escapeHtml(it.name)}</td>
-        <td class="r">${fmtMoney(it.price)}${it.unit ? '/' + escapeHtml(it.unit) : ''}</td>
+        <td class="r">${fmtMoneyDecimal(it.price)}${it.unit ? '/' + escapeHtml(it.unit) : ''}</td>
         <td class="r"><button class="btn btn-sm btn-pri" onclick='addItemFromSearch(${JSON.stringify(JSON.stringify({ ...it, supplier: r.supplierName }))})'>+ Añadir</button></td>
       </tr>`).join('');
     return `
@@ -435,10 +435,10 @@ function renderItems() {
           </td>
           <td>${escapeHtml(it.supplier || '—')}</td>
           <td class="r"><span class="cant-cell"><input class="num" type="number" min="0" step="0.1" value="${it.quantity}" onchange="updItem(${i},'quantity',this.value)"><span class="cant-ud">${escapeHtml(it.unit || 'ud')}</span></span></td>
-          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
-          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
-          <td class="r"><input class="num" type="number" min="0" step="1" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
-          <td class="r"><strong>${fmtMoney(it.totalPrice)}</strong></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.unitPrice}" onchange="updItem(${i},'unitPrice',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.material || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'material',this.value)"></td>
+          <td class="r"><input class="num" type="number" min="0" step="0.01" value="${it.manoObra || ''}" placeholder="—"${estiloReparto(it)} onchange="updItem(${i},'manoObra',this.value)"></td>
+          <td class="r"><strong>${fmtMoneyDecimal(it.totalPrice)}</strong></td>
           <td class="r"><input class="num" type="number" min="0" step="1" value="${it.realCost || ''}" placeholder="—" onchange="updItem(${i},'realCost',this.value)"></td>
           <td class="r" style="color:${devColor}">${dev == null ? '—' : (dev > 0 ? '+' : '') + fmtMoney(dev)}</td>
           <td class="r" style="white-space:nowrap">
@@ -551,10 +551,14 @@ function updItem(i, field, value) {
   // Un reparto corregido a mano deja de ser una estimación de la IA.
   if (field === 'material' || field === 'manoObra') it.repartoEstimado = false;
   if (field === 'name' || field === 'estancia') it[field] = value;
-  // Los euros van enteros; la cantidad sí admite decimales (49,16 m²).
-  else if (field === 'quantity') it[field] = Number(value) || 0;
-  else it[field] = Math.round(Number(value) || 0);
-  it.totalPrice = Math.round((Number(it.quantity) || 0) * (Number(it.unitPrice) || 0));
+  // Precio unitario, material y mano de obra admiten céntimos (8,50 €/m²
+  // no se puede redondear a 8 o 9 sin desviar el total); la cantidad
+  // también (49,16 m²). Solo los subtotales/totales agregados van en
+  // euros enteros (ver fmtMoney en _common.js).
+  else if (field === 'quantity' || field === 'unitPrice' || field === 'material' || field === 'manoObra' || field === 'realCost') {
+    it[field] = Math.round((Number(value) || 0) * 100) / 100;
+  } else it[field] = Math.round(Number(value) || 0);
+  it.totalPrice = Math.round((Number(it.quantity) || 0) * (Number(it.unitPrice) || 0) * 100) / 100;
   renderItems();
   saveProject(false);
 }
@@ -1276,17 +1280,20 @@ async function enviarAPropuesta() {
   // que en el Excel que revisa el ingeniero).
   const rows = (project.items || []).map((it) => {
     const capitulo = String(it.capitulo || '').trim();
-    const importe = Math.round(Number(it.totalPrice) || 0);
+    // Precio unitario, importe, material y mano de obra viajan con céntimos
+    // hasta la propuesta — solo los subtotales/totales agregados que
+    // calcula la propia plantilla se redondean a entero.
+    const importe = Math.round((Number(it.totalPrice) || 0) * 100) / 100;
     return {
       concept: capitulo || 'Otros trabajos',
       desc: it.name,
       ud: it.unit || 'ud',
       cantidad: Number(it.quantity) || 0,
-      precioUnit: Math.round(Number(it.unitPrice) || 0),
+      precioUnit: Math.round((Number(it.unitPrice) || 0) * 100) / 100,
       importe: importe,
       notas: String(it.reasoning || '').slice(0, 300),
-      material: Math.round(Number(it.material) || 0),
-      manoObra: Math.round(Number(it.manoObra) || 0),
+      material: Math.round((Number(it.material) || 0) * 100) / 100,
+      manoObra: Math.round((Number(it.manoObra) || 0) * 100) / 100,
       mat: importe, // usado por el total del banner de importación
       labor: 0,
     };
@@ -1524,14 +1531,14 @@ function applyAssistantAction(action) {
     project.items = project.items || [];
     for (const it of action.items) {
       const qty = Number(it.quantity) || 1;
-      const price = Math.round(Number(it.unitPrice) || 0);
+      const price = Math.round((Number(it.unitPrice) || 0) * 100) / 100;
       project.items.push({
         name: String(it.name || ''), supplier: String(it.supplier || 'estimación'),
         capitulo: String(it.capitulo || ''),
         material: Number(it.material) || 0, manoObra: Number(it.manoObra) || 0,
         repartoEstimado: it.repartoEstimado === true,
         unit: String(it.unit || 'ud'), unitPrice: price, quantity: qty,
-        totalPrice: Math.round(qty * price), reasoning: String(it.reasoning || ''),
+        totalPrice: Math.round(qty * price * 100) / 100, reasoning: String(it.reasoning || ''),
       });
     }
     renderItems();
@@ -1565,7 +1572,7 @@ function renderLibrary(items) {
     <tr>
       <td>${escapeHtml(l.name)} ${l.timesUsed ? `<span class="badge badge-muted">${l.timesUsed}×</span>` : ''}
         ${l.supplier ? `<div style="font-size:10.5px;color:var(--slate)">${escapeHtml(l.supplier)}</div>` : ''}</td>
-      <td class="r">${fmtMoney(l.unitPrice)}/${escapeHtml(l.unit || 'ud')}</td>
+      <td class="r">${fmtMoneyDecimal(l.unitPrice)}/${escapeHtml(l.unit || 'ud')}</td>
       <td class="r" style="white-space:nowrap">
         <button class="btn btn-sm btn-pri" onclick='usarDeBiblioteca(${JSON.stringify(JSON.stringify(l))})'>+ Añadir</button>
         <button class="btn btn-sm btn-danger" onclick="borrarDeBiblioteca('${escapeHtml(l.id)}')">×</button>
@@ -1826,7 +1833,7 @@ function abrirMontarTexto(prefillText) {
         <table class="tbl">${items.map((it) => `
           <tr><td>${escapeHtml(it.name)}${it.reasoning ? `<div style="font-size:10px;color:var(--slate)">${escapeHtml(it.reasoning)}</div>` : ''}</td>
           <td class="r">${it.quantity} ${escapeHtml(it.unit || 'ud')}</td>
-          <td class="r">${fmtMoney(it.unitPrice)}</td></tr>`).join('')}</table>
+          <td class="r">${fmtMoneyDecimal(it.unitPrice)}</td></tr>`).join('')}</table>
         <button class="btn btn-pri" style="margin-top:10px" id="composeApply">Añadir las ${items.length} partidas al proyecto</button>`;
       prev.querySelector('#composeApply').addEventListener('click', async () => {
         applyAssistantAction({ type: 'add_items', items });
@@ -1876,7 +1883,7 @@ function renderReview(data) {
         <tr>
           <td>${escapeHtml(m.name)}<div style="font-size:10.5px;color:var(--slate)">${escapeHtml(m.reason)}</div></td>
           <td class="r">${m.quantity} ${escapeHtml(m.unit || 'ud')}</td>
-          <td class="r">${fmtMoney(m.unitPrice)}</td>
+          <td class="r">${fmtMoneyDecimal(m.unitPrice)}</td>
           <td class="r"><button class="btn btn-sm btn-pri" onclick='anadirFaltante(${JSON.stringify(JSON.stringify(m))}, this)'>+ Añadir</button></td>
         </tr>`).join('')}</table>` : ''}
     ${warnings.length ? `<div class="notice">${warnings.map(escapeHtml).join('<br>')}</div>` : ''}
@@ -1976,8 +1983,8 @@ function buildInformeHtml({ p, e, review, bench }) {
     <tr>
       <td>${escapeHtml(it.name)}</td>
       <td style="text-align:right">${it.quantity} ${escapeHtml(it.unit || 'ud')}</td>
-      <td style="text-align:right">${fmtMoney(it.unitPrice)}</td>
-      <td style="text-align:right">${fmtMoney(it.totalPrice)}</td>
+      <td style="text-align:right">${fmtMoneyDecimal(it.unitPrice)}</td>
+      <td style="text-align:right">${fmtMoneyDecimal(it.totalPrice)}</td>
     </tr>`).join('');
 
   const strengths = review && Array.isArray(review.strengths) ? review.strengths : [];
@@ -1989,7 +1996,7 @@ function buildInformeHtml({ p, e, review, bench }) {
     <tr>
       <td>${escapeHtml(m.name)}<br><span style="font-size:10px;color:#5b6472">${escapeHtml(m.reason || '')}</span></td>
       <td style="text-align:right">${m.quantity} ${escapeHtml(m.unit || 'ud')}</td>
-      <td style="text-align:right">${fmtMoney(m.unitPrice)}</td>
+      <td style="text-align:right">${fmtMoneyDecimal(m.unitPrice)}</td>
     </tr>`).join('');
 
   const market = bench && bench.market ? bench.market : null;

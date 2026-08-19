@@ -12,13 +12,27 @@ window.BT = (function () {
     }[c]));
   }
 
-  // En los presupuestos se trabaja con euros enteros: nada de céntimos. Se
-  // compone a mano porque el formato español por defecto deja las cifras de
-  // cuatro dígitos sin punto de miles (3078 en vez de 3.078).
+  // Los subtotales y totales finales van en euros enteros: nada de
+  // céntimos, para que la cifra que ve el cliente sea limpia. Se compone a
+  // mano porque el formato español por defecto deja las cifras de cuatro
+  // dígitos sin punto de miles (3078 en vez de 3.078).
   function fmtMoney(n) {
     const v = Math.round(Number(n) || 0);
     const entera = String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     return (v < 0 ? '-' : '') + entera + ' €';
+  }
+
+  // Precio unitario, importe, material y mano de obra por partida SÍ
+  // admiten céntimos (un precio de 8,50 €/m² no se puede redondear a 8 o 9
+  // sin desviar el total) — solo los subtotales/totales agregados se
+  // redondean a entero con fmtMoney. Sin decimales de sobra si no los
+  // tiene (450, no 450,00).
+  function fmtMoneyDecimal(n) {
+    const v = Math.round((Number(n) || 0) * 100) / 100;
+    const partes = Math.abs(v).toFixed(2).split('.');
+    const entera = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const texto = partes[1] === '00' ? entera : entera + ',' + partes[1];
+    return (v < 0 ? '-' : '') + texto + ' €';
   }
 
   function fmtPct(n) {
@@ -217,6 +231,6 @@ window.BT = (function () {
     panel.querySelector('#gaSend').addEventListener('click', send);
   }
 
-  return { $, escapeHtml, fmtMoney, fmtPct, toast, api, logout, initAuth, mountAssistant };
+  return { $, escapeHtml, fmtMoney, fmtMoneyDecimal, fmtPct, toast, api, logout, initAuth, mountAssistant };
 })();
 window.logout = window.BT.logout;

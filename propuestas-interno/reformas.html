@@ -1483,10 +1483,22 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
     var n = parseFloat(t.replace(/[^\d,-]/g, '').replace(',', '.'));
     return isFinite(n) ? n : 0;
   }
+  // Subtotales de capítulo y totales agregados: euros enteros, para que la
+  // cifra final que ve el cliente sea limpia.
   function fmt(n) {
     if (!(n > 0)) return '—';
     var v = Math.round(n);
     return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  // Precio unitario / importe / total POR PARTIDA sí llevan céntimos (un
+  // precio de 8,50 €/m² no se puede redondear a 8 o 9 sin desviar el
+  // total). Sin decimales de sobra si no los tiene (450, no 450,00).
+  function fmtDecimal(n) {
+    if (!(n > 0)) return '—';
+    var v = Math.round(n * 100) / 100;
+    var partes = v.toFixed(2).split('.');
+    var entera = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return partes[1] === '00' ? entera : entera + ',' + partes[1];
   }
   function setText(el, txt) { if (el) el.textContent = txt; }
 
@@ -1497,8 +1509,8 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
     var precioEl = tr.querySelector('td.precio');
     if (!cantidadEl || !precioEl) return;
     var importe = num(cantidadEl) * num(precioEl);
-    setText(tr.querySelector('td.importe'), fmt(importe));
-    setText(tr.querySelector('td.total-col'), fmt(importe));
+    setText(tr.querySelector('td.importe'), fmtDecimal(importe));
+    setText(tr.querySelector('td.total-col'), fmtDecimal(importe));
   }
 
   function recalcularPresupuesto() {
@@ -1660,6 +1672,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260904"></script>
+<script src="_import-budget.js?v=20260905"></script>
 </body>
 </html>

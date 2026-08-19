@@ -32,6 +32,18 @@
     return String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(/^/, v < 0 ? '-' : '');
   }
 
+  // Precio unitario, importe, material y mano de obra POR PARTIDA sí llevan
+  // céntimos (vienen así desde la herramienta de presupuestos) — solo el
+  // subtotal de capítulo y los totales agregados se redondean a entero con
+  // fmtMoney. Sin decimales de sobra si no los tiene (450, no 450,00).
+  function fmtMoneyDecimal(n) {
+    var v = Math.round((Number(n) || 0) * 100) / 100;
+    var partes = Math.abs(v).toFixed(2).split('.');
+    var entera = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    var texto = partes[1] === '00' ? entera : entera + ',' + partes[1];
+    return (v < 0 ? '-' : '') + texto;
+  }
+
   function setCell(cell, value) {
     if (!cell) return;
     var input = cell.tagName === 'INPUT' ? cell : cell.querySelector('input');
@@ -165,12 +177,12 @@
     setCell(fila.querySelector('td.concept'), item.desc || '');
     setCell(fila.querySelector('td.ud'), item.ud || 'ud');
     setCell(fila.querySelector('td.cantidad'), formatearCantidad(item.cantidad));
-    setCell(fila.querySelector('td.precio'), item.precioUnit > 0 ? fmtMoney(item.precioUnit) : '—');
-    setCell(fila.querySelector('td.importe'), item.importe > 0 ? fmtMoney(item.importe) : '—');
-    setCell(fila.querySelector('td.material-col'), item.material > 0 ? fmtMoney(item.material) : '—');
-    setCell(fila.querySelector('td.manoobra-col'), item.manoObra > 0 ? fmtMoney(item.manoObra) : '—');
+    setCell(fila.querySelector('td.precio'), item.precioUnit > 0 ? fmtMoneyDecimal(item.precioUnit) : '—');
+    setCell(fila.querySelector('td.importe'), item.importe > 0 ? fmtMoneyDecimal(item.importe) : '—');
+    setCell(fila.querySelector('td.material-col'), item.material > 0 ? fmtMoneyDecimal(item.material) : '—');
+    setCell(fila.querySelector('td.manoobra-col'), item.manoObra > 0 ? fmtMoneyDecimal(item.manoObra) : '—');
     var total = fila.querySelector('td.total-col');
-    setCell(total, item.importe > 0 ? fmtMoney(item.importe) : '—');
+    setCell(total, item.importe > 0 ? fmtMoneyDecimal(item.importe) : '—');
     if (total) total.addEventListener('input', function () {
       if (typeof window.calcBudget === 'function') window.calcBudget();
     });
