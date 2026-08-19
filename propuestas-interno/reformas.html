@@ -21,6 +21,7 @@
   --sand:#F1EDE0;
   --sand2:#E8E2D3;
   --blue:#5C7CD9;
+  --navy-medio:#2D3A56;
   --slate:#8896B3;
   --serif:'Playfair Display',Georgia,serif;
   --sans:'DM Sans',Arial,sans-serif;
@@ -229,7 +230,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .p7-header-sub{font-size:7.5pt;color:var(--slate);margin-top:3mm;}
 .p7-table-wrap{padding:0 15mm;}
 .p7-table{width:100%;border-collapse:collapse;font-size:8pt;}
-.p7-table thead tr{background:var(--navy);color:#fff;}
+.p7-table thead tr{background:var(--navy-medio);color:#fff;}
 .p7-table thead th{
   padding:4mm 3mm;font-family:var(--sans);
   font-size:6.5pt;text-transform:uppercase;letter-spacing:.12em;
@@ -266,7 +267,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
 .p7-table tr.subtotal-row td{
   background:#EDEFF7;font-weight:700;color:var(--navy);
   border-top:1px solid #C9CDE0;border-bottom:2px solid #C9CDE0;
-  font-variant-numeric:tabular-nums;
+  font-variant-numeric:tabular-nums;text-align:right;
 }
 .p7-table tr.subtotal-row td.subtotal-label{text-align:right;text-transform:uppercase;letter-spacing:.04em;font-size:6.5pt;}
 .p7-sub-row td{
@@ -760,7 +761,7 @@ body{background:#d8d8d8;font-family:var(--sans);color:var(--navy);}
           <th class="right" contenteditable="true">Material (€)</th>
           <th class="right" contenteditable="true">M. obra (€)</th>
           <th class="right" contenteditable="true">TOTAL (€)</th>
-          <th></th>
+          <th style="background:#fff"></th>
         </tr>
       </thead>
       <tbody id="budgetBody">
