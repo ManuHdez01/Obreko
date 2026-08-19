@@ -32,16 +32,14 @@
     return String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(/^/, v < 0 ? '-' : '');
   }
 
-  // Precio unitario, importe, material y mano de obra POR PARTIDA sí llevan
-  // céntimos (vienen así desde la herramienta de presupuestos) — solo el
-  // subtotal de capítulo y los totales agregados se redondean a entero con
-  // fmtMoney. Sin decimales de sobra si no los tiene (450, no 450,00).
+  // Precio unitario, importe, material, mano de obra, subtotal de capítulo
+  // y totales del presupuesto detallado: siempre con dos decimales, sin
+  // redondeos intermedios.
   function fmtMoneyDecimal(n) {
     var v = Math.round((Number(n) || 0) * 100) / 100;
     var partes = Math.abs(v).toFixed(2).split('.');
     var entera = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    var texto = partes[1] === '00' ? entera : entera + ',' + partes[1];
-    return (v < 0 ? '-' : '') + texto;
+    return (v < 0 ? '-' : '') + entera + ',' + partes[1];
   }
 
   function setCell(cell, value) {
@@ -181,12 +179,12 @@
     setCell(fila.querySelector('td.importe'), item.importe > 0 ? fmtMoneyDecimal(item.importe) : '—');
     setCell(fila.querySelector('td.material-col'), item.material > 0 ? fmtMoneyDecimal(item.material) : '—');
     setCell(fila.querySelector('td.manoobra-col'), item.manoObra > 0 ? fmtMoneyDecimal(item.manoObra) : '—');
-    // Total = Material + Mano de obra de esa partida, redondeado a entero
-    // (no una copia del Importe): reformas.html recalcula esto en cuanto
+    // Total = Material + Mano de obra de esa partida (no una copia del
+    // Importe), con dos decimales: reformas.html recalcula esto en cuanto
     // carga, esto es solo el valor inicial antes de ese primer cálculo.
     var total = fila.querySelector('td.total-col');
     var sumaTotal = (Number(item.material) || 0) + (Number(item.manoObra) || 0);
-    setCell(total, sumaTotal > 0 ? fmtMoney(sumaTotal) : '—');
+    setCell(total, sumaTotal > 0 ? fmtMoneyDecimal(sumaTotal) : '—');
     if (total) total.addEventListener('input', function () {
       if (typeof window.calcBudget === 'function') window.calcBudget();
     });
@@ -194,12 +192,13 @@
 
   // Fila "Subtotal Capítulo N" tras las partidas de cada capítulo: solo
   // material, mano de obra y total de ese capítulo, cada uno bajo su
-  // columna correspondiente (Importe no lleva subtotal propio, coincide
-  // con el Total).
+  // columna correspondiente. Total = Material + Mano de obra (igual que
+  // en cada partida, ver reformas.html), no el Importe. Los tres con dos
+  // decimales — reformas.html recalcula esto en cuanto carga, esto es
+  // solo el valor inicial antes de ese primer cálculo.
   function crearFilaSubtotalCapitulo(grupo, numeroCapitulo) {
-    var sumaImporte = 0, sumaMaterial = 0, sumaManoObra = 0;
+    var sumaMaterial = 0, sumaManoObra = 0;
     grupo.items.forEach(function (it) {
-      sumaImporte += Number(it.importe) || 0;
       sumaMaterial += Number(it.material) || 0;
       sumaManoObra += Number(it.manoObra) || 0;
     });
@@ -210,7 +209,7 @@
     label.colSpan = 6; // Código + Descripción + Ud + Cantidad + Precio Unit. + Importe
     label.textContent = 'Subtotal Capítulo ' + numeroCapitulo;
     tr.appendChild(label);
-    [fmtMoney(sumaMaterial), fmtMoney(sumaManoObra), fmtMoney(sumaImporte)].forEach(function (texto) {
+    [fmtMoneyDecimal(sumaMaterial), fmtMoneyDecimal(sumaManoObra), fmtMoneyDecimal(sumaMaterial + sumaManoObra)].forEach(function (texto) {
       var td = document.createElement('td');
       td.textContent = texto;
       tr.appendChild(td);

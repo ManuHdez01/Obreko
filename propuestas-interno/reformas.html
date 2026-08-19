@@ -1498,36 +1498,27 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
     var n = parseFloat(t.replace(/[^\d,-]/g, '').replace(',', '.'));
     return isFinite(n) ? n : 0;
   }
-  // Subtotales de capítulo y totales agregados: euros enteros, para que la
-  // cifra final que ve el cliente sea limpia.
+  // Precios, importes, subtotales y totales: siempre con dos decimales,
+  // sin mezclar redondeos — así ninguna columna deja de cuadrar con las
+  // que se suman para calcularla.
   function fmt(n) {
-    if (!(n > 0)) return '—';
-    var v = Math.round(n);
-    return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  }
-  // Precio unitario / importe / total POR PARTIDA sí llevan céntimos (un
-  // precio de 8,50 €/m² no se puede redondear a 8 o 9 sin desviar el
-  // total). Sin decimales de sobra si no los tiene (450, no 450,00).
-  function fmtDecimal(n) {
     if (!(n > 0)) return '—';
     var v = Math.round(n * 100) / 100;
     var partes = v.toFixed(2).split('.');
     var entera = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return partes[1] === '00' ? entera : entera + ',' + partes[1];
+    return entera + ',' + partes[1];
   }
   function setText(el, txt) { if (el) el.textContent = txt; }
 
-  // Importe = Cantidad × Precio Unit., con céntimos — no es un campo
-  // editable directamente (ver colgroup/thead más arriba). Total, en
-  // cambio, es la suma de Material + Mano de obra de esa misma partida,
-  // redondeada a euros enteros: es el importe "limpio" que luego se suma
-  // en el subtotal de capítulo y en el total general.
+  // Importe = Cantidad × Precio Unit. Total = Material + Mano de obra de
+  // esa misma partida (no es un campo editable directamente, ver
+  // colgroup/thead más arriba) — ambos con dos decimales.
   function recalcularFila(tr) {
     var cantidadEl = tr.querySelector('td.cantidad');
     var precioEl = tr.querySelector('td.precio');
     if (!cantidadEl || !precioEl) return;
     var importe = num(cantidadEl) * num(precioEl);
-    setText(tr.querySelector('td.importe'), fmtDecimal(importe));
+    setText(tr.querySelector('td.importe'), fmt(importe));
     var material = num(tr.querySelector('td.material-col'));
     var manoObra = num(tr.querySelector('td.manoobra-col'));
     setText(tr.querySelector('td.total-col'), fmt(material + manoObra));
@@ -1566,10 +1557,10 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
     setText(document.getElementById('subtotal'), fmt(totalGeneral) + ' €');
 
     var giPct = num(document.getElementById('giPct'));
-    var beneficio = Math.round(totalGeneral * giPct / 100);
+    var beneficio = totalGeneral * giPct / 100;
     var contrata = totalGeneral + beneficio;
     var taxRate = (typeof window.getTaxRate === 'function') ? window.getTaxRate() : 0.21;
-    var impuesto = Math.round(contrata * taxRate);
+    var impuesto = contrata * taxRate;
     var total = contrata + impuesto;
 
     setText(document.getElementById('beneficioIndustrial'), fmt(beneficio) + ' €');
@@ -1692,6 +1683,6 @@ function removePaymentItem(btn){var item=btn.closest('.payment-item,[data-pay]')
   else init();
 })();
 </script>
-<script src="_import-budget.js?v=20260906"></script>
+<script src="_import-budget.js?v=20260907"></script>
 </body>
 </html>

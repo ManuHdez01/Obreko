@@ -496,25 +496,27 @@ function estiloReparto(it) {
 
 function pintarTotales(pem, totalMaterial, totalObra, realTotal) {
   const giPct = Number(($('fGiPct') || {}).value) || 0;
-  // Todo en euros enteros, y el total es la suma de lo que se ve: si se
-  // redondeara solo al pintar, las líneas no cuadrarían con el total.
-  const gi = Math.round(pem * (giPct / 100));
+  // Precios, importes y totales con dos decimales, sin redondeos
+  // intermedios: si se redondeara a entero en cada paso, las líneas no
+  // cuadrarían con el total (ver el mismo criterio en la plantilla de
+  // propuesta, reformas.html).
+  const gi = pem * (giPct / 100);
   const contrata = pem + gi;
   const taxPct = Number(($('fTaxPctPie') || {}).value) || 0;
-  const impuesto = Math.round(contrata * (taxPct / 100));
-  $('itemsPem').textContent = fmtMoney(pem);
-  $('itemsGi').textContent = fmtMoney(gi);
-  $('itemsContrata').textContent = fmtMoney(contrata);
-  $('itemsTaxAmount').textContent = fmtMoney(impuesto);
+  const impuesto = contrata * (taxPct / 100);
+  $('itemsPem').textContent = fmtMoneyDecimal(pem);
+  $('itemsGi').textContent = fmtMoneyDecimal(gi);
+  $('itemsContrata').textContent = fmtMoneyDecimal(contrata);
+  $('itemsTaxAmount').textContent = fmtMoneyDecimal(impuesto);
   $('itemsTaxLabel').textContent = ($('fTaxLabel') || {}).value || 'IGIC';
-  $('itemsTotalConIgic').textContent = fmtMoney(contrata + impuesto);
-  $('itemsMatTotal').textContent = fmtMoney(totalMaterial);
-  $('itemsObraTotal').textContent = fmtMoney(totalObra);
+  $('itemsTotalConIgic').textContent = fmtMoneyDecimal(contrata + impuesto);
+  $('itemsMatTotal').textContent = fmtMoneyDecimal(totalMaterial);
+  $('itemsObraTotal').textContent = fmtMoneyDecimal(totalObra);
   // Material + mano de obra debería sumar la ejecución material. Si no cuadra
   // es que falta repartir alguna partida, y conviene verlo.
   const sinRepartir = pem - (totalMaterial + totalObra);
   $('itemsRepartoAviso').innerHTML = Math.abs(sinRepartir) > 0.5
-    ? ` · <span style="color:var(--red)">sin repartir ${escapeHtml(fmtMoney(sinRepartir))}</span>`
+    ? ` · <span style="color:var(--red)">sin repartir ${escapeHtml(fmtMoneyDecimal(sinRepartir))}</span>`
     : '';
   $('itemsRealTotalRow').style.display = realTotal > 0 ? 'block' : 'none';
 }
